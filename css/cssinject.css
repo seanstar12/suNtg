@@ -1,0 +1,46 @@
+.FavCol h3 {
+  background: none !important;
+}
+
+div.header a {
+  color: black !important;
+}
+
+A:link {
+  text-decoration: none;
+}
+
+#netHijack{
+  display:none !important;
+}
+
+.Outer_Nav {
+  border: none !important;
+}
+
+.Navigation {
+  margin-left: 0px !important;
+  padding-right: 5px;
+}
+
+.NetHeading {
+  background-color: none !important;
+  background-image: none !important;
+  background: none !important;
+}
+
+div.LocalNav {
+  width: 163px !important;
+}
+
+div.LocalNav ul li {
+  width: 85% !important;
+}
+
+li {
+  list-style-type:none;
+}
+
+.ColumnSet h3 {
+  background: none !important;
+}

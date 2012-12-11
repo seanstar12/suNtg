@@ -1,0 +1,37 @@
+{
+  "name": "NTG Tool",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Helpful functions for the NTG domain.",
+  "options_page": "options.html",
+  "icons": {
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
+  "background": { "scripts": ["js/background.js"] },
+  "page_action": {
+    "default_icon": "img/icon.png",
+    "default_popup": "pop.html"
+  },
+  "permissions": [
+    "tabs",
+    "background",
+    "idle",
+    "webNavigation",
+    "webRequest",
+    "alarms",
+    "cookies",
+    "https://ntg.missouristate.edu/*",
+    "storage" 
+  ],
+  "web_accessible_resources": ["js/inject.js"],
+  "content_scripts": [
+    {
+      "js": ["js/inject.js"],
+      "css": ["css/cssinject.css"],
+      "matches": ["https://ntg.missouristate.edu/*"],
+      "run_at": "document_end"
+    }
+  ]
+}
