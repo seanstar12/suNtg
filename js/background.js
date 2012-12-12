@@ -21,9 +21,11 @@ function refreshPage(){
         localStorage.requestFailureCount ++;
       } else {
           console.log('Page pull with success: '+ date.toTimeString());
-      }
+      } 
     }
+
   }
+  console.log('refreshPage');
   xmlhttp.open("GET","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604",true);
   xmlhttp.send(); //attempt to keep connection serverside
 }
@@ -36,7 +38,7 @@ function writeCode() {
   document.getElementsByClassName('Main')[0].appendChild(funInject);
 }
 
-function keepAlive(){
+function keepAlive(item){
   var base = "https://ntg.missouristate.edu/";
   var urls = ["Tools/Default.aspx","NetInfo/EquipmentDetail.asp","NetInfo/FloorPlans.asp", "NetInfo/EquipmentList.asp?dbsSMSUTag=X3604"];
   var frame = document.createElement('iframe');
@@ -44,9 +46,8 @@ function keepAlive(){
   frame.setAttribute('id','netHijack');
   var rand = urls[Math.floor((Math.random()*3))];
   frame.setAttribute('src',base+rand);
-  console.log(rand);
-  console.log(frame);
   //document.getElementsByClassName('Main')[0].appendChild(frame);
+  console.log('keepAlive');
 }
 
 function onInit() {
@@ -70,8 +71,7 @@ function scheduleRequest() {
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
   keepAlive();
-  
-//  refreshPage();
+  refreshPage();
 }
 
 function onAlarm(alarm) {
