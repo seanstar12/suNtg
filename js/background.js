@@ -52,7 +52,6 @@ function keepAlive(item){
 
 function onInit() {
   //console.log('Initializing Plugin');
-  localStorage.requestFailureCount = 0; //use for failure to backoff
   startRequest({scheduleRequest:true});
   chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
 }
@@ -70,8 +69,8 @@ function scheduleRequest() {
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-  keepAlive();
-  refreshPage();
+  //keepAlive();                                           // Enable these later. because that is the reason for this file
+  //refreshPage();
 }
 
 function onAlarm(alarm) {

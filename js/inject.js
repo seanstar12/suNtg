@@ -66,9 +66,11 @@ var code = function (){
   function init() {
     
     document.body.setAttribute('onload','');  
-    hijackCookies();
+    //hijackCookies();
     writeCode();  
-  //Object.defineProperty(window, 'sessionTimeout', { value: 31536000 }); // set javascript timeout to a year
+    logMeIn();
+    checkFix();
+
     var url = window.location.pathname.split('/');
     
     if (url.length >= 3) {
@@ -93,14 +95,42 @@ var code = function (){
   
   function writeCode() {
     var funInject = document.createElement('script');
-    var codeInject = ['function getPage(){var base="https://ntg.missouristate.edu/";var urls =["Tools/Default.aspx","NetInfo/EquipmentDetail.asp","NetInfo/FloorPlans.asp", "NetInfo/EquipmentList.asp?dbsSMSUTag=X3604"];'+
-    'var frame = document.createElement("iframe");frame.setAttribute("id","netHijack");var rand = urls[Math.floor((Math.random()*3))];frame.setAttribute("src",base+rand);console.log(rand);console.log(frame);'+
-    'document.getElementsByClassName("Main")[0].appendChild(frame);}'];
-    funInject.innerText = codeInject;
+    funInject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
     document.body.appendChild(funInject);
   }
+  
+  function logMeIn(){
+    if ((document.URL).indexOf('Login.aspx') >= 0) {
+      document.forms.aspnetForm.setAttribute('autocomplete','on');
+      setTimeout(function(){
+        document.getElementById('ctl00_MainContent_ImageButton1').click();
+      } ,500);
+    }
+  }
 
-  layoutChange();
+  function checkFix(){
+    if ((document.URL).indexOf('PortList.asp') >= 0) {
+      
+      var elements = document.getElementsByName('Update');
+      for (i=0; i < elements.length; i++) { 
+        var temp = (elements[i].id).replace(' ',''); 
+        elements[i].id = temp;
+      }
+   
+      document.scripts[1].innerText = ""; 
+      var script = document.createElement('script');
+      var code = 'function openSelectLinkWindow(ObjID, LinkPortInfo){var a=window.open("LinkSelect.asp?LocalPort="+ObjID+"_"+LinkPortInfo,"_blank");a.focus();}function checkChanged(fName, num){num =num.replace(" ","");eval("document.forms[\'"+fName+"\'].Update_"+num+".checked=true");}';
+      
+      script.innerText = code;
+      document.body.appendChild(script);
+       
+    }
+    if ((document.URL).indexOf('LinkSelect.asp') >=0){
+      document.forms[0].dbsName.focus();
+    }
+  }
+ 
+  if (!(document.URL.indexOf('LinkSelect.asp') >= 0)) layoutChange();
   init();
   
   
