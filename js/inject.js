@@ -102,11 +102,18 @@ var code = function (){
   function logMeIn(){
     if ((document.URL).indexOf('/Login/') >= 0) {
       document.forms.aspnetForm.setAttribute('autocomplete','on');
+
       setTimeout(function(){
-        document.getElementById('ctl00_MainContent_ImageButton1').click();
-      } ,750);
-      setTimeout(function(){
-        window.location.href = "https://ntg.missouristate.edu/Tools/";
+        var id = document.getElementById('ctl00_MainContent_UserID').value;
+
+        if ((id != '') && (document.getElementById('ctl00_MainContent_Password').value != '')){    
+          setTimeout(function(){
+            document.getElementById('ctl00_MainContent_ImageButton1').click();
+          } ,750);
+          setTimeout(function(){
+            window.location.href = "https://ntg.missouristate.edu/Tools/";
+          } ,500);
+        }
       } ,500);
     }
   }
@@ -114,10 +121,9 @@ var code = function (){
   function checkFix(){
     if ((document.URL).indexOf('PortList.asp') >= 0) {
       
-      var elements = document.getElementsByName('Update');
-      for (i=0; i < elements.length; i++) { 
-        var temp = (elements[i].id).replace(' ',''); 
-        elements[i].id = temp;
+      var el = document.getElementsByName('Update');
+      for (i=0; i < el.length; i++) { 
+        el[i].id = (el[i].id).replace(' ',''); 
       }
    
       document.scripts[1].innerText = ""; 
