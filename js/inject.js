@@ -67,7 +67,7 @@ var code = function (){
     
     document.body.setAttribute('onload','');  
     //hijackCookies();
-    writeCode();  
+    addJquery();  
     logMeIn();
     checkFix();
 
@@ -93,17 +93,20 @@ var code = function (){
     document.getElementsByClassName('header')[0].setAttribute("style","height: 15px; background: none; border: none; color: #000");
   }
   
-  function writeCode() {
+  function addJquery() {
     var funInject = document.createElement('script');
     funInject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
     document.body.appendChild(funInject);
   }
   
   function logMeIn(){
-    if ((document.URL).indexOf('Login.aspx') >= 0) {
+    if ((document.URL).indexOf('/Login/') >= 0) {
       document.forms.aspnetForm.setAttribute('autocomplete','on');
       setTimeout(function(){
         document.getElementById('ctl00_MainContent_ImageButton1').click();
+      } ,750);
+      setTimeout(function(){
+        window.location.href = "https://ntg.missouristate.edu/Tools/";
       } ,500);
     }
   }
