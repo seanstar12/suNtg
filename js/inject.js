@@ -122,9 +122,7 @@ var code = function (){
     if ((document.URL).indexOf('PortList.asp') >= 0) {
       
       var el = document.getElementsByName('Update');
-      for (i=0; i < el.length; i++) { 
-        el[i].id = (el[i].id).replace(' ',''); 
-      }
+      for (i=0; i < el.length; i++) el[i].id = (el[i].id).replace(' ',''); 
    
       document.scripts[1].innerText = ""; 
       var script = document.createElement('script');
