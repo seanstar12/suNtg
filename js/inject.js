@@ -88,10 +88,10 @@ var code = function (){
 
       if ((id != '') && (document.getElementById('ctl00_MainContent_Password').value != '')){    
         setTimeout(function(){
-          document.getElementById('ctl00_MainContent_ImageButton1').click();
+         // document.getElementById('ctl00_MainContent_ImageButton1').click();
         } ,750);
         setTimeout(function(){
-          window.location.href = "https://ntg.missouristate.edu/Tools/";
+         // window.location.href = "https://ntg.missouristate.edu/Tools/";
         } ,500);
       }
     } ,500);
