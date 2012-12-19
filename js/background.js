@@ -30,13 +30,6 @@ function refreshPage(){
   xmlhttp.send(); //attempt to keep connection serverside
 }
 
-function writeCode() {
-  var funInject = document.createElement('script');
-  var codeInject = ['var base="https://ntg.missouristate.edu/";var urls =["Tools/Default.aspx","NetInfo/EquipmentDetail.asp","NetInfo/FloorPlans.asp", "NetInfo/EquipmentList.asp?dbsSMSUTag=X3604"];'+
-  'var frame = document.createElement("iframe");frame.setAttribute("id","netHijack");var rand = urls[Math.floor((Math.random()*3))];frame.setAttribute("src",base+rand);console.log(rand);console.log(frame);'];
-  funInject.innerText = codeInject;
-  document.getElementsByClassName('Main')[0].appendChild(funInject);
-}
 
 function keepAlive(item){
   var base = "https://ntg.missouristate.edu/";
@@ -69,7 +62,7 @@ function scheduleRequest() {
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-  //keepAlive();                                           // Enable these later. because that is the reason for this file
+  //keepAlive();            // Enable these later. because that is the reason for this file
   //refreshPage();
 }
 
@@ -95,6 +88,6 @@ function onWatchdog(){
 //onInit();
 
 //Chrome Processes Running 
-chrome.tabs.onUpdated.addListener(checkForURL); // icon set
-chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
-chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
+//chrome.tabs.onUpdated.addListener(checkForURL); // icon set
+//chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
+//chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
