@@ -25,23 +25,24 @@ var code = function (){
   }
   
   function hijackCookies() {
-    var auth = document.cookie.indexOf('ASPXAUTH');                  //Look for auth token
-    var cookie = document.cookie.split(';');                         //Get all teh cookies
+    var auth = document.cookie.indexOf('ASPXAUTH');
+    var cookie = document.cookie.split(';');
     
-    if (auth == -1) {                                                //If no auth token ...
-      if (window.location.pathname.split('/')[2].indexOf('Default.aspx') != -1) {           // exploiting the login form so that if
-                                                                                            //  AUTH != found && user is on privileged
-        window.location = "https://ntg.missouristate.edu/Login/login.aspx?ForceLogin=true"; //  page, we make the login form kill it's own
-      }                                                                                     //  so we can set it.
-      cookie.push("ASP.NET_SessionId="+ MasterPageSessionID);                             // Add SessonId to stack
+    /*if (auth == -1) { //Cookie Hijack ... Do this later
+      var goTo = (window.location = "https://ntg.missouristate.edu/Login/login.aspx?ForceLogin=true")();
+      urlCheck(['Default'],
+      if (window.location.pathname.split('/')[2].indexOf('Default.aspx') != -1) {
+      }
+      cookie.push("ASP.NET_SessionId="+ MasterPageSessionID);
     }
     
-    cookie.forEach(function(item, i) {                                                      // Check for cookies that have ASP
-      if(item.match('ASP')) {                                                               // on the ntg domain and set experation to a year
+    cookie.forEach(function(item, i) {
+      if(item.match('ASP')) {
         var current = item.split('=');
         setCookie(current[0],current[1],365);
       }
     });
+  */
   }
   
   function fillDate(){
@@ -63,62 +64,40 @@ var code = function (){
     return date;
   }
   
-  function init() {
-    
-    document.body.setAttribute('onload','');  
-    //hijackCookies();
-    addJquery();  
-    logMeIn();
-    checkFix();
-
-    var url = window.location.pathname.split('/');
-    
-    if (url.length >= 3) {
-    
-      if (url[2].indexOf('login.asp') > -1) {
-        document.forms.aspnetForm.setAttribute('autocomplete','on');  //set autocomplete for login form
-      } 
-      if (url[2].indexOf('EquipmentDetail.asp') != -1) {              // run functions if on EquipmentDetail page
-    
-      }
-    }
-  }
 
   //deallocateTag('X3675');
   function layoutChange(){
-    var replace = "";
     var replace = '<a style="float:left;" href="/Tools/Default.aspx">Networking</a>';
-    document.getElementsByClassName('header')[0].innerHTML = replace;
-    document.getElementsByClassName('header')[0].appendChild(document.getElementsByClassName('Breadcrumb')[0]);
-    document.getElementsByClassName('header')[0].setAttribute("style","height: 15px; background: none; border: none; color: #000");
+    var el = document.getElementsByClassName('header')[0];
+    el.innerHTML = replace;
+    el.appendChild(document.getElementsByClassName('Breadcrumb')[0]);
+    el.setAttribute("style","height: 15px; background: none; border: none; color: #000");
   }
   
   function addJquery() {
-    var funInject = document.createElement('script');
-    funInject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
-    document.body.appendChild(funInject);
+    var inject = document.createElement('script');
+    inject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
+    document.body.appendChild(inject);
   }
   
-  function logMeIn(){
-    if ((document.URL).indexOf('/Login/') >= 0) {
-      document.forms.aspnetForm.setAttribute('autocomplete','on');
+  function logMeIn() {
+    document.forms.aspnetForm.setAttribute('autocomplete','on');
 
-      setTimeout(function(){
-        var id = document.getElementById('ctl00_MainContent_UserID').value;
+    setTimeout(function(){
+      var id = document.getElementById('ctl00_MainContent_UserID').value;
 
-        if ((id != '') && (document.getElementById('ctl00_MainContent_Password').value != '')){    
-          setTimeout(function(){
-            document.getElementById('ctl00_MainContent_ImageButton1').click();
-          } ,750);
-          setTimeout(function(){
-            window.location.href = "https://ntg.missouristate.edu/Tools/";
-          } ,500);
-        }
-      } ,500);
-    }
+      if ((id != '') && (document.getElementById('ctl00_MainContent_Password').value != '')){    
+        setTimeout(function(){
+          document.getElementById('ctl00_MainContent_ImageButton1').click();
+        } ,750);
+        setTimeout(function(){
+          window.location.href = "https://ntg.missouristate.edu/Tools/";
+        } ,500);
+      }
+    } ,500);
   }
 
-  function checkFix(){
+  function checkFix() {
     if ((document.URL).indexOf('PortList.asp') >= 0) {
       
       var el = document.getElementsByName('Update');
@@ -136,14 +115,38 @@ var code = function (){
       document.forms[0].dbsName.focus();
     }
   }
- 
-  if (!(document.URL.indexOf('LinkSelect.asp') >= 0)) layoutChange();
-  init();
+
+  function urlCheck(link,f,invert) {
+  // invert {t,f} ; link {array of links} ; f {function to run}
+  // invert = true, f() will NOT run on ARRAY of pages 
+    if (invert) {
+      var count = 0;
+      for (var i=0; i < link.length; i++) {      
+        var item = (document.URL.indexOf(link[i]) >= 0);
+        if (item) count++;
+      }
+      if (count == 0) f();
+    } else (document.URL.indexOf(link) >=0) ? f(): false;
+  }
   
+  function init() {
+    
+    document.body.setAttribute('onload','');  
+    //hijackCookies();
+    addJquery();  
+    urlCheck(['LinkSelect.asp'],layoutChange,true);
+    urlCheck('Login',logMeIn);
+    checkFix();
+
+  }
+  
+  
+  // Runs every page load
+  init();
   
 }
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
 document.body.appendChild(script);
-//script.parentNode.removeChild(script);
+//script.parentNode.removeChild(script); //I was never here...
