@@ -30,18 +30,52 @@ function refreshPage(){
   xmlhttp.send(); //attempt to keep connection serverside
 }
 
-
-function keepAlive(item){
-  var base = "https://ntg.missouristate.edu/";
-  var urls = ["Tools/Default.aspx","NetInfo/EquipmentDetail.asp","NetInfo/FloorPlans.asp", "NetInfo/EquipmentList.asp?dbsSMSUTag=X3604"];
-  var frame = document.createElement('iframe');
-  //frame.setAttribute('style','display: none;');
-  frame.setAttribute('id','netHijack');
-  var rand = urls[Math.floor((Math.random()*3))];
-  frame.setAttribute('src',base+rand);
-  //document.getElementsByClassName('Main')[0].appendChild(frame);
-  console.log('keepAlive');
+function loggedIn(){
+  $.ajax({
+    type: 'GET',
+    url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
+    success: function(data) {
+      if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
+        localStorage['loggedIn'] = false;
+      } else localStorage['loggedIn'] = true;
+    },
+  });
 }
+
+function msuGet(){
+  $.ajax({
+    type: 'GET',
+    url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+    success: function(data) {
+      console.log(data.responseText);
+      //jquery gets hung up on relative links in the script tags on the page
+      //and causes it to abort. cannot figure out how to either A) strip the script tags
+      //because I don't care about them, or B) fix the relative urls so that I can grab the 
+      //value of __EVENTValidation 
+      localStorage['viewstate'] = $('#__VIEWSTATE',data).attr('value');
+      localStorage['eventval'] = $('#__EVENTVALIDATION',data).attr('value');
+    },
+  });
+}
+
+function msuPost(){
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/Login/Login.aspx',
+    data: {
+      '__LASTFOCUS':'',
+      '__VIEWSTATE':localStorage['viewstate'],
+      '__EVENTTARGET':'',
+      '__EVENTARGUMENT':'',
+      '__EVENTVALIDATION':localStorage['eventval'],
+      'ctl00$MainContent$UserID':localStorage['user'],
+      'ctl00$MainContent$Password':localStorage['pass'],
+      'ctl00$MainContent$ImageButton1.x':'15',
+      'ctl00$MainContent$ImageButton1.y':'23'
+    },
+    success :  function() { console.log('login complete'); }, 
+  });
+}  
 
 function onInit() {
   //console.log('Initializing Plugin');
@@ -62,11 +96,13 @@ function scheduleRequest() {
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-  //keepAlive();            // Enable these later. because that is the reason for this file
-  //refreshPage();
+   
+  msuGet();
+  //msuPost();
 }
 
 function onAlarm(alarm) {
+  console.log('Logged In?', localStorage["loggedIn"]);
   if (alarm) console.log('Alarm', alarm);
   if (alarm.name == 'watchdog') {
     onWatchdog();
@@ -88,6 +124,6 @@ function onWatchdog(){
 //onInit();
 
 //Chrome Processes Running 
-//chrome.tabs.onUpdated.addListener(checkForURL); // icon set
-//chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
-//chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
+chrome.tabs.onUpdated.addListener(checkForURL); // icon set
+chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
+chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload

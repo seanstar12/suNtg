@@ -80,21 +80,15 @@ var code = function (){
     document.body.appendChild(inject);
   }
   
+
+
   function logMeIn() {
-    document.forms.aspnetForm.setAttribute('autocomplete','on');
-
-    setTimeout(function(){
-      var id = document.getElementById('ctl00_MainContent_UserID').value;
-
-      if ((id != '') && (document.getElementById('ctl00_MainContent_Password').value != '')){    
-        setTimeout(function(){
-         // document.getElementById('ctl00_MainContent_ImageButton1').click();
-        } ,750);
-        setTimeout(function(){
-         // window.location.href = "https://ntg.missouristate.edu/Tools/";
-        } ,500);
-      }
-    } ,500);
+    
+    document.forms.aspnetForm.setAttribute('autocomplete','on'); 
+    document.forms[0].addEventListener("submit", function(evt) {
+      localStorage['user'] = $('#ctl00_MainContent_UserID').attr('value');
+      localStorage['pass'] = $('#ctl00_MainContent_Password').attr('value');
+    });
   }
 
   function checkFix() {
@@ -130,14 +124,12 @@ var code = function (){
   }
   
   function init() {
-    
+    addJquery();  
     document.body.setAttribute('onload','');  
     //hijackCookies();
-    addJquery();  
     urlCheck(['LinkSelect.asp'],layoutChange,true);
-    urlCheck('Login',logMeIn);
     checkFix();
-
+    urlCheck('Login',logMeIn);
   }
   
   
