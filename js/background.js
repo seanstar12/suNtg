@@ -1,4 +1,4 @@
-var pollIntervalMin = 1;
+var pollIntervalMin = 3;
 var pollIntervalMax = 5;
 var requestTimeout = 2000;
 
@@ -43,19 +43,20 @@ function loggedIn(){
 }
 
 function msuGet(){
-  $.ajax({
-    type: 'GET',
-    url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-    success: function(data) {
-      console.log(data.responseText);
-      //jquery gets hung up on relative links in the script tags on the page
-      //and causes it to abort. cannot figure out how to either A) strip the script tags
-      //because I don't care about them, or B) fix the relative urls so that I can grab the 
-      //value of __EVENTValidation 
-      localStorage['viewstate'] = $('#__VIEWSTATE',data).attr('value');
-      localStorage['eventval'] = $('#__EVENTVALIDATION',data).attr('value');
-    },
-  });
+  var xmlhttp = new XMLHttpRequest();
+
+  xmlhttp.onreadystatechange=function() {
+ 
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      var root = document.createElement("div");
+      document.body.innerHTML = xmlhttp.responseText;
+      localStorage.eventval = document.getElementById('__EVENTVALIDATION').value;
+      localStorage.viewstate = document.getElementById('__VIEWSTATE').value;
+    }
+  }
+
+  xmlhttp.open("GET","https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true",true);
+  xmlhttp.send();
 }
 
 function msuPost(){
@@ -64,21 +65,25 @@ function msuPost(){
     url: 'https://ntg.missouristate.edu/Login/Login.aspx',
     data: {
       '__LASTFOCUS':'',
-      '__VIEWSTATE':localStorage['viewstate'],
+      '__VIEWSTATE':localStorage.viewstate,
       '__EVENTTARGET':'',
       '__EVENTARGUMENT':'',
-      '__EVENTVALIDATION':localStorage['eventval'],
-      'ctl00$MainContent$UserID':localStorage['user'],
-      'ctl00$MainContent$Password':localStorage['pass'],
+      '__EVENTVALIDATION':localStorage.eventval,
+      'ctl00$MainContent$UserID':'ss4599', //fix with pass from context script
+      'ctl00$MainContent$Password':'PASSGOESHERE', 
       'ctl00$MainContent$ImageButton1.x':'15',
       'ctl00$MainContent$ImageButton1.y':'23'
     },
-    success :  function() { console.log('login complete'); }, 
+    success :  function() { 
+      localStorage.loginCount++;
+      console.log('login complete', localStorage.loginCount); 
+    }, 
   });
 }  
 
 function onInit() {
   //console.log('Initializing Plugin');
+  localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
   chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
 }
@@ -98,7 +103,7 @@ function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
    
   msuGet();
-  //msuPost();
+  msuPost();
 }
 
 function onAlarm(alarm) {
