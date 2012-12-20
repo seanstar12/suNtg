@@ -88,7 +88,10 @@ var code = function (){
     document.forms[0].addEventListener("submit", function(evt) {
       localStorage['user'] = $('#ctl00_MainContent_UserID').attr('value');
       localStorage['pass'] = $('#ctl00_MainContent_Password').attr('value');
-    });
+
+      window.postMessage({ type: "FROM_PAGE", text: localStorage.pass},"*");
+
+    }, false);
   }
 
   function checkFix() {
@@ -137,6 +140,14 @@ var code = function (){
   init();
   
 }
+
+window.addEventListener("message", function(event) {
+  var port = chrome.extension.connect();
+  if (event.data.type && (event.data.type == "FROM_PAGE")) {
+    console.log("Content Received: " + event.data.text);
+    port.postMessage(event.data.text);
+  }
+}, false);
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';

@@ -17,16 +17,16 @@ function refreshPage(){
     if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
       if ((xmlhttp.responseText).indexOf("Credentials Required") > 0 ){
         console.log(xmlhttp);
-        console.log("Returned Login Page");
+        console.log("Returned Login Page -- We Have Failed.");
         localStorage.requestFailureCount ++;
       } else {
-          console.log('Page pull with success: '+ date.toTimeString());
+          console.log('Page POST with success: '+ date.toTimeString());
       } 
     }
 
   }
-  console.log('refreshPage');
-  xmlhttp.open("GET","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604",true);
+  console.log('(refreshPage)');
+  xmlhttp.open("POST","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604",true);
   xmlhttp.send(); //attempt to keep connection serverside
 }
 
@@ -102,8 +102,9 @@ function scheduleRequest() {
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
    
-  msuGet();
-  msuPost();
+  //msuGet();
+  //msuPost();
+  refreshPage();
 }
 
 function onAlarm(alarm) {
@@ -116,9 +117,7 @@ function onAlarm(alarm) {
 
 function onWatchdog(){
   chrome.alarms.get('refresh', function(alarm) {
-    if (alarm) {
-//      console.log('Refresh alarm is there.');
-    } else {
+    if (!alarm) {
       console.log('Refresh alarm is missing.');
       startRequest({scheduleRequest:true});
     }
@@ -132,3 +131,6 @@ function onWatchdog(){
 chrome.tabs.onUpdated.addListener(checkForURL); // icon set
 chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
 chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
+chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
+  console.log('Got message' + JSON.stringify(msg));
+});
