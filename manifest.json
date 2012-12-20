@@ -22,7 +22,6 @@
     "webNavigation",
     "webRequest",
     "alarms",
-    "experimental",
     "cookies",
     "https://ntg.missouristate.edu/*",
     "storage" 
