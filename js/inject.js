@@ -67,7 +67,7 @@ var code = function (){
 
   //deallocateTag('X3675');
   function layoutChange(){
-    var replace = '<a style="float:left;" href="/Tools/Default.aspx">Networking</a>';
+    var replace = '<a style="float:left;" href="/Tools/">Networking</a>';
     var el = document.getElementsByClassName('header')[0];
     el.innerHTML = replace;
     el.appendChild(document.getElementsByClassName('Breadcrumb')[0]);
@@ -127,7 +127,7 @@ var code = function (){
   }
   
   function init() {
-    addJquery();  
+    addJquery();
     document.body.setAttribute('onload','');  
     //hijackCookies();
     urlCheck(['LinkSelect.asp'],layoutChange,true);
@@ -135,19 +135,27 @@ var code = function (){
     urlCheck('Login',logMeIn);
   }
   
-  
   // Runs every page load
   init();
-  
 }
 
-window.addEventListener("message", function(event) {
-  var port = chrome.extension.connect();
-  if (event.data.type && (event.data.type == "FROM_PAGE")) {
-    console.log("Content Received: " + event.data.text);
-    port.postMessage(event.data.text);
-  }
-}, false);
+
+
+if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
+  chrome.extension.sendMessage({data: "loginPage"}, function(response) {
+    console.log(response.farewell);
+  });
+}
+
+chrome.extension.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.data == "reload") {
+      window.location = decodeURIComponent(window.location.search)
+                          .replace('?ForceLogin=true&ReturnURL=','')
+                          .replace('?ReturnUrl=','');
+      sendResponse({farewell: "Nothing to see here... Move along."});
+    }
+ });
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';

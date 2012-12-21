@@ -9,54 +9,65 @@ function checkForURL(tabId, changeInfo, tab) {
   }
 }
 
-function refreshPage(){
-  var xmlhttp;
-  var date = new Date();
-  xmlhttp=new XMLHttpRequest();
-  xmlhttp.onreadystatechange = function(){
-    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-      if ((xmlhttp.responseText).indexOf("Credentials Required") > 0 ){
-        console.log(xmlhttp);
-        console.log("Returned Login Page -- We Have Failed.");
-        localStorage.requestFailureCount ++;
-      } else {
-          console.log('Page POST with success: '+ date.toTimeString());
-      } 
+function msuRefresh(){
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604',
+    success: function () {
+      var date = new Date();
+      console.log('Page POST with success: '+ date.toTimeString());
+    },
+    error: function(){
+      console.log(xmlhttp);
+      console.log("Returned Login Page -- We Have Failed.");
+      localStorage.requestFailureCount ++;
     }
-
-  }
-  console.log('(refreshPage)');
-  xmlhttp.open("POST","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604",true);
-  xmlhttp.send(); //attempt to keep connection serverside
+  });
 }
 
 function loggedIn(){
   $.ajax({
     type: 'GET',
     url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-    success: function(data) {
-      if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
-        localStorage['loggedIn'] = false;
-      } else localStorage['loggedIn'] = true;
-    },
+    success: loggedInSuccess,
   });
 }
 
-function msuGet(){
-  var xmlhttp = new XMLHttpRequest();
-
-  xmlhttp.onreadystatechange=function() {
- 
-    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-      var root = document.createElement("div");
-      document.body.innerHTML = xmlhttp.responseText;
-      localStorage.eventval = document.getElementById('__EVENTVALIDATION').value;
-      localStorage.viewstate = document.getElementById('__VIEWSTATE').value;
+function loggedInSuccess(data) {
+    if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
+      localStorage['loggedIn'] = false;
+      msuGet();
+    } else  {
+      localStorage['loggedIn'] = true;
+      msuRefresh();
     }
-  }
+}
 
-  xmlhttp.open("GET","https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true",true);
-  xmlhttp.send();
+function msuGet() {
+  console.log('im getting');
+  (localStorage.pass == null) ? localStorage.pass = prompt("Enter your password") : false;
+  $.ajax({
+    url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+    success: function(req) { msuGetProcess(req); },
+  });
+}
+
+function msuGetProcess(req) {
+  console.log('im processing');
+
+  var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = req.replace(/<script(.|\s)*?\/script>/g, '');
+  
+  // tempDiv now has a DOM structure:
+  tempDiv.childNodes;
+
+  localStorage.eventval = tempDiv.querySelector('#__EVENTVALIDATION').value;
+  localStorage.viewstate = tempDiv.querySelector('#__VIEWSTATE').value;
+  
+  // remove unneeded div
+  delete tempDiv;
+
+  msuPost();
 }
 
 function msuPost(){
@@ -70,13 +81,13 @@ function msuPost(){
       '__EVENTARGUMENT':'',
       '__EVENTVALIDATION':localStorage.eventval,
       'ctl00$MainContent$UserID':'ss4599', //fix with pass from context script
-      'ctl00$MainContent$Password':'PASSGOESHERE', 
+      'ctl00$MainContent$Password':localStorage.pass, 
       'ctl00$MainContent$ImageButton1.x':'15',
       'ctl00$MainContent$ImageButton1.y':'23'
     },
     success :  function() { 
       localStorage.loginCount++;
-      console.log('login complete', localStorage.loginCount); 
+      (webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, we logged you back in...' + localStorage.loginCount)).show(); 
     }, 
   });
 }  
@@ -96,15 +107,12 @@ function scheduleRequest() {
   var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
   delay = Math.round(delay);
  // console.log('Scheduling for: ' + delay + ' minutes');
-  chrome.alarms.create('refresh',{periodInMinutes: delay});
+  chrome.alarms.create('refresh',{periodInMinutes: 2});
 }
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-   
-  //msuGet();
-  //msuPost();
-  refreshPage();
+  loggedIn();
 }
 
 function onAlarm(alarm) {
@@ -124,13 +132,21 @@ function onWatchdog(){
   });
 }
 
-
-//onInit();
-
 //Chrome Processes Running 
 chrome.tabs.onUpdated.addListener(checkForURL); // icon set
 chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
 chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
 chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
   console.log('Got message' + JSON.stringify(msg));
+  chrome.tabs.getSelected(null, function(tab) {
+    if (msg.data == "loginPage"){
+      if (localStorage.loggedIn)
+      msuGet();
+      
+  
+      chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
+        console.log(response.farewell);
+      });
+    }
+  });
 });
