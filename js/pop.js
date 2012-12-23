@@ -51,19 +51,25 @@ function processForm(e) {
     }
   }
 
-  //alert(bleh);
   chrome.extension.getBackgroundPage().keepAlive(data);
   console.log(data);
   return false;
 }
 
-function dateChange(){
-  if (custDate.checked) {
-    document.getElementById('customDateField').setAttribute('style','display:inline');
-  } else {
-    document.getElementById('customDateField').setAttribute('style','display:none');
-  }
-}
+//function dateChange(){
+//  if (custDate.checked) {
+//    document.getElementById('customDateField').setAttribute('style','display:inline');
+//  } else {
+//    document.getElementById('customDateField').setAttribute('style','display:none');
+//  }
+//}
+
+$('#custDate').click(function() {
+  $('#customDateField').toggle('fast', function() {
+    // Animation complete
+  });
+});
+
 function radioChange(){
   var warning = document.getElementById('warning');
   if (this.value == 'dataXtag') {
@@ -86,9 +92,9 @@ function radioChange(){
   //}
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-        document.querySelector('#custDate').addEventListener('change', dateChange);
-});
+//document.addEventListener('DOMContentLoaded', function () {
+//        document.querySelector('#custDate').addEventListener('change', dateChange);
+//});
 document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#massAllo input[type="radio"]')[0].addEventListener('change', radioChange);
         document.querySelectorAll('#massAllo input[type="radio"]')[1].addEventListener('change', radioChange);

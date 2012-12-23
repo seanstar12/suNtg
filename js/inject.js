@@ -77,10 +77,9 @@ var code = function (){
   function addJquery() {
     var inject = document.createElement('script');
     inject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
-    document.body.appendChild(inject);
+    document.head.appendChild(inject);
   }
   
-
 
   function logMeIn() {
     
@@ -126,6 +125,14 @@ var code = function (){
     } else (document.URL.indexOf(link) >=0) ? f(): false;
   }
   
+  function injPop() {
+    var script = document.createElement('script');
+    var div = "<div id='fade'><div id='dialog'><h1>Oh Noes!</h1><p>Your screen has been locked. Please enter your password to continue.</p><input type='password' name='pass' id='pass' size='20'></div></div>";
+    var code = '$(function() {var docHeight = $(document).height();$("body").append('+ div +')})';
+    script.innerText = code;
+    document.body.appendChild(script);
+  }
+
   function init() {
     addJquery();
     document.body.setAttribute('onload','');  
@@ -153,11 +160,11 @@ chrome.extension.onMessage.addListener(
       window.location = decodeURIComponent(window.location.search)
                           .replace('?ForceLogin=true&ReturnURL=','')
                           .replace('?ReturnUrl=','');
-      sendResponse({farewell: "Nothing to see here... Move along."});
+      sendResponse({farewell: "Callback from background tab"});
     }
  });
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
-document.body.appendChild(script);
+document.head.appendChild(script);
 //script.parentNode.removeChild(script); //I was never here...

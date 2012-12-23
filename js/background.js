@@ -11,11 +11,11 @@ function checkForURL(tabId, changeInfo, tab) {
 
 function msuRefresh(){
   $.ajax({
-    type: 'POST',
+    type: 'GET',
     url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604',
     success: function () {
       var date = new Date();
-      console.log('Page POST with success: '+ date.toTimeString());
+      console.log('Page GET with success: '+ date.toTimeString());
     },
     error: function(){
       console.log(xmlhttp);
@@ -87,13 +87,18 @@ function msuPost(){
     },
     success :  function() { 
       localStorage.loginCount++;
-      (webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, we logged you back in...' + localStorage.loginCount)).show(); 
+      var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, we logged you back in...' + localStorage.loginCount);
+      hud.show();
+      setTimeout(function() {
+        hud.cancel();
+      }, 3000);
     }, 
   });
 }  
 
 function onInit() {
   //console.log('Initializing Plugin');
+  localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
   chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
@@ -136,6 +141,7 @@ function onWatchdog(){
 chrome.tabs.onUpdated.addListener(checkForURL); // icon set
 chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
 chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
+
 chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
   console.log('Got message' + JSON.stringify(msg));
   chrome.tabs.getSelected(null, function(tab) {
