@@ -45,6 +45,7 @@ function loggedInSuccess(data) {
 
 function msuGet() {
   console.log('im getting');
+  (localStorage.user == null) ? localStorage.user = prompt("Enter your username") : false;
   (localStorage.pass == null) ? localStorage.pass = prompt("Enter your password") : false;
   $.ajax({
     url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
@@ -80,7 +81,7 @@ function msuPost(){
       '__EVENTTARGET':'',
       '__EVENTARGUMENT':'',
       '__EVENTVALIDATION':localStorage.eventval,
-      'ctl00$MainContent$UserID':'ss4599', //fix with pass from context script
+      'ctl00$MainContent$UserID':localStorage.user, //fix with pass from context script
       'ctl00$MainContent$Password':localStorage.pass, 
       'ctl00$MainContent$ImageButton1.x':'15',
       'ctl00$MainContent$ImageButton1.y':'23'
