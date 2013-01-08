@@ -35,10 +35,10 @@ function loggedIn(){
 
 function loggedInSuccess(data) {
     if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
-      localStorage['loggedIn'] = false;
+      localStorage.loggedIn = false;
       msuGet();
     } else  {
-      localStorage['loggedIn'] = true;
+      localStorage.loggedIn = true;
       msuRefresh();
     }
 }
@@ -124,7 +124,7 @@ function startRequest(params) {
 }
 
 function onAlarm(alarm) {
-  console.log('Logged In?', localStorage["loggedIn"]);
+  console.log('Logged In?', localStorage.loggedIn);
   if (alarm) console.log('Alarm', alarm);
   if (alarm.name == 'watchdog') {
     onWatchdog();
