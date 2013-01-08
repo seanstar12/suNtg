@@ -88,7 +88,9 @@ function msuPost(){
     },
     success :  function() { 
       localStorage.loginCount++;
-      var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, we logged you back in...' + localStorage.loginCount);
+      localStorage.loggedIn = true;
+      var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
+                + localStorage.loginCount);
       hud.show();
       setTimeout(function() {
         hud.cancel();
