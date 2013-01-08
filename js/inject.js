@@ -64,6 +64,33 @@ var code = function (){
     return date;
   }
   
+  function tabReturn(){
+    var input = document.getElementById('dbsName');
+    input.focus();
+    document.onkeydown = keyHandler;
+             
+    function keyHandler(event) {
+      var code;
+      var e;
+                      
+      if (document.all) {
+        if (!event) {
+          var e = window.event;
+          code = e.keyCode;
+        }
+      } 
+      else if (event.which) {
+        code = event.which;
+        e = event;
+      }
+      if (e.keyCode == 9){
+        document.forms[0].mode.value = "Device Select";
+        document.forms.PageBody.submit();
+        return false;
+      }
+    }
+  }
+
 
   //deallocateTag('X3675');
   function layoutChange(){
@@ -138,6 +165,8 @@ var code = function (){
     document.body.setAttribute('onload','');  
     //hijackCookies();
     urlCheck(['LinkSelect.asp'],layoutChange,true);
+    urlCheck('EquipmentDetail.asp',fillDate);
+    urlCheck('LinkSelect.asp',tabReturn);
     checkFix();
     urlCheck('Login',logMeIn);
   }
