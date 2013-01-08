@@ -84,9 +84,11 @@ var code = function (){
         e = event;
       }
       if (e.keyCode == 9){
-        document.forms[0].mode.value = "Device Select";
-        document.forms.PageBody.submit();
-        return false;
+        if ((input.value).length > 1)  {
+          document.forms[0].mode.value = "Device Select";
+          document.forms.PageBody.submit();
+          return false;
+        }
       }
     }
   }
@@ -163,7 +165,6 @@ var code = function (){
   function init() {
     addJquery();
     document.body.setAttribute('onload','');  
-    //hijackCookies();
     urlCheck(['LinkSelect.asp'],layoutChange,true);
     urlCheck('EquipmentDetail.asp',fillDate);
     urlCheck('LinkSelect.asp',tabReturn);
