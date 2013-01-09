@@ -81,3 +81,7 @@ li {
   font-size: 24px;
 }
 
+.selectList {
+  font-size: 10px;
+  float: right;
+}

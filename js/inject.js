@@ -64,9 +64,29 @@ var code = function (){
     return date;
   }
   
+  function addLinks() {
+    var el = document.createElement('div');
+    var ul = document.createElement('ul');
+    el.className = "selectList";
+
+    //var content = "<li><a href=\"#Update_"+xfer+"_"+switch+"_"+set+"_0\"></li>";
+    var content = "stuff";
+    var item = document.getElementsByClassName('NetHeading');
+    var length = item.length;
+
+    for (var i=1; i< (length); i++){
+      content = "<span class=\"selectList\">  Links go Here</div>"; 
+      item[i].innerHTML += content;
+    }
+
+  }
+  
   function tabReturn(){
+
     var input = document.getElementById('dbsName');
-    input.focus();
+    
+    if (input != null) input.focus();
+    
     document.onkeydown = keyHandler;
              
     function keyHandler(event) {
@@ -91,6 +111,10 @@ var code = function (){
         }
       }
     }
+  }
+
+  function closeListen(){
+    if (document.body.innerHTML == "") window.close();
   }
 
 
@@ -168,6 +192,8 @@ var code = function (){
     urlCheck(['LinkSelect.asp'],layoutChange,true);
     urlCheck('EquipmentDetail.asp',fillDate);
     urlCheck('LinkSelect.asp',tabReturn);
+    urlCheck('LinkSelect.asp',closeListen);
+    urlCheck('PortList.asp',addLinks);
     checkFix();
     urlCheck('Login',logMeIn);
   }
