@@ -69,7 +69,9 @@ var code = function (){
     var ul = document.createElement('ul');
     el.className = "selectList";
 
-    //var content = "<li><a href=\"#Update_"+xfer+"_"+switch+"_"+set+"_0\"></li>";
+    var name = (document.getElementsByClassName('Content')[0].children[0].innerHTML);
+    name = name.split(' ');
+    
     var k =0;
     var content = "";
     var item = document.getElementsByClassName('NetHeading');
@@ -77,12 +79,12 @@ var code = function (){
     if (length < 3 ) return false; 
     else {
       for (var j=1;j<length;j+=2){
-        content += "<li><a href=\"#switch_"+(j-1)+"\">[GE-"+k+"   </a></li>";
-        content += "<li><a href=\"#switch_"+(j)+"\">XE-"+k+"] </a></li>";
+        content += "<li><a href=\"#switch_"+(j-1)+"\">("+k+"/0 - </a></li>";
+        content += "<li><a href=\"#switch_"+(j)+"\">"+k+"/1)</a></li>";
         k++;
       }
       for (var i=1; i< length; i++){
-        item[i].innerHTML += "<span id=\"switch_"+(i-1)+"\" class=\"selectList\">"+content+"</div>"; 
+        item[i].innerHTML += "<span id=\"switch_"+(i-1)+"\" class=\"selectList\">"+name[2]+ " " +content+"</div>"; 
       }
     }
   }
