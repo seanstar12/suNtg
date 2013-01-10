@@ -89,6 +89,6 @@ li {
 .selectList li {
   display: inline;
 }
-.selectList a:visited {
+.selectList a:visited, .selectList a:link {
   color: #00858E;
 }
