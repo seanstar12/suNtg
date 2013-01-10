@@ -84,4 +84,11 @@ li {
 .selectList {
   font-size: 10px;
   float: right;
+  color: #00858E;
+}
+.selectList li {
+  display: inline;
+}
+.selectList a:visited {
+  color: #00858E;
 }

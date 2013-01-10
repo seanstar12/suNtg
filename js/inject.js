@@ -70,15 +70,21 @@ var code = function (){
     el.className = "selectList";
 
     //var content = "<li><a href=\"#Update_"+xfer+"_"+switch+"_"+set+"_0\"></li>";
-    var content = "stuff";
+    var k =0;
+    var content = "";
     var item = document.getElementsByClassName('NetHeading');
     var length = item.length;
-
-    for (var i=1; i< (length); i++){
-      content = "<span class=\"selectList\">  Links go Here</div>"; 
-      item[i].innerHTML += content;
+    if (length < 3 ) return false; 
+    else {
+      for (var j=1;j<length;j+=2){
+        content += "<li><a href=\"#switch_"+(j-1)+"\">[GE-"+k+"   </a></li>";
+        content += "<li><a href=\"#switch_"+(j)+"\">XE-"+k+"] </a></li>";
+        k++;
+      }
+      for (var i=1; i< length; i++){
+        item[i].innerHTML += "<span id=\"switch_"+(i-1)+"\" class=\"selectList\">"+content+"</div>"; 
+      }
     }
-
   }
   
   function tabReturn(){
