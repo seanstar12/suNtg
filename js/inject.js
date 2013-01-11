@@ -79,12 +79,12 @@ var code = function (){
     if (length < 3 ) return false; 
     else {
       for (var j=1;j<length;j+=2){
-        content += "<li><a href=\"#switch_"+(j-1)+"\">("+k+"/0 - </a></li>";
-        content += "<li><a href=\"#switch_"+(j)+"\">"+k+"/1)</a></li>";
+        content += "<li><a href=\"#switch_"+(j-1)+"\">(<span class=\"gE\">"+k+"/0</span> - </a></li>";
+        content += "<li><a href=\"#switch_"+(j)+"\"><span class=\"xE\">"+k+"/1</span>)</a></li>";
         k++;
       }
       for (var i=1; i< length; i++){
-        item[i].innerHTML += "<span id=\"switch_"+(i-1)+"\" class=\"selectList\">"+name[2]+ " " +content+"</div>"; 
+        item[i].innerHTML += "<span id=\"switch_"+(i-1)+"\" class=\"sL\">"+name[2]+ " " +content+"</div>"; 
       }
     }
   }

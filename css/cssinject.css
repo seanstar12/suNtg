@@ -81,14 +81,20 @@ li {
   font-size: 24px;
 }
 
-.selectList {
+.sL {
   font-size: 10px;
   float: right;
-  color: #00858E;
+  color: #B0B0B0;
 }
-.selectList li {
+.sL li {
   display: inline;
 }
-.selectList a:visited, .selectList a:link {
-  color: #00858E;
+.sL a:visited, .sL a:link {
+  color: #B0B0B0;
+}
+.gE a:link, .gE a:visited, .gE {
+  color: #B41D66;
+}
+.xE a:link, .xE a:visited, .xE {
+  color: #0092FB;
 }
