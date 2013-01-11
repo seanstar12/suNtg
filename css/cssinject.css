@@ -2,10 +2,6 @@
   background: none !important;
 }
 
-div.header a {
-  color: black !important;
-}
-
 A:link {
   text-decoration: none;
 }
@@ -15,14 +11,14 @@ A:link {
 }
 
 .Outer_Nav {
-  border: none !important;
+  border-left: solid 179px white !important;
 }
-
+/*
 .Navigation {
   margin-left: 0px !important;
-  padding-right: 5px;
+  padding-right: 5px; !important;
 }
-
+*/
 .NetHeading {
   background-color: none !important;
   background-image: none !important;
@@ -37,64 +33,8 @@ div.LocalNav ul li {
   width: 85% !important;
 }
 
-li {
-  list-style-type:none;
-}
 
 .ColumnSet h3 {
   background: none !important;
 }
 
-#fade {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.9);
-  width: 100%;
-  z-index: 5000;
-}
-
-#dialog {
-  padding: 5px;
-  color: #fff;
-  margin-top: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: rgba(0, 0, 0, 1);
-  z-index:5001;
-  width: 267px;
-  min-height: 150px;
-}
-
-#dialog h1 {
-  border-bottom: 1px solid #fff;
-}
-
-#dialog p {
-  padding-top: 10px;
-}
-
-#dialog input{
-  margin-top: 15px;
-  background-color: #fff;
-  font-size: 24px;
-}
-
-.sL {
-  font-size: 10px;
-  float: right;
-  color: #B0B0B0;
-}
-.sL li {
-  display: inline;
-}
-.sL a:visited, .sL a:link {
-  color: #B0B0B0;
-}
-.gE a:link, .gE a:visited, .gE {
-  color: #B41D66;
-}
-.xE a:link, .xE a:visited, .xE {
-  color: #0092FB;
-}

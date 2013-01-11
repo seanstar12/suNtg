@@ -79,7 +79,7 @@ var code = function (){
     if (length < 3 ) return false; 
     else {
       for (var j=1;j<length;j+=2){
-        content += "<li><a href=\"#switch_"+(j-1)+"\">(<span class=\"gE\">"+k+"/0</span> - </a></li>";
+        content += "<li><a href=\"#switch_"+(j-1)+"\">(<span class=\"gE\">"+k+"/0</span>-</a></li>";
         content += "<li><a href=\"#switch_"+(j)+"\"><span class=\"xE\">"+k+"/1</span>)</a></li>";
         k++;
       }
@@ -197,13 +197,13 @@ var code = function (){
   function init() {
     addJquery();
     document.body.setAttribute('onload','');  
-    urlCheck(['LinkSelect.asp'],layoutChange,true);
-    urlCheck('EquipmentDetail.asp',fillDate);
-    urlCheck('LinkSelect.asp',tabReturn);
-    urlCheck('LinkSelect.asp',closeListen);
-    urlCheck('PortList.asp',addLinks);
-    checkFix();
-    urlCheck('Login',logMeIn);
+    if (!localStorage.layoutChange) urlCheck(['LinkSelect.asp'],layoutChange,true);
+    if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
+    if (!localStorage.tabReturn) urlCheck('LinkSelect.asp',tabReturn);
+    if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
+    if (!localStorage.addLinks) urlCheck('PortList.asp',addLinks);
+    if (!localStorage.checkFix) checkFix();
+    if (!localStorage.logIn) urlCheck('Login',logMeIn);
   }
   
   // Runs every page load
