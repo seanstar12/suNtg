@@ -1,0 +1,63 @@
+li {
+  list-style-type: none;
+}
+
+div.header a {
+  color: black !important;
+}
+
+#fade {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  z-index: 5000;
+}
+
+#dialog {
+  padding: 5px;
+  color: #fff;
+  margin-top: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(0, 0, 0, 1);
+  z-index:5001;
+  width: 267px;
+  min-height: 150px;
+}
+
+#dialog h1 {
+  border-bottom: 1px solid #fff;
+}
+
+#dialog p {
+  padding-top: 10px;
+}
+
+#dialog input{
+  margin-top: 15px;
+  background-color: #fff;
+  font-size: 24px;
+}
+
+.sL {
+  font-size: 10px;
+  float: right;
+  margin-top: -20px;
+  color: #B0B0B0;
+}
+.sL li, a:link {
+  text-decoration: none;
+  display: inline;
+}
+.sL a:visited, .sL a:link {
+  color: #B0B0B0;
+}
+.gE a:link, .gE a:visited, .gE {
+  color: #B41D66;
+}
+.xE a:link, .xE a:visited, .xE {
+  color: #0092FB;
+}
