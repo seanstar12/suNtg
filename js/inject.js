@@ -15,6 +15,8 @@ var code = function (){
     }
     http.open("GET","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag="+xtag);
     http.send(); 
+
+
   }
   
   function setCookie(c_name,value,exdays) {
