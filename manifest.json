@@ -29,6 +29,7 @@
   "web_accessible_resources": [
     "js/inject.js",
     "js/jquery-1.8.3.min.js",
+    "dateAdd.js",
     "images/icon48.png"
   ],
   "content_scripts": [

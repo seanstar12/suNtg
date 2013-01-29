@@ -54,6 +54,14 @@ var code = function (){
       document.forms.detailform.cmdSubmit.click();
     }
   }
+
+  function setObjId() { //Sets URL to have objid. No More Post reuqests. :D
+    id = document.forms[0].children[0].value;
+    url = (document.URL).toLowerCase();
+    if (url.indexOf('objid') < 0) {
+      window.location += "?ObjId=" + id;
+    }
+  }
    
   function returnDate(){
     var currentDate = new Date();
@@ -202,6 +210,7 @@ var code = function (){
     if (!localStorage.tabReturn) urlCheck('LinkSelect.asp',tabReturn);
     if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
     if (!localStorage.addLinks) urlCheck('PortList.asp',addLinks);
+    if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
   }
