@@ -227,8 +227,8 @@ var code = function (){
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
     
     setTimeout(function(){
-      if (getUrlVars()["f"] == 1) $('body').fadeIn(150);
-    }, 50);
+      if (getUrlVars()["f"] == 1) $('body').fadeIn(250);
+    }, 150);
   }
   
   // Runs every page load
@@ -238,25 +238,29 @@ var code = function (){
 
 
 if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
-  document.body.innerHTML = "Nothing to see here";
-  document.title='Magic Smoke';
+  document.body.innerHTML = "";
+  document.title='Magic Smoke Goes Here';
   chrome.extension.sendMessage({data: "loginPage"}, function(response) {
-    console.log(response.data);
+    console.log(response);
   });
 }
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.data == "reload") {
-      var newUrl = decodeURIComponent(window.location.search)
-                          .replace('?ForceLogin=true&ReturnURL=','')
-                          .replace('?ReturnUrl=','');
-      if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
-      else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
-      
-      window.location = newUrl;
-      sendResponse({farewell: "Callback from background tab"});
-    }
+   
+   setTimeout(function(){ 
+      if (request.data == "reload") {
+        var newUrl = decodeURIComponent(window.location.search)
+                            .replace('?ForceLogin=true&ReturnURL=','')
+                            .replace('?ReturnUrl=','');
+        if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
+        else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
+        
+        sendResponse({farewell: "Callback from background tab"});
+        window.location = newUrl;
+      }
+    }, 1000);
+
   });
 
 var script = document.createElement('script');

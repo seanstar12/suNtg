@@ -35,21 +35,25 @@ function loggedIn(){
 }
 
 function loggedInSuccess(data) {
+    
+    data = data.replace(/<script(.|\s)*?\/script>/g, '');
+    data = data.replace(/<a(.|\s)*?\/a>/g, '');
+    //console.log(data);
     if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
       localStorage.loggedIn = false;
+      console.log('Logging In');
       msuGet();
-      return false;
     } else  {
       localStorage.loggedIn = true;
-      msuRefresh();
-      return true;
+      console.log('Logged In');
+      //msuRefresh();
     }
 }
 
 function msuGet() {
-  console.log('im getting');
-  (localStorage.user == null) ? localStorage.user = confirm("You need to enter your username") : false;
-  (localStorage.pass == null) ? localStorage.user = confirm("You need to enter your password") : false;
+  //console.log('Getting Session Vars');
+  (localStorage.user == null) ? localStorage.user = prompt("You need to enter your username or bad things will happen") : false;
+  (localStorage.pass == null) ? localStorage.user = prompt("You need to enter your password or bad things will happen") : false;
   $.ajax({
     url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
     success: function(req) { msuGetProcess(req); },
@@ -57,8 +61,10 @@ function msuGet() {
 }
 
 function msuGetProcess(req) {
-  console.log('im processing');
+  //console.log('Processing Session Vars');
   var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = req.replace(/<img(.|\s)*?\/>/g, '');
+  tempDiv.innerHTML = req.replace(/<a(.|\s)*?\/a>/g, '');
   tempDiv.innerHTML = req.replace(/<script(.|\s)*?\/script>/g, '');
   
   // tempDiv now has a DOM structure:
@@ -67,9 +73,12 @@ function msuGetProcess(req) {
   localStorage.eventval = tempDiv.querySelector('#__EVENTVALIDATION').value;
   localStorage.viewstate = tempDiv.querySelector('#__VIEWSTATE').value;
   
+//  console.log(localStorage.eventval);
+//  console.log(localStorage.viewstate);
+
   // remove unneeded div
   delete tempDiv;
-
+  
   msuPost();
 }
 
@@ -104,8 +113,7 @@ function msuPost(){
 
 function onInit() {
   //console.log('Initializing Plugin');
-  //localStorage.loggedIn = false;
-  if(!loggedIn) localStorage.loggedIn = false;
+  localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
   chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
@@ -128,7 +136,6 @@ function startRequest(params) {
 }
 
 function onAlarm(alarm) {
-  console.log('Logged In?', localStorage.loggedIn);
   if (alarm) console.log('Alarm', alarm);
   if (alarm.name == 'watchdog') {
     onWatchdog();
@@ -153,14 +160,12 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
   console.log('Got message' + JSON.stringify(msg));
   chrome.tabs.getSelected(null, function(tab) {
     if (msg.data == "loginPage"){
-      if (loggedIn) {
-        msuGet();
-      }
-      setTimeout(function() {
-        chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
-          console.log(response.data);
-        });
-      }, 700);
+      
+      loggedIn();
+      
+      chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
+          console.log(response.farewell);
+      });
     }
   });
 });
