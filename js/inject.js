@@ -61,7 +61,8 @@ var code = function (){
     id = document.forms[0].children[0].value;
     url = (document.URL).toLowerCase();
     if (url.indexOf('objid') < 0) {
-      window.location += "?ObjId=" + id;
+      document.body.style.display = "none";
+      window.location += "?ObjId=" + id + "&f=1";
     }
   }
    
@@ -182,6 +183,33 @@ var code = function (){
       document.forms[0].dbsName.focus();
     }
   }
+  
+  function autoDate() {
+    //alert("autodate"); 
+    if (getUrlVars()["d"] == 1) {
+    
+      var dateArray = document.getElementsByName('dbdVerifyDt');
+      var forms = document.forms;
+      var check = document.getElementsByName('Update');
+
+      var cDate = new Date();
+      var day = cDate.getDate();
+      var month = cDate.getMonth() +1;
+      var year = cDate.getFullYear() -1;
+      //if (getUrlVars()["dVal"] != "" ) var date = getUrlVars()["dVal"];
+      var date = month + "/" + day + "/" + year;
+
+      for (var i = 0; i < dateArray.length; i++) {
+        dateArray[i].value= date;
+      }
+                       
+      for (var k = 0; k < check.length; k++){
+        check[k].checked= true;
+      }
+      
+    }
+  }
+
 
   function urlCheck(link,f,invert) {
   // invert {t,f} ; link {array of links} ; f {function to run}
@@ -223,6 +251,7 @@ var code = function (){
     if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
     if (!localStorage.addLinks) urlCheck('PortList.asp',addLinks);
     if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
+    if (localStorage.autoDate) urlCheck('PortList.asp',autoDate);
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
     

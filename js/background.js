@@ -10,9 +10,11 @@ function checkForURL(tabId, changeInfo, tab) {
 }
 
 function msuRefresh(){
+  var ts = Math.round(new Date().getTime() / 1000);
   $.ajax({
     type: 'GET',
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604',
+    cache: false,
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+ts,
     success: function () {
       var date = new Date();
       console.log('Page GET with success: '+ date.toTimeString());
@@ -21,7 +23,6 @@ function msuRefresh(){
       console.log(xmlhttp);
       console.log("Returned Login Page -- We Have Failed.");
       localStorage.requestFailureCount ++;
-      alert('WE HAVE FAILED');
     }
   });
 }
@@ -43,6 +44,7 @@ function loggedInSuccess(data) {
       localStorage.loggedIn = false;
       console.log('Logging In');
       msuGet();
+      console.log('Ran msuGet()');
     } else  {
       localStorage.loggedIn = true;
       console.log('Logged In');
@@ -68,7 +70,7 @@ function msuGet() {
 }
 
 function msuGetProcess(req) {
-  //console.log('Processing Session Vars');
+  console.log('msuGet -> msuGetProcess');
   var tempDiv = document.createElement('div');
   tempDiv.innerHTML = req.replace(/<img(.|\s)*?\/>/g, '');
   tempDiv.innerHTML = req.replace(/<a(.|\s)*?\/a>/g, '');
@@ -90,6 +92,7 @@ function msuGetProcess(req) {
 }
 
 function msuPost(){
+  console.log('msuGetProcess -> msuPost()');
   $.ajax({
     type: 'POST',
     url: 'https://ntg.missouristate.edu/Login/Login.aspx',
@@ -104,7 +107,8 @@ function msuPost(){
       'ctl00$MainContent$ImageButton1.x':'15',
       'ctl00$MainContent$ImageButton1.y':'23'
     },
-    success :  function() { 
+    success :  function(callback) { 
+        console.log('msuGetProcess:success');
         localStorage.loginCount++;
         localStorage.loggedIn = true;
  //       var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
@@ -123,7 +127,7 @@ function onInit() {
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
-  chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
+  chrome.alarms.create('watchdog', {periodInMinutes: 6}); // watchdog incase of crash
 }
 
 function scheduleRequest() {
@@ -134,7 +138,7 @@ function scheduleRequest() {
   var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
   delay = Math.round(delay);
  // console.log('Scheduling for: ' + delay + ' minutes');
-  chrome.alarms.create('refresh',{periodInMinutes: 2});
+  chrome.alarms.create('refresh',{periodInMinutes: 5});
 }
 
 function startRequest(params) {
