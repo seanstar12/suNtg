@@ -21,6 +21,7 @@ function msuRefresh(){
       console.log(xmlhttp);
       console.log("Returned Login Page -- We Have Failed.");
       localStorage.requestFailureCount ++;
+      alert('WE HAVE FAILED');
     }
   });
 }
@@ -37,16 +38,18 @@ function loggedInSuccess(data) {
     if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
       localStorage.loggedIn = false;
       msuGet();
+      return false;
     } else  {
       localStorage.loggedIn = true;
       msuRefresh();
+      return true;
     }
 }
 
 function msuGet() {
   console.log('im getting');
-  (localStorage.user == null) ? localStorage.user = prompt("Enter your username") : false;
-  (localStorage.pass == null) ? localStorage.pass = prompt("Enter your password") : false;
+  (localStorage.user == null) ? localStorage.user = confirm("You need to enter your username") : false;
+  (localStorage.pass == null) ? localStorage.user = confirm("You need to enter your password") : false;
   $.ajax({
     url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
     success: function(req) { msuGetProcess(req); },
@@ -55,7 +58,6 @@ function msuGet() {
 
 function msuGetProcess(req) {
   console.log('im processing');
-
   var tempDiv = document.createElement('div');
   tempDiv.innerHTML = req.replace(/<script(.|\s)*?\/script>/g, '');
   
@@ -87,21 +89,23 @@ function msuPost(){
       'ctl00$MainContent$ImageButton1.y':'23'
     },
     success :  function() { 
-      localStorage.loginCount++;
-      //localStorage.loggedIn = true;
-      var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
-                + localStorage.loginCount);
-      hud.show();
-      setTimeout(function() {
-        hud.cancel();
-      }, 3000);
+        localStorage.loginCount++;
+        localStorage.loggedIn = true;
+ //       var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
+ //               + localStorage.loginCount);
+ //       hud.show();
+
+ //     setTimeout(function() {
+ //       hud.cancel();
+ //     }, 3000);
     }, 
   });
 }  
 
 function onInit() {
   //console.log('Initializing Plugin');
-  localStorage.loggedIn = false;
+  //localStorage.loggedIn = false;
+  if(!loggedIn) localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
   chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
@@ -149,13 +153,14 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
   console.log('Got message' + JSON.stringify(msg));
   chrome.tabs.getSelected(null, function(tab) {
     if (msg.data == "loginPage"){
-      if (localStorage.loggedIn)
-      msuGet();
-      
-  
-      chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
-        console.log(response.farewell);
-      });
+      if (loggedIn) {
+        msuGet();
+      }
+      setTimeout(function() {
+        chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
+          console.log(response.data);
+        });
+      }, 700);
     }
   });
 });

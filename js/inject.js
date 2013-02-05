@@ -138,7 +138,7 @@ var code = function (){
 
   //deallocateTag('X3675');
   function layoutChange(){
-    var replace = '<a style="float:left;" href="/Tools/">Networking</a>';
+    var replace = '<a style="float:left;" href="/Tools/Default.aspx">Networking</a>';
     var el = document.getElementsByClassName('header')[0];
     el.innerHTML = replace;
     el.appendChild(document.getElementsByClassName('Breadcrumb')[0]);
@@ -203,10 +203,20 @@ var code = function (){
     script.innerText = code;
     document.body.appendChild(script);
   }
+  
+  function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+  }
 
   function init() {
     addJquery();
-    document.body.setAttribute('onload','');  
+    document.body.setAttribute('onload','');
+    if (getUrlVars()['f'] == 1) document.body.style.display='none';    
+  
     if (!localStorage.layoutChange) urlCheck(['LinkSelect.asp'],layoutChange,true);
     if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
     if (!localStorage.tabReturn) urlCheck('LinkSelect.asp',tabReturn);
@@ -215,6 +225,10 @@ var code = function (){
     if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
+    
+    setTimeout(function(){
+      if (getUrlVars()["f"] == 1) $('body').fadeIn(150);
+    }, 50);
   }
   
   // Runs every page load
@@ -224,20 +238,26 @@ var code = function (){
 
 
 if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
+  document.body.innerHTML = "Nothing to see here";
+  document.title='Magic Smoke';
   chrome.extension.sendMessage({data: "loginPage"}, function(response) {
-    console.log(response.farewell);
+    console.log(response.data);
   });
 }
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.data == "reload") {
-      window.location = decodeURIComponent(window.location.search)
+      var newUrl = decodeURIComponent(window.location.search)
                           .replace('?ForceLogin=true&ReturnURL=','')
                           .replace('?ReturnUrl=','');
+      if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
+      else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
+      
+      window.location = newUrl;
       sendResponse({farewell: "Callback from background tab"});
     }
- });
+  });
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
