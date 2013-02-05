@@ -250,13 +250,13 @@ chrome.extension.onMessage.addListener(
    
    setTimeout(function(){ 
       if (request.data == "reload") {
+        sendResponse({msg: "Callback from background tab"});
         var newUrl = decodeURIComponent(window.location.search)
                             .replace('?ForceLogin=true&ReturnURL=','')
                             .replace('?ReturnUrl=','');
         if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
         else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
         
-        sendResponse({farewell: "Callback from background tab"});
         window.location = newUrl;
       }
     }, 1000);

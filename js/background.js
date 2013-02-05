@@ -52,12 +52,19 @@ function loggedInSuccess(data) {
 
 function msuGet() {
   //console.log('Getting Session Vars');
-  (localStorage.user == null) ? localStorage.user = prompt("You need to enter your username or bad things will happen") : false;
-  (localStorage.pass == null) ? localStorage.user = prompt("You need to enter your password or bad things will happen") : false;
-  $.ajax({
-    url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-    success: function(req) { msuGetProcess(req); },
-  });
+  if (localStorage.user == null || localStorage.user == "") {
+    localStorage.user = prompt("You need to enter your username", "USERNAME GOES HERE");
+  }
+  if (localStorage.pass == null || localStorage.pass == "") {
+    localStorage.pass = prompt("You need to enter your password", "PASSWORD GOES HERE");
+  }
+  
+  if (localStorage.user != null && localStorage.pass != null) {
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+      success: function(req) { msuGetProcess(req); },
+    });
+  }
 }
 
 function msuGetProcess(req) {
@@ -164,7 +171,7 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
       loggedIn();
       
       chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
-          console.log(response.farewell);
+          //console.log(response.msg);
       });
     }
   });
