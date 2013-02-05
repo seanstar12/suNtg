@@ -46,7 +46,7 @@ function loggedInSuccess(data) {
     } else  {
       localStorage.loggedIn = true;
       console.log('Logged In');
-      //msuRefresh();
+      msuRefresh();
     }
 }
 
