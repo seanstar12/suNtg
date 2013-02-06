@@ -33,12 +33,13 @@ function jPop() {
                     "</div></div>";
                 
   document.body.appendChild(div);
-}
-
-function fade(){
+  
   var docHeight = $(document).height();
 
   var bleh = $('#fade');
   bleh.height(docHeight);
-  bleh.fadeIn(250);
+}
+
+function fade(){
+  $('#fade').fadeIn(500);
 }

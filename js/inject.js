@@ -148,13 +148,13 @@ var code = function (){
   
   function addFunctions() {
     var inject = document.createElement('script');
-    inject.setAttribute('src','chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/functions.js');
+    inject.setAttribute('src','chrome-extension://jadchlldlabcgcgklffmhkjhkomgbagn/js/functions.js');
     document.head.appendChild(inject);
   }
   
   function addjquery() {
     var inject = document.createElement('script');
-    inject.setAttribute('src','chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/jquery-1.8.3.min.js');
+    inject.setAttribute('src','chrome-extension://jadchlldlabcgcgklffmhkjhkomgbagn/js/jquery-1.8.3.min.js');
     document.head.appendChild(inject);
   }
 
