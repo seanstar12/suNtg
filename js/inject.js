@@ -146,9 +146,9 @@ var code = function (){
     el.setAttribute("style","height: 15px; background: none; border: none; color: #000");
   }
   
-  function addJquery() {
+  function addFunctions() {
     var inject = document.createElement('script');
-    inject.setAttribute('src','//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
+    inject.setAttribute('src','chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/functions.js');
     document.head.appendChild(inject);
   }
   
@@ -241,7 +241,7 @@ var code = function (){
   }
 
   function init() {
-    addJquery();
+    addFunctions();
     document.body.setAttribute('onload','');
     if (getUrlVars()['f'] == 1) document.body.style.display='none';    
   
@@ -257,6 +257,7 @@ var code = function (){
     
     setTimeout(function(){
       if (getUrlVars()["f"] == 1) $('body').fadeIn(250);
+      //$('body').fadeIn(250);
     }, 150);
   }
   

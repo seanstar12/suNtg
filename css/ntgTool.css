@@ -7,33 +7,39 @@ div.header a {
 }
 
 #fade {
-  display: none;
+  /*display: none;
+  background-color: rgba(255, 255, 255, 0.9);*/
   position: absolute;
   top: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.9);
   width: 100%;
   z-index: 5000;
 }
 
 #dialog {
-  padding: 5px;
+  padding: 10px;
   color: #fff;
   margin-top: 200px;
   margin-left: auto;
   margin-right: auto;
   background-color: rgba(0, 0, 0, 1);
   z-index:5001;
-  width: 267px;
-  min-height: 150px;
+  width: 270px;
+  min-height: 220px;
 }
 
 #dialog h1 {
   border-bottom: 1px solid #fff;
 }
-
+#dialog button {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-right: 5px;
+  margin-top: 15px;
+}
 #dialog p {
-  padding-top: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #dialog input{
