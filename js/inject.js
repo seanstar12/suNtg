@@ -152,6 +152,11 @@ var code = function (){
     document.head.appendChild(inject);
   }
   
+  function addjquery() {
+    var inject = document.createElement('script');
+    inject.setAttribute('src','chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/jquery-1.8.3.min.js');
+    document.head.appendChild(inject);
+  }
 
   function logMeIn() {
     
@@ -241,7 +246,7 @@ var code = function (){
   }
 
   function init() {
-    addFunctions();
+    addjquery();
     document.body.setAttribute('onload','');
     if (getUrlVars()['f'] == 1) document.body.style.display='none';    
   
@@ -255,6 +260,7 @@ var code = function (){
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
     
+    addFunctions();
     setTimeout(function(){
       if (getUrlVars()["f"] == 1) $('body').fadeIn(250);
       //$('body').fadeIn(250);

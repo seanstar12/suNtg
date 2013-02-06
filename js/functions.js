@@ -36,7 +36,9 @@ function jPop() {
 }
 
 function fade(){
-  //document.getElementById('fade').setAttribute('style',"display:inline;");
+  var docHeight = $(document).height();
+
   var bleh = $('#fade');
+  bleh.height(docHeight);
   bleh.fadeIn(250);
 }
