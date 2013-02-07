@@ -124,7 +124,6 @@ function msuPost(){
 
 function onInit() {
   //console.log('Initializing Plugin');
-  localStorage.id = chrome.i18n.getMessage('@@extension_id');
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
@@ -177,6 +176,12 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
       
       chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
           //console.log(response.msg);
+      });
+    }
+    else if (msg.data == "appIdReq"){
+      var app_id = chrome.i18n.getMessage('@@extension_id');
+         //console.log('sent '+ app_id); 
+      chrome.tabs.sendMessage(tab.id, {id:app_id}, function(response) {
       });
     }
   });

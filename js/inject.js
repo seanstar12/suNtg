@@ -1,6 +1,8 @@
 var code = function (){
-  
-  var extUrl = 'chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/';
+  //var extUrl = 'chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/';
+
+  var extUrl = 'chrome-extension://'+localStorage.app_id+'/js/';
+  //workaround for app id
 
   function deallocateTag(xtag){
     var http = new XMLHttpRequest();
@@ -231,14 +233,6 @@ var code = function (){
     } else (document.URL.indexOf(link) >=0) ? f(): false;
   }
   
-  function injPop() {
-    var script = document.createElement('script');
-    var div = "<div id='fade'><div id='dialog'><h1>Oh Noes!</h1><p>Your screen has been locked. Please enter your password to continue.</p><input type='password' name='pass' id='pass' size='20'></div></div>";
-    var code = '$(function() {var docHeight = $(document).height();$("body").append('+ div +')})';
-    script.innerText = code;
-    document.body.appendChild(script);
-  }
-  
   function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -258,7 +252,7 @@ var code = function (){
     if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
     if (!localStorage.addLinks) urlCheck('PortList.asp',addLinks);
     if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
-    if (localStorage.autoDate) urlCheck('PortList.asp',autoDate);
+    if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
     
@@ -273,6 +267,15 @@ var code = function (){
   init();
 }
 
+if (!(localStorage.app_id)){
+  setTimeout(function(){
+    chrome.extension.sendMessage({data: "appIdReq"}, function(response) {
+      alert(app_id);
+      localStorage.app_id = response.id;
+      console.log(response);
+    });
+  },10);
+}
 
 
 if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
@@ -285,6 +288,11 @@ if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
+    if (request.id.length > 5) {
+      localStorage.app_id = request.id;
+      //console.log(request);
+    }
+    
    
    setTimeout(function(){ 
       if (request.data == "reload") {

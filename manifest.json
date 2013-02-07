@@ -1,6 +1,6 @@
 {
   "name": "NTG Tool",
-  "version": "0.3.37",
+  "version": "0.3.38",
   "manifest_version": 2,
   "description": "Helpful functions for the NTG domain.",
   "options_page": "options.html",
