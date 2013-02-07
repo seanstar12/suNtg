@@ -124,6 +124,7 @@ function msuPost(){
 
 function onInit() {
   //console.log('Initializing Plugin');
+  localStorage.id = chrome.i18n.getMessage('@@extension_id');
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});

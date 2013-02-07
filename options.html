@@ -1,21 +1,235 @@
-<html>
-  <head>
-    <title>Options</title>
-    <style type="text/css">
-      .options {
-        padding: 5px;
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="status"></div>
-    <h3>Options go here</h3>
-    <!--
-    <span class="options">Inject CSS: <input type="checkbox" id="css"></span>
-    <span class="options">Inject Date: <input type="checkbox" id="date"></span>
-    <button id="save">Save</button>
-    -->
-    <script src="js/options.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NTG Options</title>
+  <link rel="stylesheet" type="text/css" href="lib/chrome-bootstrap/chrome-bootstrap.css" />
+  <script src="/js/zepto.min.js" type="text/javascript"></script>
+  <script src="/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+  <script src="/js/options.js" type="text/javascript"></script>
+</head>
+<body class="frame">
+  <div class="navigation">
+    <h1>NTG Tool</h1>
+    <ul class="menu">
+      <li class="selected">
+        <a href="#user">User</a>
+      </li>
+      <li>
+        <a href="#interface">Interface</a>
+      </li>
+      <li>
+        <a href="#bugs">Bug Fixes</a>
+      </li>
+    </ul>
+    <ul class="menu">
+      <li>
+        <a href="#about">About</a>
+      </li>
+    </ul>
+  </div>
+  <div class="mainview view">
+    <div id="user" class="selected">
+      <header>
+        <h1>User Settings <small>Because you're beautiful</small></h1>
+      </header>
+      <div class="content">
+        <section>
+          <h3>Credentials</h3>
+          <div style="margin: 10px 0;">
+            <label for="user">Username:&emsp;</label><input type="Text" name="user"/><br/>
+          </div>
+          <div style="margin: 10px 0;">
+            <label for="pass">Password:&emsp;&thinsp;</label><input type="Password" name="pass"/><br/>
+          </div>
+        </section>
+        <section>
+          <h3>Session</h3> 
+          <div style="margin: 10px 0;">
+            <div class="checkbox">
+              <input type="checkbox" name="keepLogin" id="keepLogin">
+              <label for="keepLogin">&emsp;Persistent Login</label>
+            </div>
+            <section id="keepGroup" style="display:none;">
+              <select name="timeout" id="timeout">
+                <option>10 min</option>
+                <option>15 min</option>
+                <option>30 min</option>
+                <option>45 min</option>
+                <option>1 hour</option>
+                <option>Never</option>
+              </select>
+              <label for="timeout">&emsp;Timeout Duration</label>
+              <div class="checkbox">
+                <input type="checkbox" name="lockScreen" id="lockScreen">
+                <label for="lockScreen">
+                  &emsp;Lock the screen after...
+                </label>
+              </div>
+                <div id="lockAfter" style="display:none;">
+                  <select name="timeout" id="lockTime">
+                    <option>10 min</option>
+                    <option>15 min</option>
+                    <option>30 min</option>
+                    <option>45 min</option>
+                    <option>1 hour</option>
+                    <option>Never</option>
+                  </select>
+                </div>
+            </section>
+            <div class="checkbox">
+              <input type="checkbox" name="keepLogin">
+              <label for="keepLogin">&emsp;Moar Stuff</label>
+            </div>
+          </div>
+        </section>
+        <div class="controls">
+          <div class="spacer"></div>
+          <button id="saveModalButton">Save</button>
+        </div>
+      </div>
+      
+      <div class="overlay save" style="display: none;">
+        <div class="page">
+          <h1>Warning</h1>
+          <div class="content-area">
+            This saves your password in raw text so that it can log back in 
+            after a browser close. 
+          </div>
+          <div class="action-area">
+            <div class="action-area-right">
+              <div class="button-strip">
+                <button>I will not go to space today</button>
+                <button>Okay</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="interface">
+      <header>
+        <h1>Interface Tweaks <small>Lumberjacks have feelings too</small></h1>
+      </header>
+      <div class="content">
+        <h3>Interface hacks that ain't too hard on the eyes</h3>
+        <section>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+        </section>
+        <div style="margin-top: 10px;">
+          <button id="launch_modal">Popup Modal</button>
+        </div>
+        <div class="overlay default" style="display: none;">
+          <div class="page">
+            <h1>Hey! Listen!</h1>
+            <div class="content-area">
+              the quick brown dog jumps over the slow fox.
+            </div>
+            <div class="action-area">
+              <div class="action-area-right">
+                <div class="button-strip">
+                  <button>Cancel</button>
+                  <button>Okay</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="spacer"></div>
+          <button id="saveModalButton">Save</button>
+        </div>
+      </div>
+    </div>
+    <div id="bugs">
+      <header>
+        <h1>Bug Fixes <small>What did paper ever do to staples?</small></h1>
+      </header>
+      <div class="content">
+        <h3>Various Tweaks that make work easier</h3>
+        <section>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" name="lockScreen" id="lockScreen">
+            <label for="lockScreen">&emsp;Lock the screen after...</label>
+          </div>
+        </section>
+        <div class="controls">
+          <div class="spacer"></div>
+          <button id="saveModalButton">Save</button>
+        </div>
+      </div>
+    </div>
+    <div id="about">
+      <header>
+        <h1>About <small>Because life can suck less</small></h1>
+      </header>
+      <div class="content">
+        <h3></h3>
+        <p>This work in progress was made to make life easier. Below are the features that will eventually be implemented.</p>
+        <section>
+          <ul>
+            <li>Mass Allocation Feature</li>
+            <li>Mass Deallocation Feature</li>
+            <li>Screen Lock</li>
+            <li>Ajax Drivin Interface</li>
+            <li>CLI Interface</li>
+            <li>And Moar</li>
+          </ul>
+        </section>
+        <a href="https://chrome.google.com/webstore/detail/ntg-tool/kjepjpokjkaoeiildjilokmlbdgajkgp">Market Link</a>
+      </div>
+    </div>
+  </div>
+</body>
 </html>

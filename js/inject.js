@@ -1,5 +1,7 @@
 var code = function (){
   
+  var extUrl = 'chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/';
+
   function deallocateTag(xtag){
     var http = new XMLHttpRequest();
     http.onreadystatechange = function(){
@@ -148,13 +150,13 @@ var code = function (){
   
   function addFunctions() {
     var inject = document.createElement('script');
-    inject.setAttribute('src','chrome-extension://jadchlldlabcgcgklffmhkjhkomgbagn/js/functions.js');
+    inject.setAttribute('src',extUrl +'functions.js');
     document.head.appendChild(inject);
   }
   
   function addjquery() {
     var inject = document.createElement('script');
-    inject.setAttribute('src','chrome-extension://jadchlldlabcgcgklffmhkjhkomgbagn/js/jquery-1.8.3.min.js');
+    inject.setAttribute('src',extUrl+'jquery-1.8.3.min.js');
     document.head.appendChild(inject);
   }
 

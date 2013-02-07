@@ -28,6 +28,7 @@
   ],
   "web_accessible_resources": [
     "js/inject.js",
+    "background.html",
     "js/jquery-1.8.3.min.js",
     "js/functions.js",
     "images/icon48.png"
