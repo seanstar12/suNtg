@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>NTG Options</title>
   <link rel="stylesheet" type="text/css" href="lib/chromebootstrap/chrome-bootstrap.css" />
+  <script src="/js/include.js" type="text/javascript"></script>
   <script src="/js/zepto.min.js" type="text/javascript"></script>
   <script src="/js/jquery-1.8.3.min.js" type="text/javascript"></script>
   <script src="/js/options.js" type="text/javascript"></script>
@@ -37,21 +38,21 @@
         <section>
           <h3>Credentials</h3>
           <div style="margin: 10px 0;">
-            <label for="user">Username:&emsp;</label><input type="Text" name="user" id="user"/><br/>
+            <label for="user">Username:&emsp;</label><input type="Text" name="user" id="username"/><br/>
           </div>
           <div style="margin: 10px 0;">
-            <label for="pass">Password:&emsp;&thinsp;</label><input type="Password" name="pass" id="pass"/><br/>
+            <label for="pass">Password:&emsp;&thinsp;</label><input type="Password" name="pass" id="password"/><br/>
           </div>
         </section>
         <section>
           <h3>Session</h3> 
           <div style="margin: 10px 0;">
             <div class="checkbox">
-              <input type="checkbox" name="keepLogin" id="keepLogin">
+              <input type="checkbox" name="keepLogin" id="keepAlive">
               <label for="keepLogin">&emsp;Persistent Login</label>
             </div>
             <section id="keepGroup" style="display:none;">
-              <select name="timeout" id="timeout">
+              <select name="timeout" id="keepAliveTimeout" type="select">
                 <option>10 min</option>
                 <option>15 min</option>
                 <option>30 min</option>
@@ -67,7 +68,7 @@
                 </label>
               </div>
                 <div id="lockAfter" style="display:none;">
-                  <select name="timeout" id="lockTime">
+                  <select name="timeout" id="lockScreenTimeout" type="select">
                     <option>10 min</option>
                     <option>15 min</option>
                     <option>30 min</option>
@@ -78,7 +79,7 @@
                 </div>
             </section>
             <div class="checkbox">
-              <input type="checkbox" name="keepLogin">
+              <input type="checkbox" name="moarStuff" id="moarStuff">
               <label for="keepLogin">&emsp;Moar Stuff</label>
             </div>
           </div>
@@ -115,31 +116,31 @@
         <h3>Interface hacks that ain't too hard on the eyes</h3>
         <section>
           <div class="checkbox">
-            <input type="checkbox" name="cheader" id="cHeader">
+            <input type="checkbox" name="cheader" id="tinyHeader">
             <label for="header">&emsp;Tiny header</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cSwitch" id="cSwitch">
+            <input type="checkbox" name="cSwitch" id="switchShortcuts">
             <label for="cSwitch">&emsp;Switch shorcuts</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cObj" id="cObj">
+            <input type="checkbox" name="cObj" id="objIdUrl">
             <label for="cObj">&emsp;Force ObjID back into URL</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cFade" id="cFade">
+            <input type="checkbox" name="cFade" id="pageFadeIn">
             <label for="cFade">&emsp;Fade in pages</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cAuto" id="cAuto">
+            <input type="checkbox" name="cAuto" id="forceAutoCompleteLogin">
             <label for="cAuto">&emsp;Force auto-complete on login form</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cDate" id="cDate">
+            <input type="checkbox" name="cDate" id="enDate">
             <label for="cDate">&emsp;Enable automatic date on PortList</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cLayout" id="cLayout">
+            <input type="checkbox" name="cLayout" id="enCss">
             <label for="cLayout">&emsp;Enable White Layout</label>
           </div>
         </section>
@@ -157,19 +158,19 @@
         <h3>Various Tweaks that make work easier</h3>
         <section>
           <div class="checkbox">
-            <input type="checkbox" name="cTab" id="cTab">
+            <input type="checkbox" name="cTab" id="autoDnsSelect">
             <label for="cTab">&emsp;LinkSelect.asp - AutoSelect DNS w/ Tab to Return Form</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cPop" id="cPop">
+            <input type="checkbox" name="cPop" id="newTabLink">
             <label for="cPop">&emsp;LinkSelect.asp - 'add link' opens in New Tab instead of tiny box</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cClose" id="cClose">
+            <input type="checkbox" name="cClose" id="tabLinkClose">
             <label for="cClose">&emsp;LinkSelect.asp - AutoClose after submission</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cCheck" id="cCheck">
+            <input type="checkbox" name="cCheck" id="checkFix">
             <label for="cCheck">&emsp;EquipmentDetail.asp - Fix Juniper checkbox select</label>
           </div>
         </section>
