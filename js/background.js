@@ -54,11 +54,9 @@ function loggedInSuccess(data) {
 
 function msuGet() {
   //console.log('Getting Session Vars');
-  if (localStorage.user == null || localStorage.user == "") {
-    localStorage.user = prompt("You need to enter your username", "USERNAME GOES HERE");
-  }
-  if (localStorage.pass == null || localStorage.pass == "") {
-    localStorage.pass = prompt("You need to enter your password", "PASSWORD GOES HERE");
+  if (localStorage.user == null||localStorage.user == ""||localStorage.pass == null || localStorage.pass == "") {
+    chrome.tabs.create({url: "options.html"});
+    localStorage.settings = false;
   }
   
   if (localStorage.user != null && localStorage.pass != null) {
@@ -93,8 +91,11 @@ function msuGetProcess(req) {
 
 function msuPost(){
   console.log('msuGetProcess -> msuPost()');
-  $.ajax({
+  var req = $.ajax({
     type: 'POST',
+    xhrFields: {
+            withCredentials: true
+    },
     url: 'https://ntg.missouristate.edu/Login/Login.aspx',
     data: {
       '__LASTFOCUS':'',
@@ -108,6 +109,7 @@ function msuPost(){
       'ctl00$MainContent$ImageButton1.y':'23'
     },
     success :  function(callback) { 
+        console.log(req.getAllResponseHeaders());
         console.log('msuGetProcess:success');
         localStorage.loginCount++;
         localStorage.loggedIn = true;
@@ -127,6 +129,7 @@ function onInit() {
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
   startRequest({scheduleRequest:true});
+  
   chrome.alarms.create('watchdog', {periodInMinutes: 6}); // watchdog incase of crash
 }
 
@@ -143,7 +146,7 @@ function scheduleRequest() {
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-  loggedIn();
+  if (localStorage.settings) loggedIn();
 }
 
 function onAlarm(alarm) {
@@ -183,6 +186,10 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
          //console.log('sent '+ app_id); 
       chrome.tabs.sendMessage(tab.id, {id:app_id}, function(response) {
       });
+    }
+    else if (msg.data == "optionsSave"){
+      onInit();
+         //console.log('sent '+ app_id); 
     }
   });
 });

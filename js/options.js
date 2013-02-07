@@ -57,6 +57,12 @@ function init() {
     $('body').append(modal);
   });
 
+  $('#user').val(localStorage.user);
+  $('#pass').val(localStorage.pass);
+
+  if ($('#user').val() != '' && $('#pass').val() != ''){
+    localStorage.settings = true;
+  }
 
   $('#keepLogin').click(function() {
     var box = $(this);
@@ -72,6 +78,14 @@ function init() {
   
   $('#saveModalButton').click(function(ev) {
     ev.preventDefault();
+
+    localStorage.user = $('#user').val();
+    localStorage.pass = $('#pass').val();
+
+    chrome.extension.sendMessage({data: "optionsSave"}, function(response) {
+          //console.log(response.msg);
+    });
+
     var modal = $('.overlay.save').clone();
     $(modal).removeAttr('style');
     $(modal).find('button').click(function() {
