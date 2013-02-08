@@ -152,12 +152,14 @@ var code = function (){
   
   function addFunctions() {
     var inject = document.createElement('script');
+    console.log(extUrl);
     inject.setAttribute('src',extUrl +'functions.js');
     document.head.appendChild(inject);
   }
   
   function addjquery() {
     var inject = document.createElement('script');
+    console.log(extUrl);
     inject.setAttribute('src',extUrl+'jquery-1.8.3.min.js');
     document.head.appendChild(inject);
   }
@@ -193,8 +195,7 @@ var code = function (){
     }
   }
   
-  function autoDate() {
-    //alert("autodate"); 
+  function autoDated() {
     if (getUrlVars()["d"] == 1) {
     
       var dateArray = document.getElementsByName('dbdVerifyDt');
@@ -252,7 +253,7 @@ var code = function (){
     if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
     if (!localStorage.addLinks) urlCheck('PortList.asp',addLinks);
     if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
-    if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
+    //if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
     if (!localStorage.checkFix) checkFix();
     if (!localStorage.logIn) urlCheck('Login',logMeIn);
     
@@ -267,7 +268,7 @@ var code = function (){
   init();
 }
 
-if (!(localStorage.app_id)){
+if (true){
   setTimeout(function(){
     chrome.extension.sendMessage({data: "appIdReq"}, function(response) {
       alert(app_id);

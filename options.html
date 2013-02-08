@@ -38,29 +38,29 @@
         <section>
           <h3>Credentials</h3>
           <div style="margin: 10px 0;">
-            <label for="user">Username:&emsp;</label><input type="Text" name="user" id="username"/><br/>
+            <label for="user">Username:&emsp;</label><input type="text" name="user" id="username"/><br/>
           </div>
           <div style="margin: 10px 0;">
-            <label for="pass">Password:&emsp;&thinsp;</label><input type="Password" name="pass" id="password"/><br/>
+            <label for="pass">Password:&emsp;&thinsp;</label><input type="password" name="pass" id="password"/><br/>
           </div>
         </section>
         <section>
           <h3>Session</h3> 
           <div style="margin: 10px 0;">
             <div class="checkbox">
-              <input type="checkbox" name="keepLogin" id="keepAlive">
-              <label for="keepLogin">&emsp;Persistent Login</label>
+              <input type="checkbox" name="keepAlive" id="keepAlive">
+              <label for="keepAlive">&emsp;Persistent Login</label>
             </div>
             <section id="keepGroup" style="display:none;">
-              <select name="timeout" id="keepAliveTimeout" type="select">
-                <option>10 min</option>
-                <option>15 min</option>
-                <option>30 min</option>
-                <option>45 min</option>
-                <option>1 hour</option>
-                <option>Never</option>
+              <select name="keepAliveTimeout" id="keepAliveTimeout" type="select">
+                <option value="10">10 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">1 hour</option>
+                <option value="0" >Never</option>
               </select>
-              <label for="timeout">&emsp;Timeout Duration</label>
+              <label for="keepAliveTimeout">&emsp;Timeout Duration</label>
               <div class="checkbox">
                 <input type="checkbox" name="lockScreen" id="lockScreen">
                 <label for="lockScreen">
@@ -68,25 +68,25 @@
                 </label>
               </div>
                 <div id="lockAfter" style="display:none;">
-                  <select name="timeout" id="lockScreenTimeout" type="select">
-                    <option>10 min</option>
-                    <option>15 min</option>
-                    <option>30 min</option>
-                    <option>45 min</option>
-                    <option>1 hour</option>
-                    <option>Never</option>
+                  <select name="lockScreenTimeout" id="lockScreenTimeout" type="select">
+                    <option value="10">10 min</option>
+                    <option value="15">15 min</option>
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">1 hour</option>
+                    <option value="0" >Never</option>
                   </select>
                 </div>
             </section>
             <div class="checkbox">
               <input type="checkbox" name="moarStuff" id="moarStuff">
-              <label for="keepLogin">&emsp;Moar Stuff</label>
+              <label for="moarStuff">&emsp;Moar Stuff</label>
             </div>
           </div>
         </section>
         <div class="controls">
           <div class="spacer"></div>
-          <button id="saveModalButton">Save</button>
+          <button class="saveButton">Save</button>
         </div>
       </div>
       
@@ -94,8 +94,10 @@
         <div class="page">
           <h1>Warning</h1>
           <div class="content-area">
-            This saves your password so that it can log back in 
-            after the browser has closed. <br/>Just Sayin'
+            This plugin saves your username and password so that it can log back in <br/>
+            after the browser has closed. This information is stored in the plugin's <br/>
+            key/pair system as a JSON string. It is sandboxed and only available to <br/>
+            this plugin, but you have proper warning.
           </div>
           <div class="action-area">
             <div class="action-area-right">
@@ -116,37 +118,37 @@
         <h3>Interface hacks that ain't too hard on the eyes</h3>
         <section>
           <div class="checkbox">
-            <input type="checkbox" name="cheader" id="tinyHeader">
-            <label for="header">&emsp;Tiny header</label>
+            <input type="checkbox" name="tinyHeader" id="tinyHeader">
+            <label for="tinyHeader">&emsp;Tiny header</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cSwitch" id="switchShortcuts">
-            <label for="cSwitch">&emsp;Switch shorcuts</label>
+            <input type="checkbox" name="switchShortcuts" id="switchShortcuts">
+            <label for="switchShortcuts">&emsp;Switch shorcuts</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cObj" id="objIdUrl">
-            <label for="cObj">&emsp;Force ObjID back into URL</label>
+            <input type="checkbox" name="objIdUrl" id="objIdUrl">
+            <label for="objIdUrl">&emsp;Force ObjID back into URL</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cFade" id="pageFadeIn">
-            <label for="cFade">&emsp;Fade in pages</label>
+            <input type="checkbox" name="pageFadeIn" id="pageFadeIn">
+            <label for="pageFadeIn">&emsp;Fade in pages</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cAuto" id="forceAutoCompleteLogin">
-            <label for="cAuto">&emsp;Force auto-complete on login form</label>
+            <input type="checkbox" name="forceAutoCompleteLogin" id="forceAutoCompleteLogin">
+            <label for="forceAutoCompleteLogin">&emsp;Force auto-complete on login form</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cDate" id="enDate">
-            <label for="cDate">&emsp;Enable automatic date on PortList</label>
+            <input type="checkbox" name="enDate" id="enDate">
+            <label for="enDate">&emsp;Enable automatic date on PortList</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cLayout" id="enCss">
-            <label for="cLayout">&emsp;Enable White Layout</label>
+            <input type="checkbox" name="enCss" id="enCss">
+            <label for="enCss">&emsp;Enable White Layout</label>
           </div>
         </section>
         <div class="controls">
           <div class="spacer"></div>
-          <button id="saveModalButton">Save</button>
+          <button class="saveButton">Save</button>
         </div>
       </div>
     </div>
@@ -155,28 +157,28 @@
         <h1>Bug Fixes <small>What did paper ever do to staples?</small></h1>
       </header>
       <div class="content">
-        <h3>Various Tweaks that make work easier</h3>
+        <h3>Various Tweaks and the reason this plugin was created</h3>
         <section>
           <div class="checkbox">
-            <input type="checkbox" name="cTab" id="autoDnsSelect">
-            <label for="cTab">&emsp;LinkSelect.asp - AutoSelect DNS w/ Tab to Return Form</label>
+            <input type="checkbox" name="autoDnsSelect" id="autoDnsSelect">
+            <label for="autoDnsSelect">&emsp;LinkSelect.asp - AutoSelect DNS w/ Tab to Return Form</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cPop" id="newTabLink">
-            <label for="cPop">&emsp;LinkSelect.asp - 'add link' opens in New Tab instead of tiny box</label>
+            <input type="checkbox" name="newTabLink" id="newTabLink">
+            <label for="newTabLink">&emsp;LinkSelect.asp - 'add link' opens in New Tab instead of tiny box</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cClose" id="tabLinkClose">
-            <label for="cClose">&emsp;LinkSelect.asp - AutoClose after submission</label>
+            <input type="checkbox" name="tabLinkClose" id="tabLinkClose">
+            <label for="tabLinkClose">&emsp;LinkSelect.asp - AutoClose after submission</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" name="cCheck" id="checkFix">
-            <label for="cCheck">&emsp;EquipmentDetail.asp - Fix Juniper checkbox select</label>
+            <input type="checkbox" name="checkFix" id="checkFix">
+            <label for="checkFix">&emsp;EquipmentDetail.asp - Fix Juniper checkbox select</label>
           </div>
         </section>
         <div class="controls">
           <div class="spacer"></div>
-          <button id="saveModalButton">Save</button>
+          <button class="saveButton">Save</button>
         </div>
       </div>
     </div>

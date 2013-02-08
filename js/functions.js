@@ -1,45 +1,54 @@
-function injPop(msg) {
-  var code =  function(){
-                var div = document.createElement('div');
-                div.innerHTML = "<div id='fade'>" +
-                    "<div id='dialog'>" +
-                    "<h1>Hey! Listen!</h1>" +
-                    "<p>We need stuff to keep you logged in.</p>"+ 
-                    "<input type='text' name='user' id='user' size='20' placeholder='User'>" +
-                    "<input type='password' name='pass' id='pass' size='20' placeholder='Password'>" +
-                    "</div></div>";
-                
-                document.body.appendChild(div);
-              }
-  //var code = '$(function() {var docHeight = $(document).height();$("body").append('+ div +')})';
-  //var code =  div;
-  var script = document.createElement('script');
-  script.textContent = '(' + code + ')()';
-  document.body.appendChild(script);
+
+  function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+  }
   
-}
+  function autoDate() {
+    //if (getUrlVars()["d"] == 1) {
+    
+      var dateArray = document.getElementsByName('dbdVerifyDt');
+      var forms = document.forms;
+      var check = document.getElementsByName('Update');
 
+      var cDate = new Date();
+      var day = cDate.getDate();
+      var month = cDate.getMonth() +1;
+      var year = cDate.getFullYear() -1;
+      //if (getUrlVars()["dVal"] != "" ) var date = getUrlVars()["dVal"];
+      var date = month + "/" + day + "/" + year;
 
-function jPop() {
-  var div = document.createElement('div');
-  div.innerHTML = "<div id='fade'>" +
-                    "<div id='dialog'>" +
-                    "<h1>Hey! Listen!</h1>" +
-                    "<p>We need stuff to keep you logged in.</p>"+ 
-                    "<input type='text' name='user' id='user' size='20' placeholder='User'>" +
-                    "<input type='password' name='pass' id='pass' size='20' placeholder='Password'>" +
-                    "<br/><button type='button' name'fButton' id='fButton'>Submit</button>" +
-                    "<button type='button' name'fClear' id='fClear'>Nah</button>" +
-                    "</div></div>";
-                
-  document.body.appendChild(div);
+      for (var i = 0; i < dateArray.length; i++) {
+        dateArray[i].value= date;
+      }
+      for (var k = 0; k < check.length; k++){
+        check[k].checked= true;
+      }
+    //}
+  }
+//<input type="submit" value="Update" name="cmdSubmit" title="Update selected records WITH date">
+  function addButtons(){
+    var forms = document.forms;
+    for (var i=0; i<forms.length;i++){
+      var button = document.createElement('input');
+      button.setAttribute('type','submit');
+      button.setAttribute('value',getDate());
+      button.setAttribute('id','cmdSubmitDate');
+      button.setAttribute('title','Update With date');
+      forms[i].appendChild(button);
+    }
+  }
   
-  var docHeight = $(document).height();
+  function getDate() {
+    var cDate = new Date();
+    var day = cDate.getDate();
+    var month = cDate.getMonth() +1;
+    var year = cDate.getFullYear();
+      //if (getUrlVars()["dVal"] != "" ) var date = getUrlVars()["dVal"];
+    //return  month + "/" + day + "/" + year;
+    return "2/1/2013";
+  }
 
-  var bleh = $('#fade');
-  bleh.height(docHeight);
-}
-
-function fade(){
-  $('#fade').fadeIn(500);
-}

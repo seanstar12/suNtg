@@ -15,7 +15,10 @@
 //document.querySelector('#save').addEventListener('click', storeVars);
 
 function init() {
-  if (!localStorage.settings) nT.storage.defaults();
+  if (!localStorage.settings) {
+    showModal();
+    nT.storage.defaults();
+  }
   console.log(localStorage.settings);
 
   $('.menu a').click(function(ev) {
@@ -62,11 +65,7 @@ function init() {
 
   var temp = nT.storage.obj();
   for (var property in temp){
-    //console.log(property);
     for (var item in temp[property]){
-      //console.log('--'+item);
-      //console.log(t);
-      //console.log($('#' + item)[0]);
       if ($('#'+item)[0].type == 'checkbox'){
         $('#'+item)[0].checked = (temp[property][item] == 1) ? true : false;
         if (temp[property][item] == 1){
@@ -74,22 +73,15 @@ function init() {
           else if (item == "lockScreen") $('#lockAfter').fadeIn(0); 
         }
       }
-      else if ($('#'+item)[0].type == 'text' || $('#'+item)[0].type == 'password'){
-        $('#'+item).val(temp[property][item]);
-      }
-      else if ($('#'+item)[0].type == 'select-one'){
-        $('#'+item).val(temp[property][item]);
-      }
+      //else if ($('#'+item)[0].type == 'text' || $('#'+item)[0].type == 'password'){
+      //  console.log(temp[property][item]);
+      //  $('#'+item).val(temp[property][item]);
+      //}
+      //else if ($('#'+item)[0].type == 'select-one'){
+      else $('#'+item).val(temp[property][item]);
+      //}
     }
   };
-
-  //$('#user').val(localStorage.user);
-  $('#user').val(nT.storage.get('credentials','username'));
-  $('#pass').val(nT.storage.get('credentials','password'));
-
-   
-
-  //$('#pass').val(localStorage.pass);
 
   if ($('#user').val() != '' && $('#pass').val() != ''){
     localStorage.hasSettings = true;
@@ -107,32 +99,22 @@ function init() {
     else $('#lockAfter').fadeOut(250);
   });
   
-  $('#saveModalButton').click(function(ev) {
+  $('.saveButton').click(function(ev) {
     ev.preventDefault();
-
-    //localStorage.user = $('#user').val();
-    //nT.storage.set('credentials','username', $('#user').val());
-    //nT.storage.set('credentials','password', $('#pass').val());
-    //localStorage.pass = $('#pass').val();
-
 
 
     var temp = nT.storage.obj();
     for (var property in temp){
-      //console.log(property);
       for (var item in temp[property]){
-        //console.log('--'+item);
-        //console.log(t);
-        //console.log($('#' + item)[0]);
         if ($('#'+item)[0].type == 'checkbox'){
-          //$('#'+item)[0].checked = (temp[property][item] == 1) ? true : false;
           nT.storage.set(property,item,($('#'+item)[0].checked ? '1' : '0'));
         }
         else if ($('#'+item)[0].type == 'text' || $('#'+item)[0].type == 'password'){
-          $('#'+item).val(temp[property][item]);
-        }
+          nT.storage.set(property,item,$('#'+item).val());
+        } 
         else if ($('#'+item)[0].type == 'select-one'){
-          $('#'+item).val(temp[property][item]);
+          nT.storage.set(property,item,$('#'+item).val());
+          //$('#'+item).val(temp[property][item]);
         }
       }
     };
@@ -142,7 +124,10 @@ function init() {
     chrome.extension.sendMessage({data: "optionsSave"}, function(response) {
           //console.log(response.msg);
     });
-
+    
+  });
+  
+  function showModal() {
     var modal = $('.overlay.save').clone();
     $(modal).removeAttr('style');
     $(modal).find('button').click(function() {
@@ -159,7 +144,8 @@ function init() {
       });
     });
     $('body').append(modal);
-  });
+  }
+   
   $('.mainview > *:not(.selected)').css('display', 'none');
 }
 
