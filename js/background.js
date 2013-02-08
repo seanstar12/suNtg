@@ -28,11 +28,13 @@ function msuRefresh(){
 }
 
 function loggedIn(){
-  $.ajax({
-    type: 'GET',
-    url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-    success: loggedInSuccess,
-  });
+  if (localStorage.hasSettings){
+    $.ajax({
+      type: 'GET',
+      url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
+      success: loggedInSuccess,
+    });
+  }
 }
 
 function loggedInSuccess(data) {
@@ -54,17 +56,14 @@ function loggedInSuccess(data) {
 
 function msuGet() {
   //console.log('Getting Session Vars');
-  if (localStorage.user == null||localStorage.user == ""||localStorage.pass == null || localStorage.pass == "") {
-    chrome.tabs.create({url: "options.html"});
-    localStorage.settings = false;
-  }
-  
-  if (localStorage.user != null && localStorage.pass != null) {
+  if (nT.storage.get('credentials','username').length > 1 && nT.storage.get('credentials','password').length > 1) {
+    
     $.ajax({
       url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
       success: function(req) { msuGetProcess(req); },
     });
   }
+  else chrome.tabs.create({url: "options.html"});
 }
 
 function msuGetProcess(req) {
@@ -103,8 +102,8 @@ function msuPost(){
       '__EVENTTARGET':'',
       '__EVENTARGUMENT':'',
       '__EVENTVALIDATION':localStorage.eventval,
-      'ctl00$MainContent$UserID':localStorage.user, //fix with pass from context script
-      'ctl00$MainContent$Password':localStorage.pass, 
+      'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
+      'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
       'ctl00$MainContent$ImageButton1.x':'15',
       'ctl00$MainContent$ImageButton1.y':'23'
     },
@@ -177,7 +176,7 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
       
       loggedIn();
       
-      chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
+      if(localStorage.loggedIn) chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
           //console.log(response.msg);
       });
     }

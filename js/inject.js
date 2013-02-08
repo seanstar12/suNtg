@@ -1,6 +1,5 @@
 var code = function (){
   //var extUrl = 'chrome-extension://ihagcjlipplnnkjdelbpnkdhoekoichp/js/';
-
   var extUrl = 'chrome-extension://'+localStorage.app_id+'/js/';
   //workaround for app id
 
@@ -17,8 +16,8 @@ var code = function (){
       }
       
     }
-    http.open("GET","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag="+xtag);
-    http.send(); 
+    //http.open("GET","https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag="+xtag);
+    //http.send(); 
 
 
   }
@@ -167,13 +166,13 @@ var code = function (){
   function logMeIn() {
     
     document.forms.aspnetForm.setAttribute('autocomplete','on'); 
-    document.forms[0].addEventListener("submit", function(evt) {
-      localStorage['user'] = $('#ctl00_MainContent_UserID').attr('value');
-      localStorage['pass'] = $('#ctl00_MainContent_Password').attr('value');
+    //document.forms[0].addEventListener("submit", function(evt) {
+    //  localStorage['user'] = $('#ctl00_MainContent_UserID').attr('value');
+    //  localStorage['pass'] = $('#ctl00_MainContent_Password').attr('value');
 
-      window.postMessage({ type: "FROM_PAGE", text: localStorage.pass},"*");
+    //  window.postMessage({ type: "FROM_PAGE", text: localStorage.pass},"*");
 
-    }, false);
+    //}, false);
   }
 
   function checkFix() {
@@ -247,7 +246,7 @@ var code = function (){
     document.body.setAttribute('onload','');
     if (getUrlVars()['f'] == 1) document.body.style.display='none';    
   
-    if (!localStorage.layoutChange) urlCheck(['LinkSelect.asp'],layoutChange,true);
+    if (!localStorage.layoutChange) urlCheck(['LinkSelect.asp','login.aspx'],layoutChange,true);
     if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
     if (!localStorage.tabReturn) urlCheck('LinkSelect.asp',tabReturn);
     if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
@@ -268,15 +267,11 @@ var code = function (){
   init();
 }
 
-if (true){
-  setTimeout(function(){
-    chrome.extension.sendMessage({data: "appIdReq"}, function(response) {
-      alert(app_id);
-      localStorage.app_id = response.id;
-      console.log(response);
-    });
-  },10);
-}
+chrome.extension.sendMessage({data: "appIdReq"}, function(response) {
+  alert(app_id);
+  localStorage.app_id = response.id;
+  console.log(response);
+});
 
 
 if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
@@ -289,26 +284,23 @@ if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
 
 chrome.extension.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.id.length > 5) {
-      localStorage.app_id = request.id;
-      //console.log(request);
-    }
+    if (request.id) localStorage.app_id = request.id;
     
    
-   setTimeout(function(){ 
-      if (request.data == "reload") {
-        sendResponse({msg: "Callback from background tab"});
-        var newUrl = decodeURIComponent(window.location.search)
-                            .replace('?ForceLogin=true&ReturnURL=','')
-                            .replace('?ReturnUrl=','');
-        if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
-        else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
+    if (request.data == "reload") {
+      sendResponse({msg: "Callback from background tab"});
+      var newUrl = decodeURIComponent(window.location.search)
+                    .replace('?ForceLogin=true&ReturnURL=','')
+                    .replace('?ReturnUrl=','');
+      if (newUrl.indexOf('?') < 0) newUrl +='?f=1';
+      else if (newUrl.indexOf('?') > 0) newUrl +='&f=1';
         
+      setTimeout(function(){ 
         window.location = newUrl;
-      }
-    }, 1000);
+      }, 1000);
+    }
+});
 
-  });
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
