@@ -38,3 +38,177 @@ div.LocalNav ul li {
   background: none !important;
 }
 
+
+/* Lukes stuff below */
+
+/*
+ * NOTES
+ *
+ * The image in the body tag below should be user settable via settings pane.
+ *
+ * These styles should be loaded differently to prevnet page flicker
+ * http://devsideaengine.typepad.com/i/2012/03/best-programatic-method-for-injecting-css-in-chrome-extensions.html
+ * also loading it this way will make editing live via developer tools work.
+ *
+ * the theme might look better 'dark' but would require a little more hand
+ * tooling with the font colors. I'd suggest finding some examples and cloning.
+ *
+ * I'm sure there are lots of usability issues still.
+ */
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+
+body {
+ background: url(http://ns223506.ovh.net/rozne/2bf4ef08fdd09f148f233ffc03d660e4/wallpaper-307776.jpg) fixed;
+ background-size: cover;
+ text-align: center;
+ font-family: 'Open Sans', sans-serif;
+}
+
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+ 
+body .Page {
+    width: 960px;
+    margin: 0 auto;
+    text-align: left;
+    padding: 2em;
+
+  opacity:0;  
+  -webkit-animation:fadeIn ease-in 1;  
+  -moz-animation:fadeIn ease-in 1;
+  animation:fadeIn ease-in 1;
+ 
+  -webkit-animation-fill-mode:forwards;
+  -moz-animation-fill-mode:forwards;
+  animation-fill-mode:forwards;
+ 
+  -webkit-animation-duration:.3s;
+  -moz-animation-duration:.3s;
+  animation-duration:.3s;
+  
+  -webkit-animation-delay: 0.5s;
+  -moz-animation-delay: 0.5s;
+  animation-delay: 0.5s;
+}
+
+body h2 {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    font-size: 2em;
+    border-bottom: 1px solid #000;
+    padding-bottom: 0.2em;
+    margin-bottom: 0.8em;
+}
+
+
+body .FavCol h3,
+body .ColumnSet h3 {
+    font-family: 'Open Sans', sans-serif;
+    color: #000;
+    border: none;
+}
+
+body .header {
+ height: auto !important;   
+}
+
+body .header > * {
+  background: rgba(255,255,255,0.7);
+  padding: 0.5em 1em;
+  color: #000;
+  border-radius: 5px;
+  border: none;
+}
+
+body div.header a {
+    color: #C00 !important;
+}
+
+.header .Breadcrumb {
+    float: right;
+    padding: 0.8em 1em;
+    margin: 0;
+}
+
+body div.Page,
+body div.footer,
+body div.Outer_noNav,
+body div.Outer_Nav {
+  background: none;    
+  border: none;
+}
+
+body div.Outer_Nav {
+  border: none !important;
+  padding-left: 220px;
+}
+
+
+body a:link,
+body a:visited {
+    color: #C00;
+}
+
+body .FavCol,
+body .ColumnSet {
+    margin: 0;
+}
+
+body .FavCol {
+  width: 100%;
+}
+
+body .ColumnSet {
+  width: 48%;
+}
+ 
+.ColumnSet:nth-child(even) {
+ margin-right: 4%;  
+}
+
+body div.Main {
+    padding: 0;
+}
+
+body .Content,
+body .Navigation {
+background-color: rgba(255,255,255,0.5);
+padding: 1em;
+margin: 0;
+border-radius: 5px;
+     border: 1px solid #;
+}
+
+body .ColumnSet div,
+body .FavCol div {
+    background: rgba(255,255,255,0.5);
+margin-top: -1px;
+border: 1px solid #000;
+padding-top: 5px;
+margin-bottom: 1.15em;
+width: auto;
+}
+
+body div.Navigation {
+  width: 200px;
+  margin-left: -220px;
+  box-sizing: border-box;
+}
+
+body div.footer {
+    background: rgba(0,0,0,0.5);
+    padding: 20px 0 10px 0;
+    color: #fff
+}
+
+body div.footer a {
+    color: #fff;
+    text-decoration: underline;
+}

@@ -31,7 +31,9 @@
     "background.html",
     "js/jquery-1.8.3.min.js",
     "js/functions.js",
-    "images/icon48.png"
+    "images/icon48.png",
+    "css/ntgTool.css",
+    "css/cssinject.css"
   ],
   "content_scripts": [
     {
