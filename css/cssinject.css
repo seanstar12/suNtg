@@ -140,7 +140,13 @@ body div.header a {
 
 body div.Page div.Content form{
   background-color: rgba(255,255,255,0.85);
+}
 
+.BoxInline,
+.BoxContainer,
+.mw900,
+.mw1100 {
+  background-color: rgba(255,255,255,0.90);
 }
 
 body div.Page,
