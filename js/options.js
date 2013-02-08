@@ -71,6 +71,7 @@ function init() {
         if (temp[property][item] == 1){
           if (item == "keepAlive") $('#keepGroup').fadeIn(0); 
           else if (item == "lockScreen") $('#lockAfter').fadeIn(0); 
+          else if (item == "enBgUrl") $('#bgUrlCont').fadeIn(0);
         }
       }
       //else if ($('#'+item)[0].type == 'text' || $('#'+item)[0].type == 'password'){
@@ -97,6 +98,12 @@ function init() {
     var box = $(this);
     if (box.is (':checked')) $('#lockAfter').fadeIn(250);
     else $('#lockAfter').fadeOut(250);
+  });
+  
+  $('#enBgUrl').click(function() {
+    var box = $(this);
+    if (box.is (':checked')) $('#bgUrlCont').fadeIn(250);
+    else $('#bgUrlCont').fadeOut(250);
   });
   
   $('.saveButton').click(function(ev) {
