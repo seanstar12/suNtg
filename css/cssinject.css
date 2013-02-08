@@ -120,7 +120,7 @@ body .header {
 }
 
 body .header > * {
-  background: rgba(255,255,255,0.7);
+  background: #fff;
   padding: 0.5em 1em;
   color: #000;
   border-radius: 5px;
@@ -179,7 +179,7 @@ body div.Main {
 
 body .Content,
 body .Navigation {
-background-color: rgba(255,255,255,0.5);
+background-color: #fff;
 padding: 1em;
 margin: 0;
 border-radius: 5px;
