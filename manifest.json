@@ -1,6 +1,6 @@
 {
   "name": "NTG Tool",
-  "version": "0.3.38",
+  "version": "0.3.50",
   "manifest_version": 2,
   "description": "Helpful functions for the NTG domain.",
   "options_page": "options.html",
@@ -9,13 +9,15 @@
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
-  "background": { "scripts": ["js/include.js","js/background.js","js/jquery-1.8.3.min.js"]},
+  "background": { 
+    "page": "background.html"
+  },
   "page_action": {
     "default_icon": "images/icon.png",
     "default_popup": "pop.html"
   },
   "permissions": [
-    "tabs",
+    "tabs", "https://ntg.missouristate.edu/*",
     "notifications",
     "background",
     "idle",
@@ -23,7 +25,6 @@
     "webRequest",
     "alarms",
     "cookies",
-    "https://ntg.missouristate.edu/*",
     "storage" 
   ],
   "web_accessible_resources": [
@@ -31,19 +32,22 @@
     "background.html",
     "js/jquery-1.8.3.min.js",
     "js/functions.js",
+    "js/include.js",
     "images/icon48.png",
     "css/ntgTool.css",
+    "images/calvin.jpg",
     "css/cssinject.css"
   ],
   "content_scripts": [
     {
-      "css": ["css/ntgTool.css", "css/cssinject.css"],
-      "js": ["js/jquery-1.8.3.min.js"],
+      "css": ["css/cssinject.css"],
+      "js": ["js/include.js","js/functions.js","js/inject.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_start"
     },
     {
-      "js": ["js/inject.js","js/include.js"],
+      "css": ["css/ntgTool.css"],
+      "js": ["js/include.js","js/functions.js","js/main.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_end"
     }

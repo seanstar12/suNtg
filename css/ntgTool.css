@@ -48,7 +48,13 @@ div.header a {
   font-size: 24px;
 }
 
+.selectList{
+  display: inline-block;
+  padding-left: 5px;
+}
+
 .sL {
+  display: inline-block;
   font-size: 10px;
   float: right;
   margin-top: -20px;

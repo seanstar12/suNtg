@@ -1,8 +1,3 @@
-var pollIntervalMin = 3;
-var pollIntervalMax = 5;
-var requestTimeout = 2000;
-
-
 function checkForURL(tabId, changeInfo, tab) {
   if (tab.url.indexOf('ntg.missouristate') > -1) {
     chrome.pageAction.show(tabId);
@@ -56,7 +51,7 @@ function loggedInSuccess(data) {
 
 function msuGet() {
   //console.log('Getting Session Vars');
-  if (nT.storage.get('credentials','username').length > 1 && nT.storage.get('credentials','password').length > 1) {
+  if (nT.storage.get('credentials','username').length > 3 && nT.storage.get('credentials','password').length > 3) {
     
     $.ajax({
       url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
@@ -112,13 +107,6 @@ function msuPost(){
         console.log('msuGetProcess:success');
         localStorage.loginCount++;
         localStorage.loggedIn = true;
- //       var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
- //               + localStorage.loginCount);
- //       hud.show();
-
- //     setTimeout(function() {
- //       hud.cancel();
- //     }, 3000);
     }, 
   });
 }  
@@ -134,18 +122,14 @@ function onInit() {
 
 function scheduleRequest() {
   //console.log('scheduleRequest');
-  var randomness = Math.random() * 2;
-  var exponent = Math.pow(2, localStorage.requestFailureCount || 0);
-  var multiplier = Math.max(randomness * exponent, 1);
-  var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
-  delay = Math.round(delay);
- // console.log('Scheduling for: ' + delay + ' minutes');
   chrome.alarms.create('refresh',{periodInMinutes: 5});
 }
 
 function startRequest(params) {
   if (params.scheduleRequest) scheduleRequest();
-  if (localStorage.settings) loggedIn();
+  if (localStorage.hasSettings){
+    loggedIn();
+  }
 }
 
 function onAlarm(alarm) {
@@ -180,15 +164,13 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
           //console.log(response.msg);
       });
     }
-    else if (msg.data == "appIdReq"){
-      var app_id = chrome.i18n.getMessage('@@extension_id');
-         //console.log('sent '+ app_id); 
-      chrome.tabs.sendMessage(tab.id, {id:app_id}, function(response) {
-      });
-    }
+    
     else if (msg.data == "optionsSave"){
       onInit();
          //console.log('sent '+ app_id); 
     }
   });
+});
+
+chrome.tabs.onUpdated.addListener(function(tab){
 });
