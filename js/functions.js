@@ -121,49 +121,50 @@ function deallocateTag(xtag){
 }
 
 function addLinks(){
+  //this gets the dns name from the top listing
   var name = (document.getElementsByClassName('Content')[0].children[0].innerHTML);
   name = name.split(' ');
-
+  //this gets all of the 'Port Information' sections
   var item = document.getElementsByClassName('NetHeading');
-  var cl = ['gE','xE','sL'];
-  var k = 0;
+  var cl = ['gE','xE','sL']; //used for my classes (arrays are fun)
+  var k = 0; //counting var
   
-  var ul = document.createElement('ul');
-  ul.className = "selectList";    
+  var ul = document.createElement('ul'); //make a master list
+  ul.className = "selectList";  //class it 
   
   if (item.length < 3 ){ 
-    return false;
+    return false; //cisco switches need not apply (juniper always have 3+)
   }
 
   else {
-    var x = 0;      
+    var x = 0;      //counting var
     for ( var j=1;j < item.length; j+=2){     
-      for ( var q=0; q < 2; q++){         
-        var li = document.createElement('li');
+      for ( var q=0; q < 2; q++){              //because on gig and 10-gig ports, create 2 links
+        var li = document.createElement('li'); // per section (0/0 and 0/1)
         var a = document.createElement('a');
         var sp = document.createElement('span');
         
-        sp.className = cl[q];
-        sp.innerText = k + '/' + (q);
-        a.href = '#switch_' + (x);
+        sp.className = cl[q];                 //giving span class name (q=0) -- gE; (q=1) -- xE
+        sp.innerText = k + '/' + (q);         //giving span the text -- 0/0;0/1;1/0...etc                       
+        a.href = '#switch_' + (x);            //a link for switch
         
-        a.appendChild(txt(q,0));
-        a.appendChild(sp);
-        a.appendChild(txt(q,1));
+        a.appendChild(txt(q,0));              //to do the grey parenth around the sections
+        a.appendChild(sp);                    //the actual item -- 0/1
+        a.appendChild(txt(q,1));              //closing parenth
 
-        li.appendChild(a);
-        ul.appendChild(li);
-        x++;
+        li.appendChild(a);                    //attach anchor to li
+        ul.appendChild(li);                   //attach li to ul
+        x++;                                  //individual count for switch id links
       }
-      k++;
+      k++;                                    // switch set count see line 148
     }  
-    for (i=1; i<item.length;i++){  
-      var sp = document.createElement('span');
-      sp.id = 'switch_' + (i-1);
-      sp.className = cl[2];
-      sp.innerHTML = name[2];
-      sp.appendChild(ul.cloneNode(true));
-      item[i].appendChild(sp);
+    for (i=1; i<item.length;i++){             //for each net heading
+      var sp = document.createElement('span');//  create new span
+      sp.id = 'switch_' + (i-1);              //  give it an id
+      sp.className = cl[2];                   //  apply class sL
+      sp.innerHTML = name[2];                 //  append dns name 
+      sp.appendChild(ul.cloneNode(true));     //  clone the master ul we created and append it to span
+      item[i].appendChild(sp);                //  append the span to the NetHeadings we got from 128
     }
   }
 }

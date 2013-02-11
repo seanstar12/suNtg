@@ -20,7 +20,7 @@ chrome.extension.onMessage.addListener(
         localStorage.enCss = 0;
       }
       document.body.setAttribute('onload','');
-      if (ui.tinyHeader == 1) urlCheck(['LinkSelect.asp','login.aspx'],tinyHeader,true);
+      //if (ui.tinyHeader == 1) urlCheck(['LinkSelect.asp','login.aspx'],tinyHeader,true);
       $('.header').show();
       if (ui.tabReturn == 1) urlCheck('LinkSelect.asp',tabReturn);
       if (ui.switchShortcuts == 1) urlCheck('PortList.asp',addLinks);
@@ -28,17 +28,17 @@ chrome.extension.onMessage.addListener(
       //if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
       //if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
       //if (bug.checkFix == 1) checkFix();
-      if (ui.forceAutoCompleteLogin == 1) urlCheck('Login',forceForm);
+      //if (ui.forceAutoCompleteLogin == 1) urlCheck('Login',forceForm);
     }
     
-    else if (req.data == "reload") {
-      sendResponse({msg: "Received Reload message. Reloading page."});
-      var newUrl = decodeURIComponent(window.location.search)
-                    .replace('?ForceLogin=true&ReturnURL=','')
-                    .replace('?ReturnUrl=','');
-        
-      setTimeout(function(){ 
-        window.location = newUrl;
-      },300);
-    }
+//    else if (req.data == "reload") {
+//      sendResponse({msg: "Received Reload message. Reloading page."});
+//      var newUrl = decodeURIComponent(window.location.search)
+//                    .replace('?ForceLogin=true&ReturnURL=','')
+//                    .replace('?ReturnUrl=','');
+//        
+//      setTimeout(function(){ 
+//        window.location = newUrl;
+//      },300);
+//    }
 });

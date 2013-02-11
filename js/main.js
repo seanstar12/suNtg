@@ -16,8 +16,8 @@ addScript('js/jquery-1.8.3.min.js');
 addScript('js/functions.js');
 addScript('js/bugFix.js');
 
-//chrome.extension.onMessage.addListener(
-//  function(req, sender, sendResponse) {
+chrome.extension.onMessage.addListener(
+  function(req, sender, sendResponse) {
 //    
 //    //if (req.data == "reqFunc"){
 //    //  var ui = req.interface;
@@ -40,17 +40,17 @@ addScript('js/bugFix.js');
 //    //  if (ui.forceAutoCompleteLogin == 1) urlCheck('Login',forceForm);
 //    //}
 //    
-//    if (req.data == "reload") {
-//      sendResponse({msg: "Received Reload message. Reloading page."});
-//      var newUrl = decodeURIComponent(window.location.search)
-//                    .replace('?ForceLogin=true&ReturnURL=','')
-//                    .replace('?ReturnUrl=','');
-//        
-//      setTimeout(function(){ 
-//        window.location = newUrl;
-//      },300);
-//    }
-//});
+    if (req.data == "reload") {
+      sendResponse({msg: "Received Reload message. Reloading page."});
+      var newUrl = decodeURIComponent(window.location.search)
+                    .replace('?ForceLogin=true&ReturnURL=','')
+                    .replace('?ReturnUrl=','');
+        
+      setTimeout(function(){ 
+        window.location = newUrl;
+      },300);
+    }
+});
 
 if (window.location.pathname.toLowerCase() == "/login/login.aspx" ) {
   document.body.innerHTML = "";
