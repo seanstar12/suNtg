@@ -27,23 +27,8 @@
 
 //Required for checkFix, addInNewTab, and General Page functions.
 function rmPageScript(){
+  //console.log(document.scripts[1]);
   document.scripts[1].parentNode.removeChild(document.scripts[1]);
-}
-
-//Fix juniper switch pages for automatic checkbox selection on edit
-function checkFix(){
-  var el = document.getElementsByName('Update');
-  for (i=0; i < el.length; i++) el[i].id = (el[i].id).replace(' ',''); 
-}
-
-//Open 'add link' in new tab.
-function openSelectLinkWindow(ObjID, LinkPortInfo){ 
-  (window.open("LinkSelect.asp?LocalPort=" + ObjID + "_" + LinkPortInfo,"_blank")).focus();
-}
-
-//Fix for after switch port allocation. Window never closes.
-function closeListen(){
-  if (document.body.innerHTML == "") window.close();
 }
 
 /////////////////
@@ -66,7 +51,7 @@ function addScript(scrpt) {
   var inject = document.createElement('script');
   //inject.setAttribute('src',chrome-extension://);
   inject.src = chrome.extension.getURL(scrpt);
-  document.head.appendChild(inject);
+  document.documentElement.insertBefore(inject);
 }
 
 function checkChanged(fName, num){
@@ -150,7 +135,8 @@ function addLinks(){
     return false;
   }
 
-  else {      
+  else {
+    var x = 0;      
     for ( var j=1;j < item.length; j+=2){     
       for ( var q=0; q < 2; q++){         
         var li = document.createElement('li');
@@ -159,7 +145,7 @@ function addLinks(){
         
         sp.className = cl[q];
         sp.innerText = k + '/' + (q);
-        a.href = '#switch_' + (k);
+        a.href = '#switch_' + (x);
         
         a.appendChild(txt(q,0));
         a.appendChild(sp);
@@ -167,6 +153,7 @@ function addLinks(){
 
         li.appendChild(a);
         ul.appendChild(li);
+        x++;
       }
       k++;
     }  

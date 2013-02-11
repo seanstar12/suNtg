@@ -6,34 +6,44 @@
 //  'listeners.js' instead?                                         //
 //////////////////////////////////////////////////////////////////////
 
-//var ui = data.interface;
 
 //if (nT.storage.get('interface','enBgUrl') && nT.storage.get('interface','bgUrl') != ''){
 //  document.body.setAttribute('style','background:none;');
 //}
-
-//addScript('js/include.js');
-
-
-//var obj = nT.storage.obj();
-//var ui = obj.interface;
-//var cred = obj.credentials;
-
-document.body.setAttribute('onload','');
-if (!localStorage.layoutChange) urlCheck(['LinkSelect.asp','login.aspx'],tinyHeader,true);
-//if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
-if (!localStorage.tabReturn) urlCheck('LinkSelect.asp',tabReturn);
-if (!localStorage.closeListen) urlCheck('LinkSelect.asp',closeListen);
-if (localStorage.addLinks) urlCheck('PortList.asp',addLinks);
-if (!localStorage.fixurl) urlCheck('PortList.asp',setObjId);
-//if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
-if (!localStorage.checkFix) checkFix();
-if (!localStorage.logIn) urlCheck('Login',forceForm);
+console.log(document.scripts[1]);
+urlCheck('PortList.asp',rmPageScript);
+addScript('js/jquery-1.8.3.min.js');
+addScript('js/functions.js');
+addScript('js/bugFix.js');
 
 chrome.extension.onMessage.addListener(
-  function(request, sender, sendResponse) {
+  function(req, sender, sendResponse) {
     
-    if (request.data == "reload") {
+    if (req.data == "reqFunc"){
+      //console.log(request);
+      var ui = req.interface;
+      var bug = req.bugs;
+      
+      if (ui.enCss == 1){
+        localStorage.enCss = 1;
+      } else if (ui.enCss == 0) {
+        localStorage.enCss = 0;
+      }
+      document.body.setAttribute('onload','');
+      if (ui.tinyHeader == 1) {
+        urlCheck(['LinkSelect.asp','login.aspx'],tinyHeader,true);
+        $('.header').show()
+      } else if (ui.tinyHeader == 0) $('.header').show();
+      if (ui.tabReturn == 1) urlCheck('LinkSelect.asp',tabReturn);
+      if (ui.switchShortcuts == 1) urlCheck('PortList.asp',addLinks);
+      if (ui.objIdUrl == 1) urlCheck('PortList.asp',setObjId);
+      //if (!localStorage.autoDate) urlCheck('PortList.asp',autoDate);
+      //if (!localStorage.fillDate) urlCheck('EquipmentDetail.asp',fillDate);
+      //if (bug.checkFix == 1) checkFix();
+      if (ui.forceAutoCompleteLogin == 1) urlCheck('Login',forceForm);
+    }
+    
+    else if (req.data == "reload") {
       sendResponse({msg: "Callback from background tab"});
       var newUrl = decodeURIComponent(window.location.search)
                     .replace('?ForceLogin=true&ReturnURL=','')
@@ -41,7 +51,7 @@ chrome.extension.onMessage.addListener(
         
       setTimeout(function(){ 
         window.location = newUrl;
-      },500);
+      },300);
     }
 });
 

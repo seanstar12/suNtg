@@ -5,5 +5,5 @@
 //  It needs to be super slim. So leave it alone.                   //
 //////////////////////////////////////////////////////////////////////
 
-addCss('css/cssinject.css');
+if (localStorage.enCss == 1) addCss('css/cssinject.css');
 

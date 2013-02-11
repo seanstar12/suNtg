@@ -1,18 +1,24 @@
 function checkForURL(tabId, changeInfo, tab) {
   if (tab.url.indexOf('ntg.missouristate') > -1) {
     chrome.pageAction.show(tabId);
+
+      var data = nT.storage.obj();
+      data.credentials = "";
+      data.data = "reqFunc";
+      chrome.tabs.sendMessage(tab.id, data,function(response){
+
+      });
   }
 }
 
 function msuRefresh(){
-  var ts = Math.round(new Date().getTime() / 1000);
   $.ajax({
     type: 'GET',
     cache: false,
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+ts,
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+Date.now(),
     success: function () {
       var date = new Date();
-      console.log('Page GET with success: '+ date.toTimeString());
+      console.log('MSU Refresh with success: '+ date.toTimeString());
     },
     error: function(){
       console.log(xmlhttp);
@@ -39,12 +45,12 @@ function loggedInSuccess(data) {
     //console.log(data);
     if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
       localStorage.loggedIn = false;
-      console.log('Logging In');
+      console.log('Attempting Log In');
       msuGet();
-      console.log('Ran msuGet()');
+      //console.log('Ran msuGet()');
     } else  {
       localStorage.loggedIn = true;
-      console.log('Logged In');
+      //console.log('You\'re logged in.');
       msuRefresh();
     }
 }
@@ -115,25 +121,42 @@ function onInit() {
   //console.log('Initializing Plugin');
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
+  localStorage.initTime = Number(Date.now());
+  localStorage.quitTime = Number(Number(Date.now()) + Number(nT.storage.get('session','keepAliveTimeout')*60));
+  console.log("Init: "+Number(localStorage.initTime) + " Quit: "+Number(localStorage.quitTime));
+  console.log("Quit - Init: " + (localStorage.quitTime - localStorage.initTime));
   startRequest({scheduleRequest:true});
   
   chrome.alarms.create('watchdog', {periodInMinutes: 6}); // watchdog incase of crash
 }
 
 function scheduleRequest() {
-  //console.log('scheduleRequest');
-  chrome.alarms.create('refresh',{periodInMinutes: 5});
+  console.log('Making Request');
+  //console.log('init: '+localStorage.initTime+' quit: '+localStorage.quitTime+' now: '+Date.now());
+  localStorage.currentTime = Number(Date.now());
+        chrome.alarms.create('refresh',{periodInMinutes: 1});
+      //chrome.alarms.create('refresh',{periodInMinutes: 1});
+  chrome.alarms.get('refresh', function(alarm){console.log('Alarm: '+alarm.scheduledTime);});
 }
 
 function startRequest(params) {
-  if (params.scheduleRequest) scheduleRequest();
+  if (params.scheduleRequest){
+    if (nT.storage.get('session','keepAlive')){
+      if (nT.storage.get('session','keepAliveTimeout') > 0){
+        scheduleRequest();
+      }
+    }
+  }
   if (localStorage.hasSettings){
     loggedIn();
   }
 }
 
 function onAlarm(alarm) {
-  if (alarm) console.log('Alarm', alarm);
+  if (alarm) {
+        startRequest({scheduleRequest:true});
+        console.log('Alarm', alarm);
+  }
   if (alarm.name == 'watchdog') {
     onWatchdog();
   } else startRequest({scheduleRequest:true});
@@ -148,7 +171,6 @@ function onWatchdog(){
   });
 }
 
-//Chrome Processes Running 
 chrome.tabs.onUpdated.addListener(checkForURL); // icon set
 chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
 chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
@@ -157,20 +179,22 @@ chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
   console.log('Got message' + JSON.stringify(msg));
   chrome.tabs.getSelected(null, function(tab) {
     if (msg.data == "loginPage"){
-      
       loggedIn();
-      
-      if(localStorage.loggedIn) chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
-          //console.log(response.msg);
-      });
+      if(localStorage.loggedIn) chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {});
     }
     
     else if (msg.data == "optionsSave"){
       onInit();
-         //console.log('sent '+ app_id); 
+    }
+    
+    else if (msg.data == "reqFunc"){
+      var data = nT.storage.obj();
+      data.credentials = "";
+      data.data = "reqFunc";
+      chrome.tabs.sendMessage(tab.id, data,function(response){
+
+      });
     }
   });
 });
 
-chrome.tabs.onUpdated.addListener(function(tab){
-});
