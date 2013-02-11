@@ -19,7 +19,9 @@ function init() {
     showModal();
     nT.storage.defaults();
   }
-  console.log(localStorage.settings);
+  var temp = JSON.parse(localStorage.settings);
+  temp.credentials.password = "******";
+  console.log(JSON.stringify(temp));
 
   $('.menu a').click(function(ev) {
     ev.preventDefault();

@@ -55,7 +55,7 @@ function addScript(scrpt) {
 }
 
 function checkChanged(fName, num){
-  num = num.replace(' ','')
+  num = num.replace(' ','');
   eval("document.forms['"+ fName + "'].Update_" + num + ".checked = true");
 }
 

@@ -5,9 +5,9 @@ function checkForURL(tabId, changeInfo, tab) {
       var data = nT.storage.obj();
       data.credentials = "";
       data.data = "reqFunc";
-      chrome.tabs.sendMessage(tab.id, data,function(response){
-
-      });
+      setTimeout(function(){
+        chrome.tabs.sendMessage(tab.id, data,function(response){});
+      }, 200);
   }
 }
 
@@ -121,10 +121,10 @@ function onInit() {
   //console.log('Initializing Plugin');
   localStorage.loggedIn = false;
   localStorage.loginCount = 0;
-  localStorage.initTime = Number(Date.now());
-  localStorage.quitTime = Number(Number(Date.now()) + Number(nT.storage.get('session','keepAliveTimeout')*60));
-  console.log("Init: "+Number(localStorage.initTime) + " Quit: "+Number(localStorage.quitTime));
-  console.log("Quit - Init: " + (localStorage.quitTime - localStorage.initTime));
+  //localStorage.initTime = Number(Date.now());
+  //localStorage.quitTime = Number(Number(Date.now()) + Number(nT.storage.get('session','keepAliveTimeout')*60));
+  //console.log("Init: "+Number(localStorage.initTime) + " Quit: "+Number(localStorage.quitTime));
+  //console.log("Quit - Init: " + (localStorage.quitTime - localStorage.initTime));
   startRequest({scheduleRequest:true});
   
   chrome.alarms.create('watchdog', {periodInMinutes: 6}); // watchdog incase of crash
@@ -143,12 +143,19 @@ function startRequest(params) {
   if (params.scheduleRequest){
     if (nT.storage.get('session','keepAlive')){
       if (nT.storage.get('session','keepAliveTimeout') > 0){
+        console.log('startRequest:> keepAliveTimeout:> schedule');
+        scheduleRequest();
+      }
+      else {
+        console.log('keepAlive:> else schedule');
         scheduleRequest();
       }
     }
   }
   if (localStorage.hasSettings){
-    loggedIn();
+    if (nT.storage.get('session','logIn') == 1){
+      loggedIn();
+    }
   }
 }
 
@@ -157,7 +164,7 @@ function onAlarm(alarm) {
         startRequest({scheduleRequest:true});
         console.log('Alarm', alarm);
   }
-  if (alarm.name == 'watchdog') {
+  else if (alarm.name == 'watchdog') {
     onWatchdog();
   } else startRequest({scheduleRequest:true});
 }
