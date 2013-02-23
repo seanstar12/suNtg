@@ -1,161 +1,131 @@
-var pollIntervalMin = 3;
-var pollIntervalMax = 5;
-var requestTimeout = 2000;
+var bg = {};
+bg = {
 
+  checkUrl: function(tabId, changeInfo, tab){
+    if (tab.url.indexOf('ntg.missouristate') > -1) {
+      chrome.pageAction.show(tabId);
+    }
+  },
+  
+  checkAuthPage: function(){
+    if (tab.url.indexOf(('login/login.aspx').toLowerCase()) > -1 ) {
+      console.log(tab.url);
+    }
+  },
 
-function checkForURL(tabId, changeInfo, tab) {
-  if (tab.url.indexOf('ntg.missouristate') > -1) {
-    chrome.pageAction.show(tabId);
+  onAlarm: function(alarm){
+    if(debug ==1) console.log('onAlarm:> '+JSON.stringify(alarm));
+    if (alarm.name == 'keepAliveTimed'){
+      chrome.alarms.clearAll();
+    }
+    else if (alarm.name == 'keepAlive'){
+      nT.msu.loggedIn();
+
+      setTimeout(function(){
+        if (localStorage.loggedIn == 1){
+          nT.msu.refresh();
+        } else if(localStorage.loggedIn == 0){
+          if (nT.storage.get('session','autoLogin') == 1){ 
+            nT.msu.logIn();
+          }
+          else {
+            chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
+              if (stuff[0] == null){ 
+                if (nT.storage.get('other','nag') == 1){
+                  console.log('I need credentials to log you back in. Log in here:');
+                  alert('You\'re MaLogged Out! Imma open up the login page for you. ');
+                }
+                if (nT.storage.get('session','newTab') == 1){
+                  chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
+                }
+              }
+            });
+          }
+        }
+      }, 2000);
+    }
+  },
+
+  init: function(){
+    localStorage.loginCount = 0;
+    if (localStorage.settings == null){
+      nT.storage.defaults();
+    }
+    if (nT.storage.get('session','keepAlive') == 1){
+      if (nT.storage.get('session','keepAliveTimeout') > 0){
+        chrome.alarms.create('keepAliveTimed',
+          {when:(Date.now() + (nT.storage.get('session','keepAliveTimeout')*60000))} 
+        );
+      }
+      if (nT.storage.get('other','debug') == 1) {
+        chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('other','debugTime'))});
+      }
+      else {
+        chrome.alarms.create('keepAlive',{periodInMinutes: 6});
+      }
+    }
+    if (nT.storage.get('session','autoLogin') == 1) {
+      nT.msu.logIn();
+    }
+    if(debug == 1) chrome.alarms.getAll(function(alarms){console.log(alarms);});
   }
 }
 
-function msuRefresh(){
-  $.ajax({
-    type: 'GET',
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604',
-    success: function () {
-      var date = new Date();
-      console.log('Page GET with success: '+ date.toTimeString());
-    },
-    error: function(){
-      console.log(xmlhttp);
-      console.log("Returned Login Page -- We Have Failed.");
-      localStorage.requestFailureCount ++;
-    }
-  });
+function onInstalled(details){
+  if (details.reason == "install"){
+    nT.storage.defaults();
+    chrome.tabs.create({url:'options.html'});
+  }
+  else if (details.reason == "update"){
+    chrome.alarms.clearAll();
+    bg.init();
+  } 
+  else if (details.reason == "chrome_update"){
+    chrome.alarms.clearAll();
+    bg.init();
+  }
+  if (debug == 1) console.log('onInstalled: ' + details.reason);
 }
 
-function loggedIn(){
-  $.ajax({
-    type: 'GET',
-    url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-    success: loggedInSuccess,
-  });
+function onStartup(){
+  console.log('Starting NTG Tool');
+  bg.init();
 }
 
-function loggedInSuccess(data) {
-    if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
-      localStorage.loggedIn = false;
-      msuGet();
-    } else  {
-      localStorage.loggedIn = true;
-      msuRefresh();
-    }
+function suspend(){
+  if (localStorage.loggedIn == 1){
+    chrome.alarms.clearAll();
+    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'.ASPXAUTH'});
+    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASP.NET_SessionId'});
+    chrome.tabs.update({url:'https://ntg.missouristate.edu'});
+    localStorage.loggedIn = 0;
+
+    console.log('Alarms are gone and you\'re logged out!');
+  }
+  else if (localStorage.loggedIn == 0){
+    bg.init();
+    setTimeout(function(){
+    console.log('loggin in');
+      chrome.tabs.update({url:'https://ntg.missouristate.edu/Tools/Default.aspx'});
+    }, 1500);
+  }
 }
 
-function msuGet() {
-  console.log('im getting');
-  (localStorage.user == null) ? localStorage.user = prompt("Enter your username") : false;
-  (localStorage.pass == null) ? localStorage.pass = prompt("Enter your password") : false;
-  $.ajax({
-    url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-    success: function(req) { msuGetProcess(req); },
-  });
-}
+var debug = nT.storage.get('other','debug');
 
-function msuGetProcess(req) {
-  console.log('im processing');
+chrome.tabs.onUpdated.addListener(bg.checkUrl);
+chrome.pageAction.onClicked.addListener(suspend);
+chrome.runtime.onStartup.addListener(onStartup);
+chrome.runtime.onInstalled.addListener(onInstalled);
+chrome.alarms.onAlarm.addListener(bg.onAlarm);
+//chrome.runtime.onSuspend.addListener(suspend);
 
-  var tempDiv = document.createElement('div');
-  tempDiv.innerHTML = req.replace(/<script(.|\s)*?\/script>/g, '');
-  
-  // tempDiv now has a DOM structure:
-  tempDiv.childNodes;
-
-  localStorage.eventval = tempDiv.querySelector('#__EVENTVALIDATION').value;
-  localStorage.viewstate = tempDiv.querySelector('#__VIEWSTATE').value;
-  
-  // remove unneeded div
-  delete tempDiv;
-
-  msuPost();
-}
-
-function msuPost(){
-  $.ajax({
-    type: 'POST',
-    url: 'https://ntg.missouristate.edu/Login/Login.aspx',
-    data: {
-      '__LASTFOCUS':'',
-      '__VIEWSTATE':localStorage.viewstate,
-      '__EVENTTARGET':'',
-      '__EVENTARGUMENT':'',
-      '__EVENTVALIDATION':localStorage.eventval,
-      'ctl00$MainContent$UserID':localStorage.user, //fix with pass from context script
-      'ctl00$MainContent$Password':localStorage.pass, 
-      'ctl00$MainContent$ImageButton1.x':'15',
-      'ctl00$MainContent$ImageButton1.y':'23'
-    },
-    success :  function() { 
-      localStorage.loginCount++;
-      localStorage.loggedIn = true;
-      var hud = webkitNotifications.createNotification('images/icon48.png','Hey Bro!','No worries, you\'re logged in. Count: ' 
-                + localStorage.loginCount);
-      hud.show();
-      setTimeout(function() {
-        hud.cancel();
-      }, 3000);
-    }, 
-  });
-}  
-
-function onInit() {
-  //console.log('Initializing Plugin');
-  localStorage.loggedIn = false;
-  localStorage.loginCount = 0;
-  startRequest({scheduleRequest:true});
-  chrome.alarms.create('watchdog', {periodInMinutes:5}); // watchdog incase of crash
-}
-
-function scheduleRequest() {
-  //console.log('scheduleRequest');
-  var randomness = Math.random() * 2;
-  var exponent = Math.pow(2, localStorage.requestFailureCount || 0);
-  var multiplier = Math.max(randomness * exponent, 1);
-  var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
-  delay = Math.round(delay);
- // console.log('Scheduling for: ' + delay + ' minutes');
-  chrome.alarms.create('refresh',{periodInMinutes: 2});
-}
-
-function startRequest(params) {
-  if (params.scheduleRequest) scheduleRequest();
-  loggedIn();
-}
-
-function onAlarm(alarm) {
-  console.log('Logged In?', localStorage.loggedIn);
-  if (alarm) console.log('Alarm', alarm);
-  if (alarm.name == 'watchdog') {
-    onWatchdog();
-  } else startRequest({scheduleRequest:true});
-}
-
-function onWatchdog(){
-  chrome.alarms.get('refresh', function(alarm) {
-    if (!alarm) {
-      console.log('Refresh alarm is missing.');
-      startRequest({scheduleRequest:true});
-    }
-  });
-}
-
-//Chrome Processes Running 
-chrome.tabs.onUpdated.addListener(checkForURL); // icon set
-chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
-chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
-
-chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
-  console.log('Got message' + JSON.stringify(msg));
-  chrome.tabs.getSelected(null, function(tab) {
-    if (msg.data == "loginPage"){
-      if (localStorage.loggedIn)
-      msuGet();
-      
-  
-      chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {
-        console.log(response.farewell);
-      });
-    }
-  });
+chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
+  if (msg.data == "optionsSave"){
+    chrome.alarms.clearAll();
+    bg.init();
+  }
+  else if (msg.data = "reqFeatures"){
+    sendResponse(nT.storage.config());
+  }
 });

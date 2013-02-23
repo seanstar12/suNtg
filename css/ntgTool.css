@@ -1,0 +1,21 @@
+select,
+input,
+textarea {
+  width: auto;
+}
+
+#screen{
+  display: none;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: #000000;
+  z-index: 1;
+}
+#load {
+ display:none;
+ z-index:2;
+}
+
