@@ -97,6 +97,7 @@ function suspend(){
     chrome.alarms.clearAll();
     chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'.ASPXAUTH'});
     chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASP.NET_SessionId'});
+    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASPSESSIONIDSQCCQCDD'});
     chrome.tabs.update({url:'https://ntg.missouristate.edu'});
     localStorage.loggedIn = 0;
 
