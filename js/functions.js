@@ -1,3 +1,21 @@
+Function.prototype.inheritsFrom = function( parentClassOrObject ){ 
+  if ( parentClassOrObject.constructor == Function ) 
+  { 
+    //Normal Inheritance 
+    this.prototype = new parentClassOrObject;
+    this.prototype.constructor = this;
+    this.prototype.parent = parentClassOrObject.prototype;
+  } 
+  else 
+  { 
+    //Pure Virtual Inheritance 
+    this.prototype = parentClassOrObject;
+    this.prototype.constructor = this;
+    this.prototype.parent = parentClassOrObject;
+  } 
+  return this;
+}
+
 function addScript(file){
   var s = document.createElement('script');
   s.src = chrome.extension.getURL(file);
@@ -80,9 +98,16 @@ function updateAllDates(){
     
 }
 
+/**
+ * Runs function based on URL, [Invert = True] the supplied function will NOT
+ * run on an ARRAY of pages. If [Invert = null] the supplied function will run
+ * on ONLY the supplied string page.
+ *
+ * @param {string|array} link - url/s of pages to run or not run on
+ * @param {callback} f - Function runs on pages based on invert
+ * @param {bool} invert - defaults to false, inverts the filter to apply to
+ */
 function urlCheck(link,f,invert) {
-// invert {t,f} ; link {array of links} ; f {function to run}
-// invert = true, f() will NOT run on ARRAY of pages 
   if (invert) {
     var count = 0;
     for (var i=0; i < link.length; i++) {      
@@ -143,12 +168,182 @@ function btnBar(){
   $('.Navigation').prepend(b);
 }
 
-jQuery.fn.center = function () {
-  this.css("position","absolute");
-  this.css("top", ( $(window).height() - this.height() ) / 2+$(window).scrollTop() + "px");
-  this.css("left", ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + "px");
-  return this;
+/**
+ * rename to createModal
+ * See also 
+ */
+
+var Modal = {
+
+  init: function() {
+    this.el = document.createElement('div');
+
+    this.el.innerHTML = '<div id="ntgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ntgModalLabel" aria-hidden="true">' +
+    '<div class="modal-header">' +
+    '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
+    '<h2 class="modal-title">Add Link Port</h2>' +
+    '<h4 class="modal-subTitle text-info">Add Link Port</h4>' +
+    '</div><div class="modal-body">' +
+    '</div><div class="modal-footer">' +
+    //buttons go here
+    '</div></div>';
+    this.el.childNodes;
+
+    document.body.appendChild(this.el);
+
+    this.title = this.el.querySelector('.modal-title');
+    this.subTitle = this.el.querySelector('.modal-subTitle');
+    this.content = this.el.querySelector('.modal-body');
+    this.footer = this.el.querySelector('.modal-footer');
+  },
+
+  show: function() {
+    $('#ntgModal').modal('show');
+  },
+
+  update: function(values) {
+    this.setTitle(values['title']);
+    this.setSubTitle(values['subTitle']);
+    this.setContent(values['content']);
+    this.setFooter(values['footer']);
+  },
+
+  setTitle: function(title) {
+    this.title.innerHTML= title;
+  },
+
+  setSubTitle: function(subTitle) {
+    this.subTitle.innerHTML= subTitle;
+  },
+  
+  setContent: function(content) {
+    this.content.innerHTML = content;
+  },
+
+  setFooter: function(footer) {
+    this.footer.innerHTML = footer;
+    styleButtons('#ntgModal .modal-footer');
+    this.setupDefaultButtons();
+  },
+
+  setupDefaultButtons: function() {
+    $('[value="Cancel"]', this.footer).attr('data-dismiss','modal');
+  }
 }
+
+/**
+ * @class
+ */
+function Form() {
+  
+}
+
+Form.prototype.setMode = function(mode) {
+  this.form.mode.value = mode;
+  this.form.submit();     
+}
+
+Form.prototype.pullValuesFromForm = function(form) {
+  var values = new Array(4);
+
+  // get values
+  values['title'] = $('.TableHeading', form).html();
+  values['subTitle'] = $('.NetHeading', form).html();
+  values['footer'] = '';
+  $($('[type="button"],[type="reset"]', form).get().reverse()).each(function(i, el) {
+    values['footer'] += $(el)[0].outerHTML;
+  });
+
+  // remove relevant values
+  form = form.replace($('.TableHeading', form).parent()[0].outerHTML, '');
+  form = form.replace($('.NetHeading', form).parent()[0].outerHTML, '');
+  $('[type="button"],[type="reset"]', form).each(function(i, el) {
+    form = form.replace($(el).parent().html(), '');
+  });
+
+  values['content'] = form;
+
+  return values;
+}
+
+
+/**
+ * @class
+ */
+function ModalForm() {
+
+};
+
+ModalForm.inheritsFrom(Form);
+
+ModalForm.prototype.getData = function(url, successCallback) {
+  $.ajax({
+    url: url,
+    success: successCallback
+  });
+}
+
+ModalForm.prototype.postData = function(url, data, successCallback) {
+  $.ajax({
+    type: 'POST',
+    url: url,
+    success: successCallback
+  });
+}
+
+
+/**
+ * @class
+ */
+function LinkPort(removeLink) {
+
+  this.removeLink = removeLink;
+  this.switchId = $('[name="ObjId"]')[0].value;
+  this.getData(
+     'LinkSelect.asp?LocalPort=' + this.switchId + '_ge%20_0_0_0',
+     this.SearchDevices.bind(this)
+  );
+  Modal.init();
+};
+
+LinkPort.inheritsFrom(ModalForm);
+
+LinkPort.prototype.SearchDevices = function(data) {
+  // create empty dom
+  var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = data;
+  tempDiv.childNodes;
+
+  var formValues = this.pullValuesFromForm(tempDiv.querySelector('.PageSmall').innerHTML); 
+
+  Modal.update(formValues);
+  
+  this.form = $('form', Modal.content);
+  var buttons = Modal.footer;
+
+  if (this.removeLink) {
+    $('input[type="button"]',buttons).first().remove();
+  }
+
+  Modal.show();
+}
+
+LinkPort.prototype.SearchDevices_Submit = function() {
+  
+}
+
+function styleButtons(query) {
+  if (!query) query = '';
+
+  $(query + ' [type="submit"],' + query + ' [type="button"]').addClass('btn');
+  $(query + ' [type="reset"]').addClass('btn btn-warning');
+
+  $(query + ' [value="Search"]').addClass('btn-primary')[0].setAttribute('type','submit');
+  $(query + ' [value="Cancel"]').addClass('btn btn-link');
+  $(query + ' [value="Remove Link"]').css('float','left').addClass('btn-danger');
+}
+
+
 
 //function btnBar(b){
 //  var barItems = [];

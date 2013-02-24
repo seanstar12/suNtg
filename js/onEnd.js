@@ -1,27 +1,47 @@
 //Pretty Buttons
-$('[type="reset"]').each(function(a){this.setAttribute('class','btn btn-warning');});
-$('[type="submit"]').each(function(a){this.setAttribute('class','btn');});
-$('[type="button"]').each(function(a){this.setAttribute('class','btn');});
-$('[value="Back"]').each(function(a){this.setAttribute('class','btn btn-inverse');});
-$('[value="Remove Link"]').each(function(a){this.setAttribute('class','btn btn-danger');});
-$('[value="Select"]').each(function(a){this.setAttribute('class','btn btn-primary');});
-$('[value="Finish"]').each(function(a){this.setAttribute('class','btn btn-success');});
+styleButtons();
 $('[size="13"]').each(function(a){this.setAttribute('size','20');});
 $('[name="dbdVerifyDt"]').each(function(a){this.setAttribute('size','10');});
 
-//Pretty link add
-$('[size="18"]').each(function(a){
+
+
+//Add Link Redux
+//  Add onclick to each button that launches
+//  an AJAX modal.
+$('[size="18"]').each(function(i, el){
+  var port = (this.name).replace('Link_', '');
+  
+
   this.setAttribute('style','');
   this.removeAttribute('readonly');
-  this.removeAttribute('type');
+  //this.removeAttribute('onclick');
+  this.setAttribute('type','button');
   this.setAttribute('class','btn btn-link');
   this.setAttribute('size','20');
   
-  if (this.value == 'add'){
+  if (this.value == 'add') {
     this.setAttribute('class', 'btn');
   }
+
+  el.removeAttribute('onclick');
+
+  $(el).click(function(e) {
+    if (el.value == 'add') {
+      form = new LinkPort(1); 
+      return;
+    }
+    form = new LinkPort();
+  });
 });
 
 
 urlCheck('PortList.asp',btnDates);
 urlCheck('PortList.asp',btnBar);
+
+document.body.removeAttribute('onload');
+jQuery.fn.center = function () {
+  this.css("position","absolute");
+  this.css("top", ( $(window).height() - this.height() ) / 2+$(window).scrollTop() + "px");
+  this.css("left", ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + "px");
+  return this;
+}

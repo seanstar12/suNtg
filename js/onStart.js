@@ -14,5 +14,6 @@ chrome.extension.sendMessage({data:'reqFeatures'}, function(rsp){
 addScript('js/jquery-1.8.3.min.js');
 addScript('js/bootstrap.js');
 addScript('js/functions.js');
+addScript('js/jquery.form.js');
 addCss('css/bootstrap.css');
 addCss('css/ntgTool.css');

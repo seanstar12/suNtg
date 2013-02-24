@@ -4,6 +4,11 @@ textarea {
   width: auto;
 }
 
+
+td.NoWrap input.btn {
+  width: 150px;
+}
+
 #screen{
   display: none;
   position: absolute;
@@ -19,3 +24,7 @@ textarea {
  z-index:2;
 }
 
+.modal h2,
+.modal h4 {
+  display: inline-block;
+}
