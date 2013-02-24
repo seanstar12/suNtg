@@ -117,7 +117,6 @@ nT.msu = {
     if (typeof(this.loggedInFinished) == "function") {
       this.loggedInFinished();
       delete this.loggedInFinished;
-      console.log(this.loggedInFinished);
     }
   },
 
