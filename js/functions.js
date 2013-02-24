@@ -173,77 +173,74 @@ function btnBar(){
  * See also 
  */
 
-var Modal = {
+function Modal() {
+  this.el = document.createElement('div');
 
-  init: function() {
-    this.el = document.createElement('div');
+  this.el.innerHTML = '<div id="ntgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ntgModalLabel" aria-hidden="true">' +
+  '<div class="modal-header">' +
+  '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
+  '<h2 class="modal-title">Add Link Port</h2>' +
+  '<h4 class="modal-subTitle text-info">Add Link Port</h4>' +
+  '</div><div class="modal-body">' +
+  '</div><div class="modal-footer">' +
+  //buttons go here
+  '</div></div>';
+  this.el.childNodes;
 
-    this.el.innerHTML = '<div id="ntgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ntgModalLabel" aria-hidden="true">' +
-    '<div class="modal-header">' +
-    '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
-    '<h2 class="modal-title">Add Link Port</h2>' +
-    '<h4 class="modal-subTitle text-info">Add Link Port</h4>' +
-    '</div><div class="modal-body">' +
-    '</div><div class="modal-footer">' +
-    //buttons go here
-    '</div></div>';
-    this.el.childNodes;
+  $(document.body).append(this.el);
 
-    document.body.appendChild(this.el);
+  this.title = this.el.querySelector('.modal-title');
+  this.subTitle = this.el.querySelector('.modal-subTitle');
+  this.content = this.el.querySelector('.modal-body');
+  this.footer = this.el.querySelector('.modal-footer');
+}
 
-    this.title = this.el.querySelector('.modal-title');
-    this.subTitle = this.el.querySelector('.modal-subTitle');
-    this.content = this.el.querySelector('.modal-body');
-    this.footer = this.el.querySelector('.modal-footer');
-  },
+Modal.prototype.show = function() {
+  $('#ntgModal').modal('show');
+}
 
-  show: function() {
-    $('#ntgModal').modal('show');
-  },
+Modal.prototype.update = function(values) {
+  this.setTitle(values['title']);
+  this.setSubTitle(values['subTitle']);
+  this.setContent(values['content']);
+  this.setFooter(values['footer']);
+}
 
-  update: function(values) {
-    this.setTitle(values['title']);
-    this.setSubTitle(values['subTitle']);
-    this.setContent(values['content']);
-    this.setFooter(values['footer']);
-  },
+Modal.prototype.setTitle = function(title) {
+  this.title.innerHTML = title;
+}
 
-  setTitle: function(title) {
-    this.title.innerHTML= title;
-  },
-
-  setSubTitle: function(subTitle) {
-    this.subTitle.innerHTML= subTitle;
-  },
+Modal.prototype.setSubTitle = function(subTitle) {
+  this.subTitle.innerHTML = subTitle;
+}
   
-  setContent: function(content) {
-    this.content.innerHTML = content;
-  },
+Modal.prototype.setContent = function(content) {
+  this.content.innerHTML = content;
+}
 
-  setFooter: function(footer) {
-    this.footer.innerHTML = footer;
-    styleButtons('#ntgModal .modal-footer');
-    this.setupDefaultButtons();
-  },
+Modal.prototype.setFooter = function(footer) {
+  this.footer.innerHTML = footer;
+  styleButtons('#ntgModal .modal-footer');
+  this.setupDefaultButtons();
+}
 
-  setupDefaultButtons: function() {
-    $('[value="Cancel"]', this.footer).attr('data-dismiss','modal');
-  }
+Modal.prototype.setupDefaultButtons = function() {
+  $('[value="Cancel"]', this.footer).attr('data-dismiss','modal');
 }
 
 /**
  * @class
  */
-function Form() {
+function NTGForm() {
   
 }
 
-Form.prototype.setMode = function(mode) {
+NTGForm.prototype.setMode = function(mode) {
   this.form.mode.value = mode;
-  this.form.submit();     
+  this.form.submit();
 }
 
-Form.prototype.pullValuesFromForm = function(form) {
+NTGForm.prototype.pullValuesFromForm = function(form) {
   var values = new Array(4);
 
   // get values
@@ -271,10 +268,9 @@ Form.prototype.pullValuesFromForm = function(form) {
  * @class
  */
 function ModalForm() {
-
 };
 
-ModalForm.inheritsFrom(Form);
+ModalForm.inheritsFrom(NTGForm);
 
 ModalForm.prototype.getData = function(url, successCallback) {
   $.ajax({
@@ -303,7 +299,7 @@ function LinkPort(removeLink) {
      'LinkSelect.asp?LocalPort=' + this.switchId + '_ge%20_0_0_0',
      this.SearchDevices.bind(this)
   );
-  Modal.init();
+  this.modal = new Modal();
 };
 
 LinkPort.inheritsFrom(ModalForm);
@@ -316,16 +312,16 @@ LinkPort.prototype.SearchDevices = function(data) {
 
   var formValues = this.pullValuesFromForm(tempDiv.querySelector('.PageSmall').innerHTML); 
 
-  Modal.update(formValues);
+  this.modal.update(formValues);
   
-  this.form = $('form', Modal.content);
-  var buttons = Modal.footer;
+  this.form = $('form', this.modal.content);
+  var buttons = this.modal.footer;
 
   if (this.removeLink) {
     $('input[type="button"]',buttons).first().remove();
   }
 
-  Modal.show();
+  this.modal.show();
 }
 
 LinkPort.prototype.SearchDevices_Submit = function() {
