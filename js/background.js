@@ -19,30 +19,32 @@ bg = {
       chrome.alarms.clearAll();
     }
     else if (alarm.name == 'keepAlive'){
-      nT.msu.loggedIn();
+      console.log('onAlarm: keepalive');
+      nT.msu.loggedIn(bg.onAlarmCallback);
 
-      setTimeout(function(){
-        if (localStorage.loggedIn == 1){
-          nT.msu.refresh();
-        } else if(localStorage.loggedIn == 0){
-          if (nT.storage.get('session','autoLogin') == 1){ 
-            nT.msu.logIn();
+    }
+  },
+
+  onAlarmCallback: function() {
+    if (localStorage.loggedIn == 1){
+      nT.msu.refresh();
+    } else if(localStorage.loggedIn == 0){
+      if (nT.storage.get('session','autoLogin') == 1){ 
+        nT.msu.logIn();
+      }
+      else {
+        chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
+          if (stuff[0] == null){ 
+            if (nT.storage.get('other','nag') == 1){
+              console.log('I need credentials to log you back in. Log in here:');
+              alert('You\'re MaLogged Out! Imma open up the login page for you. ');
+            }
+            if (nT.storage.get('session','newTab') == 1){
+              chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
+            }
           }
-          else {
-            chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
-              if (stuff[0] == null){ 
-                if (nT.storage.get('other','nag') == 1){
-                  console.log('I need credentials to log you back in. Log in here:');
-                  alert('You\'re MaLogged Out! Imma open up the login page for you. ');
-                }
-                if (nT.storage.get('session','newTab') == 1){
-                  chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
-                }
-              }
-            });
-          }
-        }
-      }, 2000);
+        });
+      }
     }
   },
 

@@ -40,8 +40,7 @@ nT.msu = {
           success: function(req) { 
             //msuGetProcess(req); 
             var tempDiv = document.createElement('div');
-            //tempDiv.innerHTML = req.replace (/<img(.|\s)*?\/>/g, '');
-            tempDiv.innerHTML = req;
+            tempDiv.innerHTML = req.replace (/<img(.|\s)*?\/>/g, '');
             tempDiv.childNodes;
             // Got viewstate && got event validation. Log in time
             $.ajax({
@@ -74,7 +73,7 @@ nT.msu = {
       }
     }
     else {
-      console.log('Login Count TOO High.');
+      console.log('Login Count TOO High. Fix it later');
     }
   },
 
@@ -93,30 +92,35 @@ nT.msu = {
     });
   },
 
-  loggedIn: function (){
+  loggedIn: function (callback){
+    this.loggedInFinished = callback;
     $.ajax({
       type: 'GET',
       url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-      success: function(data){
-        var tmp = "";
-        var temp = "";
-        temp = data.replace(/<img(.|\s)*?\/>/g, '');
-        tmp.innerHTML = temp;
-        tmp.childNodes;
-        //console.log($('#ctl00_MainContent_UserID',tmp));
-        if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
-          localStorage.loggedIn = 0;
-          console.log(localStorage.loggedIn);
-          return false;
-        } else  {
-          localStorage.loggedIn = 1;
-          console.log(localStorage.loggedIn);
-          return true;
-        }
-      
-      }
+      context: this,
+      success: this.loggedInCallBack
     });
   },
+
+  loggedInCallBack: function(data) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = data.replace(/<img(.|\s)*?\/>/g, '');
+    tmp.childNodes;
+    if ($('#ctl00_MainContent_ImageButton1',tmp).length > 0 ) {
+      localStorage.loggedIn = 0;
+      console.log(localStorage.loggedIn);
+    } else  {
+      localStorage.loggedIn = 1;
+      console.log(localStorage.loggedIn);
+    }
+
+    if (typeof(this.loggedInFinished) == "function") {
+      this.loggedInFinished();
+      delete this.loggedInFinished;
+      console.log(this.loggedInFinished);
+    }
+  },
+
   logOut: function(){
     //removes auth cookies
     chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'.ASPXAUTH'});
