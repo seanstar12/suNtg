@@ -4,6 +4,8 @@ chrome.extension.sendMessage({data:'reqFeatures'}, function(rsp){
   }
   // Login Page > Force autocomplte on 
   if ((document.location.pathname.toLowerCase()).indexOf('/login/login.aspx') > -1){
+      document.title = "OHai";
+      document.body.innerHTML = ""; 
     if (rsp.formAuto == 1){
       document.forms.aspnetForm.setAttribute('autocomplete','on'); 
       if (rsp.debug == 1) console.log('Forcing autocomplete On.');

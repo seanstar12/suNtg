@@ -23,9 +23,9 @@ bg = {
         console.log(decodeURIComponent((tab.url).split('ReturnUrl=')[1]));
         tabArgs[1] = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
       }
-      if (nT.storage.get('session','autoLogin') == 1){
+     // if (nT.storage.get('session','autoLogin') == 1){
         nT.msu.logIn(bg.pageRefresh(tabArgs));
-      }
+      //}
     }
   },
 

@@ -34,7 +34,8 @@
     "css/bootstrap.css",
     "css/clear.css",
     "css/ntgTool.css",
-    "images/glyphicons-halflings-white.png"
+    "images/glyphicons-halflings-white.png",
+    "images/cubone.png"
   ],
   "content_scripts": [
     {
