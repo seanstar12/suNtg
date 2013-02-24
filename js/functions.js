@@ -173,7 +173,9 @@ function btnBar(){
  * See also 
  */
 
-function Modal() {
+function Modal(closeCallback) {
+  this.closeCallback = closeCallback;
+
   this.el = document.createElement('div');
 
   this.el.innerHTML = '<div id="ntgModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ntgModalLabel" aria-hidden="true">' +
@@ -193,6 +195,8 @@ function Modal() {
   this.subTitle = this.el.querySelector('.modal-subTitle');
   this.content = this.el.querySelector('.modal-body');
   this.footer = this.el.querySelector('.modal-footer');
+
+  $('#ntgModal').on('hidden',this.destroy);
 }
 
 Modal.prototype.show = function() {
@@ -226,6 +230,16 @@ Modal.prototype.setFooter = function(footer) {
 
 Modal.prototype.setupDefaultButtons = function() {
   $('[value="Cancel"]', this.footer).attr('data-dismiss','modal');
+}
+
+Modal.prototype.destroy = function() {
+  $('#ntgModal').remove();
+  delete this.el;
+  delete this.title;
+  delete this.subTitle;
+  delete this.content;
+  delete this.footer;
+  //this.closeCallback();
 }
 
 /**
@@ -287,6 +301,10 @@ ModalForm.prototype.postData = function(url, data, successCallback) {
   });
 }
 
+ModalForm.prototype.destroy = function() {
+  delete this.modal;
+}
+
 
 /**
  * @class
@@ -299,7 +317,7 @@ function LinkPort(removeLink) {
      'LinkSelect.asp?LocalPort=' + this.switchId + '_ge%20_0_0_0',
      this.SearchDevices.bind(this)
   );
-  this.modal = new Modal();
+  this.modal = new Modal(this.destroy);
 };
 
 LinkPort.inheritsFrom(ModalForm);
@@ -318,7 +336,7 @@ LinkPort.prototype.SearchDevices = function(data) {
   var buttons = this.modal.footer;
 
   if (this.removeLink) {
-    $('input[type="button"]',buttons).first().remove();
+    $('.btn-danger',buttons).first().remove();
   }
 
   this.modal.show();
