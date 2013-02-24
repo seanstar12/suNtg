@@ -8,16 +8,31 @@ bg = {
   },
   
   authPageCheck: function(tabId, changeInfo, tab){
-    if (tab.url.indexOf('Login/login.aspx') > -1 ) {
-      console.log("AUTHPAGE!");
-    //  if (nT.storage.get('session','autoLogin') == 1){
-        nT.msu.logIn(bg.pageRefresh);
-    //  }
+    var temp = tab.url.toLowerCase();
+    var siteUrl = 'https://ntg.missouristate.edu'
+    if (temp.indexOf('login/login.aspx') > -1 ) {
+      var tabArgs = [];
+      
+      tabArgs[0] = tabId;
+      if ((tab.url).indexOf('URL=') > 0){
+        console.log(tab.url);
+        tabArgs[1] = {url:siteUrl+decodeURIComponent((tab.url).split('URL=')[1])};
+      } 
+      else if ((tab.url).indexOf('Url=') > 0){
+        console.log(tab.url);
+        console.log(decodeURIComponent((tab.url).split('ReturnUrl=')[1]));
+        tabArgs[1] = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
+      }
+      if (nT.storage.get('session','autoLogin') == 1){
+        nT.msu.logIn(bg.pageRefresh(tabArgs));
+      }
     }
   },
 
-  pageRefresh: function(){
+  pageRefresh: function(tabArgs){
     console.log('pageRefresh');
+    //console.log(tabArgs);
+    chrome.tabs.update(tabArgs[0],tabArgs[1]);
   },
 
   onAlarm: function(alarm){
