@@ -339,7 +339,7 @@ function styleButtons(query) {
   $(query + ' [type="reset"]').addClass('btn btn-warning');
 
   $(query + ' [value="Search"]').addClass('btn-primary')[0].setAttribute('type','submit');
-  $(query + ' [value="Cancel"]').addClass('btn btn-link');
+  $(query + ' [value="Cancel"]').addClass('btn btn-link').removeAttr('onclick');
   $(query + ' [value="Remove Link"]').css('float','left').addClass('btn-danger');
 }
 
