@@ -1,16 +1,23 @@
 var bg = {};
 bg = {
 
-  checkUrl: function(tabId, changeInfo, tab){
+  setIcon: function(tabId, changeInfo, tab){
     if (tab.url.indexOf('ntg.missouristate') > -1) {
       chrome.pageAction.show(tabId);
     }
   },
   
-  checkAuthPage: function(){
-    if (tab.url.indexOf(('login/login.aspx').toLowerCase()) > -1 ) {
-      console.log(tab.url);
+  authPageCheck: function(tabId, changeInfo, tab){
+    if (tab.url.indexOf('Login/login.aspx') > -1 ) {
+      console.log("AUTHPAGE!");
+    //  if (nT.storage.get('session','autoLogin') == 1){
+        nT.msu.logIn(bg.pageRefresh);
+    //  }
     }
+  },
+
+  pageRefresh: function(){
+    console.log('pageRefresh');
   },
 
   onAlarm: function(alarm){
@@ -21,7 +28,6 @@ bg = {
     else if (alarm.name == 'keepAlive'){
       console.log('onAlarm: keepalive');
       nT.msu.loggedIn(bg.onAlarmCallback);
-
     }
   },
 
@@ -116,7 +122,8 @@ function suspend(){
 
 var debug = nT.storage.get('other','debug');
 
-chrome.tabs.onUpdated.addListener(bg.checkUrl);
+chrome.tabs.onUpdated.addListener(bg.setIcon);
+chrome.tabs.onUpdated.addListener(bg.authPageCheck);
 chrome.pageAction.onClicked.addListener(suspend);
 chrome.runtime.onStartup.addListener(onStartup);
 chrome.runtime.onInstalled.addListener(onInstalled);

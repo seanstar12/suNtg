@@ -32,11 +32,14 @@ nT.storage = {
 };
 
 nT.msu = {
-  logIn: function (){
+  logIn: function (callback){
+    this.logInCallback = callback;
+    console.log(callback);
     if (localStorage.loginCount < 10){
       if (nT.storage.get('credentials','username') != null && nT.storage.get('credentials','password') != null){
         $.ajax({
           url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+          context: this,
           success: function(req) { 
             //msuGetProcess(req); 
             var tempDiv = document.createElement('div');
@@ -47,6 +50,7 @@ nT.msu = {
               type: 'POST',
               xhrFields: { withCredentials: true },
               url: 'https://ntg.missouristate.edu/Login/Login.aspx',
+              context: this,
               data: {
                 '__LASTFOCUS':'',
                 '__VIEWSTATE':tempDiv.querySelector('#__VIEWSTATE').value,
@@ -63,6 +67,11 @@ nT.msu = {
                 console.log('Logged In');
                 localStorage.loggedIn = 1;
                 localStorage.loginCount ++;
+    
+                if (typeof(this.logInCallback) == "function") {
+                  this.logInCallback();
+                  delete this.logInCallback;
+                }
               }
             });
           }
