@@ -1,6 +1,6 @@
 {
-  "name": "NTG Tool -- Redux",
-  "version": "0.2.0",
+  "name": "NTG Tool",
+  "version": "0.2.1",
   "manifest_version": 2,
   "description": "Helpful functions for the NTG domain.",
   "options_page": "options.html",
