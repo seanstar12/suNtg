@@ -88,7 +88,6 @@ function updateAllDates(){
     setTimeout(function(){
       time += 1.25; 
       $('.bar').attr('style','width:'+ time +'%');
-      console.log(timeout);
       timeout++;
       if (timeout == 80) {
         window.location.reload();
@@ -407,7 +406,54 @@ function parseClick(arg){
   return  {'xtag':arg[0],'bldg':arg[1],'closet':arg[2],'objId':arg[3]};
 }
 
+var ntg = {};
+ntg.db = {};
 
+ntg.db.open = null;
+
+ntg.db.open = function() {
+  var version = 1;
+  var request = ntg.open('devices',version);
+
+  request.onupgradeneeded = function(e){
+    var db = e.target.result;
+    e.target.transaction.onerror = ntg.onerror;
+
+    if (db.objectStoreNames.contains('devices')){
+      db.deleteObjectStore('devices');
+    }
+
+    var store = db.createObjectStore('devices', {keyPath: 'timeStamp'});
+  };
+
+  request.onsuccess = function(e) {
+    ntg.db = e.target.result;
+  };
+
+  request.onerror = ntg.onerror;
+};
+
+ntg.addDevice = function(string) {
+  var db = ntg.db;
+  var trans = db.transaction (['devices'], 'readwrite');
+  var store = trans.objectStore('devices');
+  var request = store.put({
+    'text': string,
+    'timeStamp': newDate().getTime() 
+  });
+
+  request.onsuccess = function(e) {
+    ntg.getAllDevices();
+  };
+
+  request.onerror = function(e) {
+    console.log(e.value);
+  };
+};
+
+ntg.getAllDevices = function() {
+    //var devices = document.get
+}
 
 //function btnBar(b){
 //  var barItems = [];

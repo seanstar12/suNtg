@@ -11,28 +11,29 @@ bg = {
     var temp = tab.url.toLowerCase();
     var siteUrl = 'https://ntg.missouristate.edu'
     if (temp.indexOf('login/login.aspx') > -1 ) {
-      var tabArgs = [];
+      var tabArgs = null;
       
-      tabArgs[0] = tabId;
       if ((tab.url).indexOf('URL=') > 0){
-        console.log(tab.url);
-        tabArgs[1] = {url:siteUrl+decodeURIComponent((tab.url).split('URL=')[1])};
+        if (debug == 1) console.log('Login.aspx: New Url='+decodeURIComponent((tab.url).split('URL=')[1]));
+        tabArgs = {url:siteUrl+decodeURIComponent((tab.url).split('URL=')[1])};
       } 
       else if ((tab.url).indexOf('Url=') > 0){
-        console.log(tab.url);
-        console.log(decodeURIComponent((tab.url).split('ReturnUrl=')[1]));
-        tabArgs[1] = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
+        if (debug == 1) console.log('Login.aspx: New Url='+decodeURIComponent((tab.url).split('ReturnUrl=')[1]));
+        tabArgs = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
       }
-      if (nT.storage.get('session','autoLogin') == 1){
-        nT.msu.logIn(bg.pageRefresh(tabArgs));
-      }
+
+      if (autoLogin == 1) nT.msu.logIn(bg.pageRefresh(tabArgs));
+    }
+    if (temp.indexOf('accessdenied.aspx') > -1 ) {
+      if (debug == 1) console.log('AccessDenied.aspx: New Url='+((tab.url).split('Referer=')[1]));
+      bg.pageRefresh({url:siteUrl+((tab.url).split('Referer=')[1])});
     }
   },
 
   pageRefresh: function(tabArgs){
     console.log('pageRefresh');
     //console.log(tabArgs);
-    chrome.tabs.update(tabArgs[0],tabArgs[1]);
+    chrome.tabs.update(tabArgs);
   },
 
   onAlarm: function(alarm){
@@ -70,6 +71,9 @@ bg = {
   },
 
   init: function(){
+    var debug = nT.storage.get('other','debug');
+    var autoLogin = nT.storage.get('session','autoLogin');
+    
     localStorage.loginCount = 0;
     if (localStorage.settings == null){
       nT.storage.defaults();
@@ -95,6 +99,7 @@ bg = {
 }
 
 function onInstalled(details){
+  
   if (details.reason == "install"){
     nT.storage.defaults();
     chrome.tabs.create({url:'options.html'});
@@ -111,16 +116,16 @@ function onInstalled(details){
 }
 
 function onStartup(){
-  console.log('Starting NTG Tool');
+  if (debug == 1) console.log('Starting NTG Tool');
   bg.init();
 }
 
 function suspend(){
   if (localStorage.loggedIn == 1){
     chrome.alarms.clearAll();
-    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'.ASPXAUTH'});
-    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASP.NET_SessionId'});
-    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASPSESSIONIDSQCCQCDD'});
+    
+    nT.msu.logOut();
+     
     chrome.tabs.update({url:'https://ntg.missouristate.edu'});
     localStorage.loggedIn = 0;
 
@@ -135,7 +140,9 @@ function suspend(){
   }
 }
 
+
 var debug = nT.storage.get('other','debug');
+var autoLogin = nT.storage.get('session','autoLogin');
 
 chrome.tabs.onUpdated.addListener(bg.setIcon);
 chrome.tabs.onUpdated.addListener(bg.authPageCheck);

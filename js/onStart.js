@@ -11,7 +11,11 @@ chrome.extension.sendMessage({data:'reqFeatures'}, function(rsp){
       if (rsp.debug == 1) console.log('Forcing autocomplete On.');
     }
   }
+  if ((document.location.pathname.toLowerCase()).indexOf('accessdenied.aspx') > -1){
+    document.body.innerHTML= "";
+  }
 });
+
 
 addScript('js/jquery-1.8.3.min.js');
 addScript('js/jquery-ui.min.js');

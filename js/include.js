@@ -131,8 +131,11 @@ nT.msu = {
 
   logOut: function(){
     //removes auth cookies
-    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'.ASPXAUTH'});
-    chrome.cookies.remove({url:'https://ntg.missouristate.edu',name:'ASP.NET_SessionId'});
+    chrome.cookies.getAll({domain: 'ntg.missouristate.edu'}, function(e) {
+      e.forEach(function(el){
+        chrome.cookies.remove({url: 'https://' + el.domain, name: el.name });
+      });
+    });
   }
 };
 
