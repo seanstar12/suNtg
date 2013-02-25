@@ -358,6 +358,56 @@ function styleButtons(query) {
 }
 
 
+/**
+ * Gets list of devices with useful information. Returns object
+ * Ran 'var temp = getDevices();' on  https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsSMSUTag=* 
+ * dumped that to js/db.json. getDevices uses parse list and parse click to return an array with device objects inside.
+ * 
+ */
+function getDevices(){ 
+  ob = [];
+  $('.NetHeading').remove();
+  
+  var list = $('tr');
+ 
+  return parseList(list);
+}
+
+
+/**
+ * Used for parsing an array of the <tr> on EquipmentList.asp. Returns object
+ *
+ * @param {array} arg - attr(onclick) --  ('xtag', 'bldg', 'closet', 'objId')
+ */
+function parseList(tRow){ 
+  for(var i=0; i< tRow.length; i++){
+    var temp = {};
+    temp = parseClick((tRow[i].getAttribute('onclick').slice('10','-1')).split(', ')); 
+    //console.log($('td',tRow));
+    temp.ipAddr = ($('td',tRow[i])[5].innerText); 
+    temp.dns = ($('td',tRow[i])[7].innerText); 
+    temp.device = ($('td',tRow[i])[9].innerText);
+    ob.push(temp);
+  }
+  return ob;
+}
+
+/**
+ * Used for parsing 'onclick()' data on EquipmentList.asp. Returns object
+ *
+ * @param {array} arg - attr(onclick) --  ('xtag', 'bldg', 'closet', 'objId')
+ */
+function parseClick(arg){
+  arg.shift();
+  for (var i = 0; i < arg.length; i++){
+    if (i < 3){
+      arg[i] = arg[i].slice('1','-1');
+    }
+  }
+  return  {'xtag':arg[0],'bldg':arg[1],'closet':arg[2],'objId':arg[3]};
+}
+
+
 
 //function btnBar(b){
 //  var barItems = [];

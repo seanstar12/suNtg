@@ -58,7 +58,7 @@ bg = {
           if (stuff[0] == null){ 
             if (nT.storage.get('other','nag') == 1){
               console.log('I need credentials to log you back in. Log in here:');
-              alert('You\'re MaLogged Out! Imma open up the login page for you. ');
+              alert('You\'re Logged Out! Imma open up the login page for you. ');
             }
             if (nT.storage.get('session','newTab') == 1){
               chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
