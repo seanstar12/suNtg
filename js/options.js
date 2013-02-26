@@ -69,8 +69,10 @@ function init() {
         $('#'+item)[0].checked = (temp[property][item] == 1) ? true : false;
         if (temp[property][item] == 1){
           if (item == "keepAlive") $('#keepGroup').fadeIn(0); 
-          else if (item == "lockScreen") $('#lockAfter').fadeIn(0); 
           else if (item == "enBgUrl") $('#bgUrlCont').fadeIn(0);
+          else if (item == "debug") $('.debug').removeAttr('disabled');
+          else if (item == "idle") $('.idle').removeAttr('disabled');
+          else if (item == "autoLogin") $('.autoLogin').fadeIn(0);
         }
       }
       else {
@@ -89,10 +91,43 @@ function init() {
     else $('#keepGroup').fadeOut(250);
   });
   
-  $('#lockScreen').click(function() {
+  $('#debug').click(function() {
     var box = $(this);
-    if (box.is (':checked')) $('#lockAfter').fadeIn(250);
-    else $('#lockAfter').fadeOut(250);
+    if (box.is (':checked')) {
+      $('.debug').removeAttr('disabled');
+    }
+    else { 
+      $('.debug').attr('disabled','true');
+      if ($('#keepAliveRate').val() < 5){
+        $('#keepAliveRate').val('7');
+      }
+      if ($('#idleTimeout').val() < 60){
+        $('#idleTimeout').val('60');
+      }
+      if ($('#idleCheckRate').val() < 120000){
+        $('#idleCheckRate').val('120000');
+      }
+    }
+  });
+
+  $('#idle').click(function() {
+    var box = $(this);
+    if (box.is (':checked')){
+      $('.idle').removeAttr('disabled');
+    }
+    else {
+      $('.idle').attr('disabled','true');
+    }
+  });
+  
+  $('#autoLogin').click(function() {
+    var box = $(this);
+    if (box.is (':checked')){
+      $('.autoLogin').fadeIn(250);
+    }
+    else {
+      $('.autoLogin').fadeOut(250);
+    }
   });
   
   $('#enBgUrl').click(function() {

@@ -27,14 +27,14 @@ nT.storage = {
   },
         // Set default settings file. 
   defaults: function(){
-    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","lockScreen":"0","lockScreenTimeout":"0","autoLogin":"0","newTab":"1"},"credentials":{"username":"","password":""}, "other":{"nag":"1","debug":"0","debugTime":"3"}}';
+    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"1"},"credentials":{"username":"","password":""}, "other":{"nag":"1","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","debug":"0"}}';
   }
 };
 
 nT.msu = {
   logIn: function (callback){
     this.logInCallback = callback;
-    console.log(callback);
+    //console.log(callback);
     if (localStorage.loginCount < 10){
       if (nT.storage.get('credentials','username') != null && nT.storage.get('credentials','password') != null){
         $.ajax({
@@ -64,7 +64,9 @@ nT.msu = {
               },
               success: function (){
                 delete tempDiv;
-                console.log('Logged In');
+                if (nT.storage.get('other','debug') == 1) {
+                  console.log('Login: Logged In successfully');
+                }
                 localStorage.loggedIn = 1;
                 localStorage.loginCount ++;
     
@@ -107,24 +109,29 @@ nT.msu = {
       type: 'GET',
       url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
       context: this,
-      success: this.loggedInCallBack
+      success: this.loggedInProcess
     });
   },
 
-  loggedInCallBack: function(data) {
+  loggedInProcess: function(data) {
+    var cbVar = '';
     var tmp = document.createElement('div');
     tmp.innerHTML = data.replace(/<img(.|\s)*?\/>/g, '');
     tmp.childNodes;
+
     if ($('#ctl00_MainContent_ImageButton1',tmp).length > 0 ) {
       localStorage.loggedIn = 0;
-      console.log(localStorage.loggedIn);
+      cbVar = 0;
+      if (nT.storage.get('other','debug') == 1) console.log('LoggedIn: User is logged out');
     } else  {
       localStorage.loggedIn = 1;
-      console.log(localStorage.loggedIn);
+      cbVar = 1;
+      if (nT.storage.get('other','debug') == 1) console.log('LoggedIn: User is logged in');
     }
+    delete tmp;
 
     if (typeof(this.loggedInFinished) == "function") {
-      this.loggedInFinished();
+      this.loggedInFinished(cbVar);
       delete this.loggedInFinished;
     }
   },

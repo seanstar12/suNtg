@@ -38,15 +38,17 @@
         <section>
           <h3>Credentials</h3>
           <div class="checkbox">
-            <input type="checkbox" name="autoLogin" id="autoLogin">
+            <input type="checkbox" name="autoLogin" id="autoLogin" >
             <label for="autoLogin">&emsp;Automatic Login</label>
           </div>
+          <div class = "autoLogin" style="display:none;">
           <div style="margin: 10px 0;">
-            <label for="username">Username:&emsp;</label><input type="text" name="username" id="username"/><br/>
+            <label for="username">Username:&emsp;</label><input type="text" name="username" id="username" /><br/>
           </div>
           <div style="margin: 10px 0;">
-            <label for="password">Password:&emsp;&thinsp;</label><input type="password" name="password" id="password"/><br/>
+            <label for="password">Password:&emsp;&thinsp;</label><input type="password" name="password" id="password" /><br/>
           </div>
+        </div>
         </section>
         <section>
           <h3>Session</h3> 
@@ -64,28 +66,22 @@
                 <option value="60">1 hour</option>
                 <option value="0" >Never</option>
               </select>
-              <label for="keepAliveTimeout">&emsp;Timeout Duration</label>
-              <div class="checkbox">
-                <input type="checkbox" name="lockScreen" id="lockScreen">
-                <label for="lockScreen">
-                  &emsp;Lock the screen after...
-                </label>
-              </div>
-                <div id="lockAfter" style="display:none;">
-                  <select name="lockScreenTimeout" id="lockScreenTimeout" type="select">
-                    <option value="10">10 min</option>
-                    <option value="15">15 min</option>
-                    <option value="30">30 min</option>
-                    <option value="45">45 min</option>
-                    <option value="60">1 hour</option>
-                    <option value="0" >Never</option>
-                  </select>
-                </div>
+              <label for="keepAliveTimeout">&emsp;Timeout Duration</label><br /><br />
+              <select name="keepAliveRate" id="keepAliveRate" type="select">
+                <option value=".2" disabled class="debug">.2 Min</option>
+                <option value=".5" disabled class="debug">.5 Min</option>
+                <option value="1" disabled class="debug">1 Min</option>
+                <option value="2" disabled class="debug">2 Min</option>
+                <option value="3" disabled class="debug">3 Min</option>
+                <option value="5">5 Min</option>
+                <option value="6">6 Min</option>
+                <option value="7">7 Min</option>
+                <option value="8">8 Min</option>
+                <option value="9">9 Min</option>
+                <option value="10">10 Min</option>
+              </select>
+              <label for="keepAliveRate">&emsp;GET page rate (Server logs you out after ~10 min)</label><br />
             </section>
-            <div class="checkbox">
-              <input type="checkbox" name="moarStuff" id="moarStuff">
-              <label for="moarStuff">&emsp;Moar Stuff</label>
-            </div>
             <div class="checkbox">
               <input type="checkbox" name="formAuto" id="formAuto">
               <label for="formAuto">&emsp;ATTEMPT to Force form autofill (sometimes it just doesn't wanna.)</label>
@@ -95,25 +91,38 @@
               <label for="nag">&emsp;Naggy Messages</label>
             </div>
             <div class="checkbox">
-              <input type="checkbox" name="cleanTheme" id="cleanTheme">
-              <label for="cleanTheme">&emsp;Clean Theme</label>
-            </div>
-            <div class="checkbox">
               <input type="checkbox" name="newTab" id="newTab">
               <label for="newTab">&emsp;Open Login Page if Logged Out</label>
             </div>
             <div class="checkbox">
+              <input type="checkbox" name="idle" id="idle">
+              <label for="idle">&emsp;Experimental Idle Feature (NOT complete -- Reload after change)</label>
+            </div>
+            <section>
+              <select name="idleTimeout" id="idleTimeout" type="select" disabled class="idle">
+                <option value="15" disabled class="debug">15 sec</option>
+                <option value="30" disabled class="debug">30 sec</option>
+                <option value="60">1 min</option>
+                <option value="120">2 min</option>
+                <option value="180">3 min</option>
+                <option value="300" >5 min</option>
+              </select>
+              <label for="idleTimeout">&emsp;Idle Timeout Duration (Time before Chrome goes idle)</label><br /><br />
+              <select name="idleCheckRate" id="idleCheckRate" type="select" disabled class="idle">
+                <option value="5000" disabled class="debug">5 sec</option>
+                <option value="15000" disabled class="debug">15 sec</option>
+                <option value="30000" disabled class="debug">30 sec</option>
+                <option value="60000" disabled class="debug">1 min</option>
+                <option value="120000">2 Min</option>
+                <option value="180000">3 Min</option>
+                <option value="300000">5 Min</option>
+              </select>
+              <label for="idleCheckRate">&emsp;Rate at which background page polls the idle notifier</label>
+            </section>
+            <div class="checkbox">
               <input type="checkbox" name="debug" id="debug">
               <label for="debug">&emsp;Debug Enable</label>
             </div>
-            <select name="debugTime" id="debugTime" type="select">
-              <option value=".2">.2 Min</option>
-              <option value=".5">.5 Min</option>
-              <option value="1">1 Min</option>
-              <option value="2">2 Min</option>
-              <option value="3">3 Min</option>
-            </select>
-            <label for="debugTime">&emsp;Debug TimeSwap</label>
           </div>
         </section>
         <div class="controls">

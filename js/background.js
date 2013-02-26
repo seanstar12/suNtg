@@ -42,15 +42,14 @@ bg = {
       chrome.alarms.clearAll();
     }
     else if (alarm.name == 'keepAlive'){
-      console.log('onAlarm: keepalive');
       nT.msu.loggedIn(bg.onAlarmCallback);
     }
   },
 
-  onAlarmCallback: function() {
-    if (localStorage.loggedIn == 1){
+  onAlarmCallback: function(value) {
+    if (value == 1){
       nT.msu.refresh();
-    } else if(localStorage.loggedIn == 0){
+    } else if(value == 0){
       if (nT.storage.get('session','autoLogin') == 1){ 
         nT.msu.logIn();
       }
@@ -70,10 +69,24 @@ bg = {
     }
   },
 
+  loggedInCallBack: function(value){
+    if(value == 0) nT.msu.logIn();
+  },
+
   init: function(){
     var debug = nT.storage.get('other','debug');
     var autoLogin = nT.storage.get('session','autoLogin');
-    
+    //chrome.tabs.create({url:'background.html'});
+    if (nT.storage.get('other','idle') == 1) {
+      clearInterval(1);
+      clearInterval(2);
+
+      var t = Number(nT.storage.get('other','idleCheckRate'));
+      document.addEventListener('DOMContentLoaded', setInterval(checkState, t), false);
+      chrome.idle.onStateChanged.addListener(function(state) {
+        if (debug == 1) console.log('idle.onStateChangedstate: '+state);
+      });
+    }
     localStorage.loginCount = 0;
     if (localStorage.settings == null){
       nT.storage.defaults();
@@ -84,15 +97,10 @@ bg = {
           {when:(Date.now() + (nT.storage.get('session','keepAliveTimeout')*60000))} 
         );
       }
-      if (nT.storage.get('other','debug') == 1) {
-        chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('other','debugTime'))});
-      }
-      else {
-        chrome.alarms.create('keepAlive',{periodInMinutes: 6});
-      }
+      chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('session','keepAliveRate'))});
     }
-    if (nT.storage.get('session','autoLogin') == 1) {
-      nT.msu.logIn();
+    if (autoLogin == 1) {
+      nT.msu.loggedIn(bg.loggedInCallBack);
     }
     if(debug == 1) chrome.alarms.getAll(function(alarms){console.log(alarms);});
   }
@@ -101,8 +109,10 @@ bg = {
 function onInstalled(details){
   
   if (details.reason == "install"){
-    nT.storage.defaults();
-    chrome.tabs.create({url:'options.html'});
+    if (localStorage.settings == null){
+      nT.storage.defaults();
+      chrome.tabs.create({url:'options.html'});
+    }
   }
   else if (details.reason == "update"){
     chrome.alarms.clearAll();
@@ -123,12 +133,14 @@ function onStartup(){
 function suspend(){
   if (localStorage.loggedIn == 1){
     chrome.alarms.clearAll();
-    
-    nT.msu.logOut();
+    if (nT.storage.get('other','idle') == 1) {
+      clearInterval(1);   //Used for 'DOMContentLoaded' setInterval(checkState) 
+    }
+    nT.msu.logOut(); 
      
     chrome.tabs.update({url:'https://ntg.missouristate.edu'});
     localStorage.loggedIn = 0;
-
+    
     console.log('Alarms are gone and you\'re logged out!');
   }
   else if (localStorage.loggedIn == 0){
@@ -140,6 +152,13 @@ function suspend(){
   }
 }
 
+function checkState(){
+  chrome.idle.queryState(Number(nT.storage.get('other','idleTimeout')), function(e){
+    if (nT.storage.get('other','debug') == 1) {
+      console.log('Chrome State: '+e);
+    }
+  });
+}
 
 var debug = nT.storage.get('other','debug');
 var autoLogin = nT.storage.get('session','autoLogin');
@@ -161,3 +180,5 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
     sendResponse(nT.storage.config());
   }
 });
+
+
