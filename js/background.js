@@ -1,6 +1,6 @@
 var bg = {};
 bg = {
-
+  
   setIcon: function(tabId, changeInfo, tab){
     if (tab.url.indexOf('ntg.missouristate') > -1) {
       chrome.pageAction.show(tabId);
@@ -161,8 +161,8 @@ function checkState(){
   });
 }
 
-//var debug = nT.storage.get('other','debug');
-//var autoLogin = nT.storage.get('session','autoLogin');
+var debug = nT.storage.get('other','debug');
+var autoLogin = nT.storage.get('session','autoLogin');
 
 chrome.tabs.onUpdated.addListener(bg.setIcon);
 chrome.tabs.onUpdated.addListener(bg.authPageCheck);
