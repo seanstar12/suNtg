@@ -37,7 +37,9 @@ bg = {
   },
 
   onAlarm: function(alarm){
-    if(debug ==1) console.log('onAlarm:> '+JSON.stringify(alarm));
+    if(debug ==1) {
+      console.log('onAlarm:> '+JSON.stringify(alarm));
+    }
     if (alarm.name == 'keepAliveTimed'){
       chrome.alarms.clearAll();
     }

@@ -95,7 +95,9 @@ nT.msu = {
       url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+Date.now(),
       success: function () {
         var date = new Date();
-        console.log('Refresh with success: '+ date.toTimeString());
+        if (nT.storage.get('other','debug') == 1) {
+          console.log('Refresh with success: '+ date.toTimeString());
+        }
       },
       error: function(){
         localStorage.requestFailureCount ++;
