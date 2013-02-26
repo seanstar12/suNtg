@@ -108,13 +108,7 @@ bg = {
 
 function onInstalled(details){
   
-  if (details.reason == "install"){
-    if (localStorage.settings == null){
-      nT.storage.defaults();
-      chrome.tabs.create({url:'options.html'});
-    }
-  }
-  else if (details.reason == "update"){
+  if (details.reason == "update"){
     chrome.alarms.clearAll();
     bg.init();
   } 
@@ -122,7 +116,14 @@ function onInstalled(details){
     chrome.alarms.clearAll();
     bg.init();
   }
-  if (debug == 1) console.log('onInstalled: ' + details.reason);
+  else if (details.reason == "install"){
+    if (localStorage.settings == null){
+      nT.storage.defaults();
+      chrome.tabs.create({url:'options.html'});
+    }
+  }
+  
+  if (nT.storage.get('other','debug') == 1) console.log('onInstalled: ' + details.reason);
 }
 
 function onStartup(){
@@ -160,8 +161,8 @@ function checkState(){
   });
 }
 
-var debug = nT.storage.get('other','debug');
-var autoLogin = nT.storage.get('session','autoLogin');
+//var debug = nT.storage.get('other','debug');
+//var autoLogin = nT.storage.get('session','autoLogin');
 
 chrome.tabs.onUpdated.addListener(bg.setIcon);
 chrome.tabs.onUpdated.addListener(bg.authPageCheck);

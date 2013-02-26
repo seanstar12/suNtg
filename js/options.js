@@ -15,9 +15,9 @@
 //document.querySelector('#save').addEventListener('click', storeVars);
 
 function init() {
-  if (!localStorage.settings) {
+  if (!localStorage.showDisc) {
     showModal();
-    nT.storage.defaults();
+    localStorage.showDisc = 1;
   }
   if (nT.storage.get('other','debug') == 1) console.log(JSON.stringify(nT.storage.obj()));
   $('.menu a').click(function(ev) {
