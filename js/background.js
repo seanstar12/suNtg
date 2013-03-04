@@ -3,7 +3,10 @@ bg = {
   
   setIcon: function(tabId, changeInfo, tab){
     if (tab.url.indexOf('ntg.missouristate') > -1) {
-      chrome.pageAction.show(tabId);
+      if (changeInfo.status === 'loading'){
+        chrome.pageAction.show(tabId);
+        chrome.tabs.sendMessage(tab.id,nT.storage.config(), function(re){});
+      }
     }
   },
   

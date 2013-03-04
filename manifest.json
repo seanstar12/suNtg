@@ -47,7 +47,7 @@
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/bootstrap.js","js/onEnd.js"],
+      "js": ["js/functions.js","js/bootstrap.js","js/onEnd.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_end"
     }

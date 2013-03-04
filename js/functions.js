@@ -71,13 +71,21 @@ function updateAllDates(){
   $('.Page').append(load);
   $('.Page').append(screen);
   
+  //Only gets used here... so why include it elsewhere
+  jQuery.fn.center = function () {
+    this.css("position","absolute");
+    this.css("top", ( $(window).height() - this.height() ) / 2+$(window).scrollTop() + "px");
+    this.css("left", ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + "px");
+    return this;
+  }
+  
   for (var i =1; i< f.length; i++){ //creates iframe for each form, then posts form
       var frame = document.createElement('iframe');
       frame.id = i;
       frame.setAttribute('style','display:none; z-index:50;');
       document.body.appendChild(frame);
       document.getElementById(i).contentDocument.body.innerHTML = f[i].outerHTML; 
-      document.getElementById(i).contentDocument.getElementsByName('cmdSubmit')[0].click();
+      //document.getElementById(i).contentDocument.getElementsByName('cmdSubmit')[0].click();
       
       $('#screen').css({ "opacity": ".7",'width':$(document).width(), 'height':$(document).height()}).fadeIn('slow');
       $('#load').css({'width':($(document).width()*0.6)}).fadeIn('slow').center();
