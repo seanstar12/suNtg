@@ -365,14 +365,6 @@ function styleButtons(query) {
 }
 
 
-function setReload () {
-  $('body').keydown(function(e){
-    if (e.keyCode == 82 && e.altKey) {
-      window.open(url,"_blank");
-    }
-  });
-}
-
 /**
  * Gets list of devices with useful information. Returns object
  * Ran 'var temp = getDevices();' on  https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsSMSUTag=* 

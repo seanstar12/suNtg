@@ -38,4 +38,8 @@ urlCheck('PortList.asp',btnDates);
 urlCheck('PortList.asp',btnBar);
 document.body.removeAttribute('onload');
 
-//document.body.setAttribute('onload','(function(){document.body.removeAttribute("style")})()');
+var t = document.createElement('script');
+var url = chrome.extension.getURL('reload.html');
+t.innerHTML = "var url = \"" + url + "\";";
+document.documentElement.insertBefore(t);
+setReload();
