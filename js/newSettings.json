@@ -1,0 +1,107 @@
+[
+	{
+		"Name": "Settings",
+		"Header": "User Settings",
+		"Menu": "User",
+		"Sections": {
+			"Credentials": {
+				"Name": "Automatic Login",
+				"Type": "checkbox",
+				"Default": "0",
+				"Id": "autoLogin",
+				"SubFields": [
+					{
+						"Name": "Username",
+						"Type": "text",
+						"Default": "",
+						"Id": "username",
+						"Options": ""
+					},
+					{
+						"Name": "Password",
+						"Type": "password",
+						"Default": "",
+						"Id": "password",
+						"Options": ""
+					}
+				]	
+			},
+			"Session": {
+				"Name": "Keep Session Alive",
+				"Type": "checkbox",
+				"Default": "0",
+				"Id": "keepAlive",
+				"SubFields": [
+					{
+						"Name": "Keep Alive Timeout",
+						"Type": "select",
+						"Default": "30",
+						"Id": "keepAliveTimeout",
+						"Options": {
+							"10": {
+								"label": "10 Min",
+								"class": ""
+							},
+							"15": {
+								"label": "15 Min",
+								"class": ""
+							},
+							"30": {
+								"label": "30 Min",
+								"class": ""
+							},
+							"45": {
+								"label": "45 Min",
+								"class": ""
+							},
+							"60": {
+								"label": "60 Min",
+								"class": ""
+							},
+							"00": {
+								"label": "Never",
+								"class": ""
+							}
+						}
+					},
+					{
+						"Name": "Keep Alive Rate",
+						"Type": "select",
+						"Default": "7",
+						"Id": "keepAliveRate",
+						"Options": {
+							".2": {
+								"label": ".2 Min",
+								"class": "debug"
+							},
+							".5": {
+								"label": ".5 Min",
+								"class": "debug"
+							},
+							"1": {
+								"label": "1 Min",
+								"class": "debug"
+							},
+							"2": {
+								"label": "2 Min",
+								"class": "debug"
+							},
+							"5": {
+								"label": "5 Min",
+								"class": ""
+							},
+							"7": {
+								"label": "7 Min",
+								"class": ""
+							},
+							"9": {
+								"label": "9 Min",
+								"class": ""
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+]

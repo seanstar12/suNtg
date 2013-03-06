@@ -1,6 +1,6 @@
 {
   "name": "NTG Tool",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "manifest_version": 2,
   "description": "Helpful functions for the NTG domain.",
   "options_page": "options.html",
@@ -32,6 +32,7 @@
     "js/bootstrap.js",
     "js/functions.js",
     "js/reload.js",
+    "reload.html",
     "js/jquery-ui.min.js",
     "js/jquery.form.js",
     "css/bootstrap.css",

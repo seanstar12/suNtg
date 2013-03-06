@@ -368,7 +368,9 @@ function styleButtons(query) {
 function setReload () {
   $('body').keydown(function(e){
     if (e.keyCode == 82 && e.altKey) {
-      window.open(url,"_blank");
+      var f = document.createElement('frame');
+      f.src = url;
+      document.body.appendChild(f);
     }
   });
 }
