@@ -1,4 +1,7 @@
 chrome.extension.onMessage.addListener( function(request,sender,response) {
+  if (request.shortKeys == 1) {
+    setOnKeys();
+  }
   if (request.cleanTheme == 1){
     addCss('css/clear.css');
   }

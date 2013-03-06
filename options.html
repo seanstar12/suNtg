@@ -95,7 +95,7 @@
               <label for="newTab">&emsp;Open Login Page if Logged Out</label>
             </div>
             <div class="checkbox">
-              <input type="checkbox" name="idle" id="idle">
+              <input type="checkbox" name="idle" id="idle" disabled>
               <label for="idle">&emsp;Experimental Idle Feature (NOT complete -- Reload after change)</label>
             </div>
             <section>
@@ -120,6 +120,10 @@
               <label for="idleCheckRate">&emsp;Rate at which background page polls the idle notifier</label>
             </section>
             <div class="checkbox">
+              <input type="checkbox" name="shortKeys" id="shortKeys">
+              <label for="shortKeys">&emsp;Enable Keyboard Shortcuts (['Alt' + R] Reload plugin; ['Alt' + O] Open Settings Page)</label>
+            </div>
+            <div class="checkbox">
               <input type="checkbox" name="debug" id="debug">
               <label for="debug">&emsp;Debug Enable</label>
             </div>
@@ -143,7 +147,7 @@
           <div class="action-area">
             <div class="action-area-right">
               <div class="button-strip">
-                <button>I will not go to space today</button>
+                <button id = "notToday">I will not go to space today</button>
                 <button>Okay</button>
               </div>
             </div>

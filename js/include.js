@@ -27,7 +27,7 @@ nT.storage = {
   },
         // Set default settings file. 
   defaults: function(){
-    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"1"},"credentials":{"username":"","password":""}, "other":{"nag":"1","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","debug":"0"}}';
+    localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
   }
 };
 

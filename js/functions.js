@@ -365,12 +365,18 @@ function styleButtons(query) {
 }
 
 
-function setReload () {
+function setOnKeys () {
   $('body').keydown(function(e){
     if (e.keyCode == 82 && e.altKey) {
       var f = document.createElement('frame');
-      f.src = url;
+      f.src = url + 'reload.html';
       document.body.appendChild(f);
+    }
+  });
+  
+  $('body').keydown(function(e){
+    if (e.keyCode == 79 && e.altKey) {
+      window.open(url+'options.html','_blank');
     }
   });
 }

@@ -39,8 +39,7 @@ urlCheck('PortList.asp',btnBar);
 document.body.removeAttribute('onload');
 
 var t = document.createElement('script');
-var url = chrome.extension.getURL('reload.html');
+var url = chrome.extension.getURL('');
 t.innerHTML = "var url = \"" + url + "\";";
 document.documentElement.insertBefore(t);
 
-setReload();

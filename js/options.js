@@ -15,7 +15,7 @@
 //document.querySelector('#save').addEventListener('click', storeVars);
 
 function init() {
-  if (!localStorage.showDisc) {
+  if (!localStorage.showDisc || localStorage.showDisc == 0) {
     showModal();
     localStorage.showDisc = 1;
   }
@@ -177,6 +177,12 @@ function init() {
       }, 1000);
     });
 
+    $(modal).find('#notToday').click(function() {
+      //$(modal).addClass('transparent');
+      localStorage.showDisc = 0;
+      window.close();
+    });
+    
     $(modal).click(function() {
       $(modal).find('.page').addClass('pulse');
       $(modal).find('.page').on('webkitAnimationEnd', function() {

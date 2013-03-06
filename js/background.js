@@ -79,8 +79,6 @@ bg = {
   },
 
   init: function(){
-    var debug = nT.storage.get('other','debug');
-    var autoLogin = nT.storage.get('session','autoLogin');
     //chrome.tabs.create({url:'background.html'});
     if (nT.storage.get('other','idle') == 1) {
       clearInterval(1);
@@ -112,20 +110,23 @@ bg = {
 }
 
 function onInstalled(details){
-  
+  if (localStorage.settings == null) nT.storage.defaults();
+   
   if (details.reason == "update"){
     chrome.alarms.clearAll();
     bg.init();
+
+    //resets the ntgTool icon in the bar. (it gets set on page update so we have to force it here)
+    chrome.tabs.query({active:true,windowId: chrome.windows.WINDOW_ID_CURRENT}, function(tab){
+      chrome.pageAction.show(tab[0].id);
+    });
   } 
   else if (details.reason == "chrome_update"){
     chrome.alarms.clearAll();
     bg.init();
   }
   else if (details.reason == "install"){
-    if (localStorage.settings == null){
-      nT.storage.defaults();
-      chrome.tabs.create({url:'options.html'});
-    }
+    chrome.tabs.create({url:'options.html'});
   }
   
   if (nT.storage.get('other','debug') == 1) console.log('onInstalled: ' + details.reason);
@@ -166,8 +167,10 @@ function checkState(){
   });
 }
 
-var debug = nT.storage.get('other','debug');
-var autoLogin = nT.storage.get('session','autoLogin');
+if (localStorage.settings != null){ 
+  var debug = nT.storage.get('other','debug');
+  var autoLogin = nT.storage.get('session','autoLogin');
+}
 
 chrome.tabs.onUpdated.addListener(bg.setIcon);
 chrome.tabs.onUpdated.addListener(bg.authPageCheck);
