@@ -21,7 +21,7 @@ chrome.extension.onMessage.addListener( function(request,sender,response) {
 
 
 addScript('js/jquery-1.8.3.min.js');
-//addScript('js/jquery-ui.min.js');
+addScript('js/bootbox.min.js');
 addScript('js/bootstrap.js');
 addScript('js/functions.js');
 //addScript('js/jquery.form.js');

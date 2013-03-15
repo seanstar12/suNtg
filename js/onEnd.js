@@ -20,7 +20,7 @@ $('[size="18"]').each(function(i, el){
   this.setAttribute('size','20');
   
   if (this.value == 'add') {
-    this.setAttribute('class', 'btn');
+    this.setAttribute('class', 'btn btnLink');
   }
 
   el.removeAttribute('onclick');
@@ -34,12 +34,23 @@ $('[size="18"]').each(function(i, el){
   });
 });
 
+//urlCheck('PortList.asp',btnBar);
+
 urlCheck('PortList.asp',btnDates);
-urlCheck('PortList.asp',btnBar);
+
+var nav = [];
+nav[0] = new NavLink('addCurrentDate', 'Set ' + returnDate(), updateAllDates).createLink();
+nav[1] = new NavLink('addCustomDate', 'Set Custom Date', linkCustDate).createLink();
+nav[2] = new NavLink('massInput','Mass Input',massInput).createLink();
+
+urlCheck('PortList.asp', function(){new Navigation('mainNav','nav nav-link',nav).createMenu()});
+
+
 document.body.removeAttribute('onload');
 
 var t = document.createElement('script');
 var url = chrome.extension.getURL('');
 t.innerHTML = "var url = \"" + url + "\";";
 document.documentElement.insertBefore(t);
+
 

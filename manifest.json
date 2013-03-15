@@ -30,6 +30,7 @@
   "web_accessible_resources": [
     "js/jquery-1.8.3.min.js",
     "js/bootstrap.js",
+    "js/bootbox.min.js",
     "js/functions.js",
     "js/reload.js",
     "reload.html",
@@ -39,11 +40,12 @@
     "css/clear.css",
     "css/ntgTool.css",
     "images/glyphicons-halflings-white.png",
+    "images/glyphicons-halflings.png",
     "images/cubone.png"
   ],
   "content_scripts": [
     {
-      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/include.js","js/onStart.js"],
+      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/include.js","js/bootbox.min.js" ,"js/onStart.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "css":["css/clear.css","css/ntgTool.css"],
       "run_at": "document_start"

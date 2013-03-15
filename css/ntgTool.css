@@ -13,6 +13,23 @@ textarea {
   line-height: 1 !important;
 }
 
+.btnPad button,
+
+.btn-group {
+  margin: 5px 0px 0px 5px;
+}
+
+.nav a {
+  color: #0088cc !important;
+}
+
+.specialOp {
+  background-color: rgb(242,242,242);
+  -webkit-border-radius:10px;
+  margin: 5px;
+  padding-bottom: 5px;
+}
+
 td.NoWrap input.btn {
   width: 150px;
 }

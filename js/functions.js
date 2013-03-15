@@ -42,7 +42,10 @@ function autoDate() {
   var dateArray = document.getElementsByName('dbdVerifyDt');
   var check = document.getElementsByName('Update');
   var date = returnDate();
-  date = '1/17/2013';
+  if (localStorage.custDate == 1) { 
+    date = localStorage.custDateVal;
+    localStorage.custDate = 0;
+  }
 
   for (var i = 0; i < dateArray.length; i++) {
     dateArray[i].setAttribute('value',date);
@@ -50,6 +53,37 @@ function autoDate() {
   for (var k = 0; k < check.length; k++){
     check[k].setAttribute('checked', 'true');
   }
+}
+
+function massInput() {
+  var that = $(this); 
+  //console.log($(this));
+  
+  $(this).toggle( 
+      
+     (function(){
+       
+        console.log('here');
+       $('input, select',document.forms)
+        .filter(':visible')
+        .not('[name="dbsDescription"]')
+        .not('[type="submit"]')
+        .each(function(){
+          this.disabled = true;
+        });
+      })(),
+      
+      (function(){
+        console.log('there');
+        $('input, select',document.forms)
+        .filter(':visible')
+        .not('[name="dbsDescription"]')
+        .not('[type="submit"]')
+        .each(function(){
+          this.disabled = false;
+        });
+      })()
+  );  
 }
 
 function updateAllDates(){
@@ -85,6 +119,7 @@ function updateAllDates(){
       frame.setAttribute('style','display:none; z-index:50;');
       document.body.appendChild(frame);
       document.getElementById(i).contentDocument.body.innerHTML = f[i].outerHTML; 
+      
       //document.getElementById(i).contentDocument.getElementsByName('cmdSubmit')[0].click();
       
       $('#screen').css({ "opacity": ".7",'width':$(document).width(), 'height':$(document).height()}).fadeIn('slow');
@@ -130,22 +165,45 @@ function btnBuildAsp(id){
   b.type = 'submit';
   b.className = 'btn btn-primary subBtn';
   b.id = id;
-  b.value = 'Update to: '+ returnDate();
+  b.value = 'Update to: '+ ((localStorage.custDate == 1) ? localStorage.custDateVal : returnDate());
   return b;
 }
 
 function btnBuild(id,_class,value,func){
   var b = document.createElement('button');
-  b.className = 'btn btn-' +_class;
+  b.className = 'btn ' +_class;
   b.id = id;
   b.innerHTML = value;
   b.type = 'button';
-
+  
   $(b).bind('click', function(){
     func();
   });
 
   return b;
+}
+
+function btnBuildGrp(id,_class,value,func){
+  var d = document.createElement('div');
+  
+  d.className = "btn-group";
+  d.appendChild(btnBuild(id,_class,value,func));
+  d.appendChild(btnBuild(id+'split','btn-info','<span class="icon-calendar icon-white"></span>',btnCustDate));
+  
+  return d;
+}
+
+function linkCustDate(){
+ var newDate = prompt('Custom Date',
+     (localStorage.custDateVal == '' || localStorage.custDateVal == null) ? returnDate() : localStorage.custDateVal);
+  
+  if (newDate != null) {
+    localStorage.custDate = 1;
+    localStorage.custDateVal = newDate; 
+    autoDate();
+    //updateAllDates();
+ }
+
 }
 
 function test(){
@@ -171,8 +229,18 @@ function btnDates(){
 }
 
 function btnBar(){
-  var b = btnBuild('updateAll','info', 'Set All  <i class="icon-calendar icon-white"></i>  to '+ returnDate(), updateAllDates);
-  $('.Navigation').prepend(b);
+  //var b = btnBuild('updateAll','btn-info', '<i class="icon-calendar icon-white"></i>  to ' + 
+  //  ((localStorage.custDate == 1) ? localStorage.custDateVal : returnDate()), updateAllDates);
+  var el = btnBuildGrp('btnBar','btn-info',returnDate(),updateAllDates);
+  var btn = btnBuild('massUpdate','btn-info', 'Mass Input', massInput);
+  var d = document.createElement('div');
+  d.className = 'btnPad';
+
+  d.appendChild(el);
+  d.appendChild(btn);
+
+  $('.Navigation').prepend(d);
+
 }
 
 /**
@@ -352,6 +420,46 @@ LinkPort.prototype.SearchDevices = function(data) {
 LinkPort.prototype.SearchDevices_Submit = function() {
   
 }
+
+
+function Navigation(id, cssClass, links){
+  this.id = id;
+  this.cssClass = cssClass;
+  this.links = links;
+}
+
+Navigation.prototype.createMenu = function(){
+  var nav = $('<ul/>')
+    .addClass('specialOp nav nav-list')
+    .html('<li class="nav-header">Special Options</li>')
+    .prependTo('.Navigation');
+
+  $.each(this.links, function(i, el) {
+    el.appendTo(nav);
+  });
+}
+
+function NavLink(id, title, func){
+  this.id = id;
+  this.title = title;
+  this.func = func;
+  this.ref = '#';
+}
+
+NavLink.prototype.createLink = function(){
+  var that = this;
+  var li = $('<li><a></a></li>');
+
+  $('a',li).attr('id',this.id)
+            .text(this.title)
+            .attr('href',this.ref)
+            .bind('click', function(){
+              $(that.func(1));
+            });
+  return li;
+}
+
+
 
 function styleButtons(query) {
   if (!query) query = '';
