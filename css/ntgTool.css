@@ -33,6 +33,11 @@ body {
   padding-bottom: 5px;
 }
 
+#updateProgressMsg {
+  color: #1F5C99;
+  font-size: 10px;
+}
+
 td.NoWrap input.btn {
   width: 150px;
 }

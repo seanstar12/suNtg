@@ -7,7 +7,7 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
          ' <div class="nav-collapse collapse">' +
          ' <div class ="btn-group pull-right"><button class="btn btn-small btn-inverse disabled">'+
          //  nT.storage.get('credentials','username')  + '</button> ' + 
-         ' sean</button>' +
+         ' ss4599</button>' +
          ' <button class="btn dropdown-toggle btn-small btn-inverse" data-toggle="dropdown"><span class="caret"> ' + 
          ' </span></button><ul class="dropdown-menu"> ' +
          ' <li><a id="logOut" href="#">Log Out</a></li><li><a id="settings"href="#">Settings</a></li>' +
@@ -65,8 +65,8 @@ head.innerHTML = b;
 var nav = [
     new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
     new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
-    new NavLink('massInput','Mass Input',massInput).createLink(),
     $('<li/>').attr('class','divider'),
+    new NavLink('massInput','Mass Input Mode',massInput).createLink(),
     new NavLink('updateAll','Update All Switches',form.submitForms).createLink()
           ];
 

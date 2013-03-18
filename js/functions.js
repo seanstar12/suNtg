@@ -402,7 +402,7 @@ function Navigation(id, cssClass, links){
 Navigation.prototype.createMenu = function(){
   var nav = $('<ul/>')
     .addClass('specialOp nav nav-list')
-    .html('<li class="nav-header">SekreT Stuff</li>')
+    .html('<li class="nav-header">Special Stuff</li>')
     .prependTo('.Navigation');
 
   $.each(this.links, function(i, el) {
@@ -501,12 +501,13 @@ form = {
   
   submitForms: function() {
     var formTotal = $('form').length;
-  
+    $('input,select',$('form')).each(function(){this.setAttribute('disabled','true')});
+    
     $('<div/>').addClass('alert alert-info')
                 .attr('id','updateProgressAlert')
                 .css('display','none')
                 .prependTo('.Content')
-                .html('<h4>Updating Switch  <span id="updateProgressMsg"></span></h4>')
+                .html('<h4>Updating Switches:  <span id="updateProgressMsg"> Generating Request</span></h4>')
                 .toggle(500)
                 .append( $('<div/>')
                   .addClass('progress progress-striped active')
@@ -552,10 +553,10 @@ form = {
         //Adds no real value, just shows the switch that's being updated
         var swName = $('h2')[0].innerHTML.split(': ')[1];
         var swNum = $('form')[currForm].name.split('_');
-        var swFull = swName +' '+((swNum[3] == 0) ? "GE":"XE")+' '+ swNum[2]+'/'+swNum[3]+'/*'; 
+        var swFull = swName +' '+((swNum[3] == 0) ? "ge":"xe")+' '+ swNum[2]+'/'+swNum[3]+''; 
 
         if (this.temp/formTotal <= 1){
-          $('#updateProgressMsg').html("<small>"+ swFull +"</small>");
+          $('#updateProgressMsg').html(""+ swFull +"");
           $('#updateProgressBar').css('width', (((this.temp) / formTotal)*100)+'%');
         }
         if (this.temp/formTotal == 1){
@@ -566,9 +567,10 @@ form = {
           $('#updateProgressCont').attr('class','progress progress-success');
           
           setTimeout(function(){
+            $('input,select',$('form')).each(function(){this.removeAttribute('disabled')});
             $('[name="Update"]').each(function(){this.checked = false});
             $('#updateProgressAlert').fadeOut(500);
-          }, 2000);
+          }, 1200);
         }
       }.bind(this)
     });
