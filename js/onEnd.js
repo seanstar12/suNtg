@@ -63,9 +63,11 @@ head.innerHTML = b;
 
 
 var nav = [
-            new NavLink('addCurrentDate', 'Set ' + returnDate(), form.allDates).createLink(),
-            new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
-            new NavLink('massInput','Mass Input',massInput).createLink()
+    new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
+    new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
+    new NavLink('massInput','Mass Input',massInput).createLink(),
+    $('<li/>').attr('class','divider'),
+    new NavLink('updateAll','Update All Switches',form.submitForms).createLink()
           ];
 
 urlCheck('PortList.asp', function(){new Navigation('mainNav','nav nav-link',nav).createMenu()});

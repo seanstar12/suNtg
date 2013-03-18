@@ -51,20 +51,13 @@ function returnDate(){
 }
 
 function autoDate() {
-  var dateArray = document.getElementsByName('dbdVerifyDt');
-  var check = document.getElementsByName('Update');
-  var date = returnDate();
+  var newDate = returnDate();
   if (localStorage.custDate == 1) { 
-    date = localStorage.custDateVal;
+    newDate = localStorage.custDateVal;
     localStorage.custDate = 0;
   }
-
-  for (var i = 0; i < dateArray.length; i++) {
-    dateArray[i].setAttribute('value',date);
-  }
-  for (var k = 0; k < check.length; k++){
-    check[k].setAttribute('checked', 'true');
-  }
+  $('[name="dbdVerifyDt"]').each(function(){this.value = newDate;});
+  $('[name="Update"]').each(function(){this.checked = true;});
 }
 
 
@@ -513,13 +506,14 @@ form = {
                 .attr('id','updateProgressAlert')
                 .css('display','none')
                 .prependTo('.Content')
-                .html('<h4>Updating Switch</h4>')
+                .html('<h4>Updating Switch  <span id="updateProgressMsg"></span></h4>')
                 .toggle(500)
                 .append( $('<div/>')
                   .addClass('progress progress-striped active')
+                  .attr('id','updateProgressCont')
                   .append($('<div/>')
                     .addClass('bar')
-                    .attr('id','updateProgress')
+                    .attr('id','updateProgressBar')
                     .css('width','1%')
                   )
                 );
@@ -537,12 +531,12 @@ form = {
             }
           }
         );
-        form.submitPortList(pData, formTotal);
+        form.submitPortList(pData, formTotal, j);
       }
     );
   },
 
-  submitPortList: function(portData, formTotal) {
+  submitPortList: function(portData, formTotal, currForm) {
     this.formTotal = formTotal;
 
     $.ajax({
@@ -555,16 +549,24 @@ form = {
       }.bind(this),
       complete:  function(){
         this.temp++;
+        //Adds no real value, just shows the switch that's being updated
+        var swName = $('h2')[0].innerHTML.split(': ')[1];
+        var swNum = $('form')[currForm].name.split('_');
+        var swFull = swName +' '+((swNum[3] == 0) ? "GE":"XE")+' '+ swNum[2]+'/'+swNum[3]+'/*'; 
+
         if (this.temp/formTotal <= 1){
-          $('#updateProgress').css('width', (((this.temp) / formTotal)*100)+'%');
+          $('#updateProgressMsg').html("<small>"+ swFull +"</small>");
+          $('#updateProgressBar').css('width', (((this.temp) / formTotal)*100)+'%');
         }
         if (this.temp/formTotal == 1){
           this.temp = 0;
-          $('#updateProgressAlert').toggleClass('alert-info')
-                                  .toggleClass('alert-success');
+
+          $('#updateProgressAlert').toggleClass('alert-info').toggleClass('alert-success');
           $('h4',$('#updateProgressAlert')).html('Updated Successfully');
+          $('#updateProgressCont').attr('class','progress progress-success');
           
           setTimeout(function(){
+            $('[name="Update"]').each(function(){this.checked = false});
             $('#updateProgressAlert').fadeOut(500);
           }, 2000);
         }
