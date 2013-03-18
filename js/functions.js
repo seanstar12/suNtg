@@ -484,10 +484,10 @@ function updateDates(){
     //$('form').each(
   }
 }
-var temp = 0;
 var form = {};
 
 form = {
+  temp: 0,
 
   allDates: function() {
     autoDate();   
@@ -551,15 +551,15 @@ form = {
       url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp',
       data: portData,
       success: function(data){
-        console.log((temp / formTotal));
-      },
+        console.log((this.temp / formTotal));
+      }.bind(this),
       complete:  function(){
-        temp++;
-        if (temp/formTotal <= 1){
-          $('#updateProgress').css('width', (((temp) / formTotal)*100)+'%');
-        } 
-        if (temp/formTotal == 1){
-          temp = 0;
+        this.temp++;
+        if (this.temp/formTotal <= 1){
+          $('#updateProgress').css('width', (((this.temp) / formTotal)*100)+'%');
+        }
+        if (this.temp/formTotal == 1){
+          this.temp = 0;
           $('#updateProgressAlert').toggleClass('alert-info')
                                   .toggleClass('alert-success');
           $('h4',$('#updateProgressAlert')).html('Updated Successfully');
@@ -568,7 +568,7 @@ form = {
             $('#updateProgressAlert').fadeOut(500);
           }, 2000);
         }
-      }
+      }.bind(this)
     });
   }
 }
