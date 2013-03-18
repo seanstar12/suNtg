@@ -16,17 +16,29 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
   return this;
 }
 
-function addScript(file){
-  var s = document.createElement('script');
-  s.src = chrome.extension.getURL(file);
-  document.documentElement.insertBefore(s);  
+function addScripts(files){
+  for (var i =0; i< files.length; i++){
+    var s = "";
+
+    if (files[i].indexOf('js/') > -1){
+      s = document.createElement('script');
+      s.src = chrome.extension.getURL(files[i]);
+    } 
+    else if (files[i].indexOf('css/') > -1) {
+      s = document.createElement('link');
+      s.href = chrome.extension.getURL(files[i]);
+      s.rel = 'stylesheet';
+    }
+    document.documentElement.insertBefore(s);  
+  }
 }
 
-function addCss(file){
-  var s = document.createElement('link');
-  s.href = chrome.extension.getURL(file);
-  s.rel = 'stylesheet';
-  document.documentElement.insertBefore(s);  
+function portalFrame(crUrl, urlVar) {
+  var f = document.createElement('frame');
+  f.src = crUrl + 'portal.html?id=' + urlVar;
+  console.log(f.src);
+  //f.style.display = 'none';
+  document.body.appendChild(f);
 }
 
 function returnDate(){
@@ -55,36 +67,6 @@ function autoDate() {
   }
 }
 
-function massInput() {
-  var that = $(this); 
-  //console.log($(this));
-  
-  $(this).toggle( 
-      
-     (function(){
-       
-        console.log('here');
-       $('input, select',document.forms)
-        .filter(':visible')
-        .not('[name="dbsDescription"]')
-        .not('[type="submit"]')
-        .each(function(){
-          this.disabled = true;
-        });
-      })(),
-      
-      (function(){
-        console.log('there');
-        $('input, select',document.forms)
-        .filter(':visible')
-        .not('[name="dbsDescription"]')
-        .not('[type="submit"]')
-        .each(function(){
-          this.disabled = false;
-        });
-      })()
-  );  
-}
 
 function updateAllDates(){
   autoDate();  //Sets all date fields and checks all boxes
@@ -137,8 +119,18 @@ function updateAllDates(){
       }
     }, j*100);
   }
-    
 }
+
+
+function getUrlVars() {
+  //var first = getUrlVars()["id"];
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = value;
+  });
+  return vars;
+}
+
 
 /**
  * Runs function based on URL, [Invert = True] the supplied function will NOT
@@ -228,20 +220,6 @@ function btnDates(){
   });
 }
 
-function btnBar(){
-  //var b = btnBuild('updateAll','btn-info', '<i class="icon-calendar icon-white"></i>  to ' + 
-  //  ((localStorage.custDate == 1) ? localStorage.custDateVal : returnDate()), updateAllDates);
-  var el = btnBuildGrp('btnBar','btn-info',returnDate(),updateAllDates);
-  var btn = btnBuild('massUpdate','btn-info', 'Mass Input', massInput);
-  var d = document.createElement('div');
-  d.className = 'btnPad';
-
-  d.appendChild(el);
-  d.appendChild(btn);
-
-  $('.Navigation').prepend(d);
-
-}
 
 /**
  * rename to createModal
@@ -431,7 +409,7 @@ function Navigation(id, cssClass, links){
 Navigation.prototype.createMenu = function(){
   var nav = $('<ul/>')
     .addClass('specialOp nav nav-list')
-    .html('<li class="nav-header">Special Options</li>')
+    .html('<li class="nav-header">SekreT Stuff</li>')
     .prependTo('.Navigation');
 
   $.each(this.links, function(i, el) {
@@ -454,12 +432,23 @@ NavLink.prototype.createLink = function(){
             .text(this.title)
             .attr('href',this.ref)
             .bind('click', function(){
-              $(that.func(1));
+              that.func();
             });
   return li;
 }
 
 
+function massInput() {
+       
+  $('input, select',document.forms)
+      .filter(':visible')
+      .not('[name="dbsDescription"]')
+      .not('[type="submit"]')
+      .each(function(){
+          (this.disabled) ? this.disabled = false: this.disabled = true;
+      });
+  $('input', document.forms).filter(':visible').not(':disabled').first().select();
+}
 
 function styleButtons(query) {
   if (!query) query = '';
@@ -471,7 +460,6 @@ function styleButtons(query) {
   $(query + ' [value="Cancel"]').addClass('btn btn-link').removeAttr('onclick');
   $(query + ' [value="Remove Link"]').css('float','left').addClass('btn-danger');
 }
-
 
 function setOnKeys () {
   $('body').keydown(function(e){
@@ -489,137 +477,98 @@ function setOnKeys () {
   });
 }
 
-/**
- * Gets list of devices with useful information. Returns object
- * Ran 'var temp = getDevices();' on  https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsSMSUTag=* 
- * dumped that to js/db.json. getDevices uses parse list and parse click to return an array with device objects inside.
- * 
- */
-function getDevices(){ 
-  ob = [];
-  $('.NetHeading').remove();
+function updateDates(){
+  if (getUrlVars()['verbose'] == 'true') {
+    console.log('Verbose Mode ON, Not gonna try to post dates');
+  } else {
+    //$('form').each(
+  }
+}
+var temp = 0;
+var form = {};
+
+form = {
+
+  allDates: function() {
+    autoDate();   
+    form.submitForms();
+  },
+
+  custDate: function(){
+    var newDate = prompt('Custom Date',
+     (localStorage.custDateVal == '' || localStorage.custDateVal == null) ? returnDate() : localStorage.custDateVal);
   
-  var list = $('tr');
- 
-  return parseList(list);
-}
-
-
-/**
- * Used for parsing an array of the <tr> on EquipmentList.asp. Returns object
- *
- * @param {array} arg - attr(onclick) --  ('xtag', 'bldg', 'closet', 'objId')
- */
-function parseList(tRow){ 
-  for(var i=0; i< tRow.length; i++){
-    var temp = {};
-    temp = parseClick((tRow[i].getAttribute('onclick').slice('10','-1')).split(', ')); 
-    //console.log($('td',tRow));
-    temp.ipAddr = ($('td',tRow[i])[5].innerText); 
-    temp.dns = ($('td',tRow[i])[7].innerText); 
-    temp.device = ($('td',tRow[i])[9].innerText);
-    ob.push(temp);
-  }
-  return ob;
-}
-
-/**
- * Used for parsing 'onclick()' data on EquipmentList.asp. Returns object
- *
- * @param {array} arg - attr(onclick) --  ('xtag', 'bldg', 'closet', 'objId')
- */
-function parseClick(arg){
-  arg.shift();
-  for (var i = 0; i < arg.length; i++){
-    if (i < 3){
-      arg[i] = arg[i].slice('1','-1');
+    if (newDate != null) {
+      localStorage.custDate = 1;
+      localStorage.custDateVal = newDate; 
+      autoDate();
+      form.submitForms();
     }
+  },
+  
+  submitForms: function() {
+    var formTotal = $('form').length;
+  
+    $('<div/>').addClass('alert alert-info')
+                .attr('id','updateProgressAlert')
+                .css('display','none')
+                .prependTo('.Content')
+                .html('<h4>Updating Switch</h4>')
+                .toggle(500)
+                .append( $('<div/>')
+                  .addClass('progress progress-striped active')
+                  .append($('<div/>')
+                    .addClass('bar')
+                    .attr('id','updateProgress')
+                    .css('width','1%')
+                  )
+                );
+    
+    $('form').each(
+      function(j, jel){
+        var pData = "";
+        $('input, select', this).each(
+          function(i, el) {
+            if (i < jel.length -1) {
+              pData += encodeURIComponent(el.name) + '=' + encodeURIComponent(el.value); 
+            }
+            if (i < jel.length -2){
+              pData += '&';
+            }
+          }
+        );
+        form.submitPortList(pData, formTotal);
+      }
+    );
+  },
+
+  submitPortList: function(portData, formTotal) {
+    this.formTotal = formTotal;
+
+    $.ajax({
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded',
+      url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp',
+      data: portData,
+      success: function(data){
+        console.log((temp / formTotal));
+      },
+      complete:  function(){
+        temp++;
+        if (temp/formTotal <= 1){
+          $('#updateProgress').css('width', (((temp) / formTotal)*100)+'%');
+        } 
+        if (temp/formTotal == 1){
+          temp = 0;
+          $('#updateProgressAlert').toggleClass('alert-info')
+                                  .toggleClass('alert-success');
+          $('h4',$('#updateProgressAlert')).html('Updated Successfully');
+          
+          setTimeout(function(){
+            $('#updateProgressAlert').fadeOut(500);
+          }, 2000);
+        }
+      }
+    });
   }
-  return  {'xtag':arg[0],'bldg':arg[1],'closet':arg[2],'objId':arg[3]};
 }
-
-var ntg = {};
-ntg.db = {};
-
-ntg.db.open = null;
-
-ntg.db.open = function() {
-  var version = 1;
-  var request = ntg.open('devices',version);
-
-  request.onupgradeneeded = function(e){
-    var db = e.target.result;
-    e.target.transaction.onerror = ntg.onerror;
-
-    if (db.objectStoreNames.contains('devices')){
-      db.deleteObjectStore('devices');
-    }
-
-    var store = db.createObjectStore('devices', {keyPath: 'timeStamp'});
-  };
-
-  request.onsuccess = function(e) {
-    ntg.db = e.target.result;
-  };
-
-  request.onerror = ntg.onerror;
-};
-
-ntg.addDevice = function(string) {
-  var db = ntg.db;
-  var trans = db.transaction (['devices'], 'readwrite');
-  var store = trans.objectStore('devices');
-  var request = store.put({
-    'text': string,
-    'timeStamp': newDate().getTime() 
-  });
-
-  request.onsuccess = function(e) {
-    ntg.getAllDevices();
-  };
-
-  request.onerror = function(e) {
-    console.log(e.value);
-  };
-};
-
-ntg.getAllDevices = function() {
-    //var devices = document.get
-}
-
-//function btnBar(b){
-//  var barItems = [];
-//  var bar = document.createElement('div');
-//  bar.className = 'btnBar';
-//  bar.id = 'buttonBar';
-//  
-//  for (var btn in b){
-//    //barItems.push(btnBuild(btn,b[btn]._class,b[btn].size,b[btn].value,b[btn].func));
-//    console.log(b[btn].func.value);
-//    bar.innerHTML += (btnBuild(btn,b[btn]._class,b[btn].size,b[btn].value,b[btn].func)).outerHTML;
-//  }
-//
-//  document.body.appendChild(bar); 
-//}
-//
-//var abuttons = { 
-//  'updateDates': {
-//    '_class':'btn-info',
-//    'size':'btn-small',
-//    'value':'Update Dates',
-//    'func':'test'
-//  },
-//  'otherBtn': {
-//    '_class':'btn-info',
-//    'size':'btn-small',
-//    'value':'Something',
-//    'func':test
-//  }
-//};
-
-
-//var btnBar = document.createElement('div');
-//btnBar.id = 'btnBar';
-//btnBar.innerHTML = '<button class="btn btn-info btn-small" id= "updateAllDate"type="button">Update Dates To ' + returnDate() +'</button>';
-//$('.Navigation').prepend(btnBar);
-

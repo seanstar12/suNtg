@@ -19,6 +19,10 @@ textarea {
   margin: 5px 0px 0px 5px;
 }
 
+body {
+  padding-top: 48px;
+}
+
 .nav a {
   color: #0088cc !important;
 }
@@ -32,6 +36,10 @@ textarea {
 
 td.NoWrap input.btn {
   width: 150px;
+}
+
+.Content .alert {
+  width: 615px;
 }
 
 #screen{

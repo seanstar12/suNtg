@@ -1,5 +1,11 @@
 var nT = {};
 
+nT.portal = {
+  launchSettings: function () {
+    window.open('options.html','_blank');
+  }
+};
+
 nT.storage = {
         // Return an individual item from storage
   get: function (set,key){
@@ -27,64 +33,70 @@ nT.storage = {
   },
         // Set default settings file. 
   defaults: function(){
-    localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
+    localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"cleanTheme":"0","nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
   }
 };
 
 nT.msu = {
   logIn: function (callback){
     this.logInCallback = callback;
-    //console.log(callback);
-    if (localStorage.loginCount < 10){
+    if (true){
       if (nT.storage.get('credentials','username') != null && nT.storage.get('credentials','password') != null){
-        $.ajax({
-          url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-          context: this,
-          success: function(req) { 
-            //msuGetProcess(req); 
-            var tempDiv = document.createElement('div');
-            tempDiv.innerHTML = req.replace (/<img(.|\s)*?\/>/g, '');
-            tempDiv.childNodes;
-            // Got viewstate && got event validation. Log in time
-            $.ajax({
-              type: 'POST',
-              xhrFields: { withCredentials: true },
-              url: 'https://ntg.missouristate.edu/Login/Login.aspx',
-              context: this,
-              data: {
-                '__LASTFOCUS':'',
-                '__VIEWSTATE':tempDiv.querySelector('#__VIEWSTATE').value,
-                '__EVENTTARGET':'',
-                '__EVENTARGUMENT':'',
-                '__EVENTVALIDATION':tempDiv.querySelector('#__EVENTVALIDATION').value,
-                'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
-                'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
-                'ctl00$MainContent$ImageButton1.x':'15',
-                'ctl00$MainContent$ImageButton1.y':'23'
-              },
-              success: function (){
-                delete tempDiv;
-                if (nT.storage.get('other','debug') == 1) {
-                  console.log('Login: Logged In successfully');
-                }
-                localStorage.loggedIn = 1;
-                localStorage.loginCount ++;
+        console.log('New Login Running');
+        this.getValidation();
+      } else console.log('Credentials not set');
+    } else console.log('Login Count TOO High. Fix it later');
+  },
+
+  getValidation: function() {
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+      context: this,
+      success: function(data){
+        this.postLogin(data);
+      }
+    });
+  },
+
+  postLogin: function(data){
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+    tempDiv.childNodes;
     
-                if (typeof(this.logInCallback) == "function") {
-                  this.logInCallback();
-                  delete this.logInCallback;
-                }
-              }
-            });
-          }
-        });
+    $.ajax({
+      type: 'POST',
+      xhrFields: {withCredentials: true},
+      url: 'https://ntg.missouristate.edu/Login/Login.aspx',
+      context: this,
+      data: {
+        '__LASTFOCUS':'',
+        '__VIEWSTATE':tempDiv.querySelector('#__VIEWSTATE').value,
+        '__EVENTTARGET':'',
+        '__EVENTARGUMENT':'',
+        '__EVENTVALIDATION':tempDiv.querySelector('#__EVENTVALIDATION').value,
+        'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
+        'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
+        'ctl00$MainContent$ImageButton1.x':'15',
+        'ctl00$MainContent$ImageButton1.y':'23'
+      },
+      global: false,
+      success: function(){
+        this.postLoginSuccess();
       }
-      else {
-        console.log('Credentials not set');
-      }
+    });
+  },
+
+  postLoginSuccess: function() {
+    delete tempDiv;
+    if (nT.storage.get('other','debug') == 1) {
+      console.log('Login: Logged In successfully');
     }
-    else {
-      console.log('Login Count TOO High. Fix it later');
+    localStorage.loggedIn = 1;
+    localStorage.loginCount ++;
+  
+    if (typeof(this.logInCallback) == "function") {
+      this.logInCallback();
+      delete this.logInCallback;
     }
   },
 
@@ -140,6 +152,7 @@ nT.msu = {
 
   logOut: function(){
     //removes auth cookies
+    if (nT.storage.get('other','debug') == 1) console.log("logOut:> Logged Out");
     chrome.cookies.getAll({domain: 'ntg.missouristate.edu'}, function(e) {
       e.forEach(function(el){
         chrome.cookies.remove({url: 'https://' + el.domain, name: el.name });
