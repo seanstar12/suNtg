@@ -116,6 +116,7 @@ function onInstalled(details){
   }
   else if (details.reason == "install"){
     chrome.tabs.create({url:'options.html'});
+    bg.init();
   }
   
   if (nT.storage.get('other','debug') == 1) console.log('onInstalled: ' + details.reason);
