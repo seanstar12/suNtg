@@ -3,18 +3,22 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
          ' <div class="container-fluid"> ' +
          ' <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> ' +
          ' <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> ' +
-         ' </button><a class="brand" href="/Tools/Default.aspx">Networking</a> ' +
-         ' <div class="nav-collapse collapse">' +
-         ' <div class ="btn-group pull-right"><button class="btn btn-small btn-inverse disabled">'+
-         //  nT.storage.get('credentials','username')  + '</button> ' + 
-         ' ss4599</button>' +
-         ' <button class="btn dropdown-toggle btn-small btn-inverse" data-toggle="dropdown"><span class="caret"> ' + 
+         ' </button><a class="brand" href="https://ntg.missouristate.edu">Networking</a> ' +
+         ' <div class="nav-collapse collapse">' + 
+         ' <div class ="btn-group pull-right"> '+ 
+         ' <button class="btn dropdown-toggle btn-small btn-inverse"data-toggle="dropdown"><span class="caret">' + 
          ' </span></button><ul class="dropdown-menu"> ' +
          ' <li><a id="logOut" href="#">Log Out</a></li><li><a id="settings"href="#">Settings</a></li>' +
          ' <li><a id="reload" href="#">Reload</a></li></ul></div> ' +
-         ' <ul class="nav"><li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
+
+         ' <form class="navbar-search pull-right" action="">' +
+         ' <input type="text" class="search-query span2" placeholder="Search"></form>' +
+
+
+         ' <ul class="nav"><li><a href="/Tools/Default.aspx">Tools</a></li> ' +
+         ' <li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
          ' <li><a href="/NetInfo/FloorPlans.asp">Floor Plans</a></li> ' +
-         ' <li><a href="#">Other</a></li> ' +
+         ' <li><a href="/NetInfo/BuildingInventory.asp">Inventory</a></li> ' +
          ' </ul></div></div></div></div> ';
 
 var head = document.getElementsByClassName('header')[0];

@@ -470,11 +470,18 @@ function setOnKeys () {
   });
 }
 
-function updateDates(){
+function verboseCheck(){
   if (getUrlVars()['verbose'] == 'true') {
-    console.log('Verbose Mode ON, Not gonna try to post dates');
+    $('<div/>').addClass('alert alert-error')
+                .attr('id','updateProgressAlert')
+                .css('display','none')
+                .prependTo('.Content')
+                .html('<h4>Eek!</h4><a class="close" data-dismiss="alert" href="#">&times;</a>' +
+                '<p> You\'re headed into unknow territory. I haven\'t tested this feature in this mode. ' +
+                'I\'ll do what I can, but you\'re on your own bro.</p>')
+                .toggle(500);
   } else {
-    //$('form').each(
+    return 1;
   }
 }
 var form = {};
@@ -484,7 +491,7 @@ form = {
 
   allDates: function() {
     autoDate();   
-    form.submitForms();
+    if (verboseCheck()) form.submitForms();
   },
 
   custDate: function(){
@@ -495,7 +502,7 @@ form = {
       localStorage.custDate = 1;
       localStorage.custDateVal = newDate; 
       autoDate();
-      form.submitForms();
+      if (verboseCheck()) form.submitForms();
     }
   },
   
@@ -507,7 +514,8 @@ form = {
                 .attr('id','updateProgressAlert')
                 .css('display','none')
                 .prependTo('.Content')
-                .html('<h4>Updating Switches:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>')
+                .html('<h4>Updating Switches:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>'+
+                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
                 .toggle(500)
                 .append( $('<div/>')
                   .addClass('progress progress-striped active')
@@ -546,7 +554,6 @@ form = {
       url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp',
       data: portData,
       success: function(data){
-        console.log((this.temp / formTotal));
       }.bind(this),
       complete:  function(){
         this.temp++;
