@@ -507,7 +507,7 @@ form = {
                 .attr('id','updateProgressAlert')
                 .css('display','none')
                 .prependTo('.Content')
-                .html('<h4>Updating Switches:  <span id="updateProgressMsg"> Generating Request</span></h4>')
+                .html('<h4>Updating Switches:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>')
                 .toggle(500)
                 .append( $('<div/>')
                   .addClass('progress progress-striped active')
@@ -556,7 +556,7 @@ form = {
         var swFull = swName +' '+((swNum[3] == 0) ? "ge":"xe")+' '+ swNum[2]+'/'+swNum[3]+''; 
 
         if (this.temp/formTotal <= 1){
-          $('#updateProgressMsg').html(""+ swFull +"");
+          $('#updateProgressMsg').html(" "+ swFull +"");
           $('#updateProgressBar').css('width', (((this.temp) / formTotal)*100)+'%');
         }
         if (this.temp/formTotal == 1){
