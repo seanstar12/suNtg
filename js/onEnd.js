@@ -75,10 +75,21 @@ var nav = [
           ];
 
 urlCheck('PortList.asp', function(){new Navigation('mainNav','nav nav-link',nav).createMenu()});
+urlCheck('PortList.asp', function(){
+  $('table').addClass('table table-condensed portTable');
+});
 
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
+// Start of on change for port list. changes the color of the row when changed
+//$('[name="Update"]').live('change', function(){
+//  if ($(this).checked = true){
+//    $($(this).parent()).parent().toggleClass('warning');
+//  } else {
+//    $($(this).parent()).parent().toggleClass('warning');
+//  }
+//})
 
 //setOnKeys();
 //$('#logOut').bind('click', function(e) {

@@ -507,8 +507,10 @@ form = {
   },
   
   submitForms: function() {
-    var formTotal = $('form').length;
-    $('input,select',$('form')).each(function(){this.setAttribute('disabled','true')});
+    var formData = $('form').not('#srchBox');
+    var formTotal = formData.length;
+
+    $('input,select',$('form').not('#srchBox')).each(function(){this.setAttribute('disabled','true')});
     
     $('<div/>').addClass('alert alert-info')
                 .attr('id','updateProgressAlert')
@@ -527,7 +529,7 @@ form = {
                   )
                 );
     
-    $('form').each(
+    $('form').not('#srchBox').each(
       function(j, jel){
         var pData = "";
         $('input, select', this).each(
@@ -559,7 +561,7 @@ form = {
         this.temp++;
         //Adds no real value, just shows the switch that's being updated
         var swName = $('h2')[0].innerHTML.split(': ')[1];
-        var swNum = $('form')[currForm].name.split('_');
+        var swNum = $('form').not('#srchBox')[currForm].name.split('_');
         var swFull = swName +' '+((swNum[3] == 0) ? "ge":"xe")+' '+ swNum[2]+'/'+swNum[3]+''; 
 
         if (this.temp/formTotal <= 1){
@@ -574,7 +576,7 @@ form = {
           $('#updateProgressCont').attr('class','progress progress-success');
           
           setTimeout(function(){
-            $('input,select',$('form')).each(function(){this.removeAttribute('disabled')});
+            $('input,select',$('form').not('#srchBox')).each(function(){this.removeAttribute('disabled')});
             $('[name="Update"]').each(function(){this.checked = false});
             $('#updateProgressAlert').fadeOut(500);
           }, 1200);
