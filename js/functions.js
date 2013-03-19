@@ -614,7 +614,7 @@ searchTool = {
             $('#srchResults')
                 .append( $('<div/>')
                   .attr('class','searchItem')
-                  .html($(temp).addClass('table table-condensed'))
+                  .html($(temp).addClass('table table-condensed table-hover'))
                   .prepend('<h2>' + key + ' Results</h2>'));
           }
         }
