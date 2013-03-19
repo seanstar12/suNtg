@@ -510,7 +510,7 @@ form = {
     var formData = $('form').not('#srchBox');
     var formTotal = formData.length;
 
-    $('input,select',$('form').not('#srchBox')).each(function(){this.setAttribute('disabled','true')});
+    $('input,select',$('form')).each(function(){this.setAttribute('disabled','true')});
     
     $('<div/>').addClass('alert alert-info')
                 .attr('id','updateProgressAlert')
@@ -576,7 +576,7 @@ form = {
           $('#updateProgressCont').attr('class','progress progress-success');
           
           setTimeout(function(){
-            $('input,select',$('form').not('#srchBox')).each(function(){this.removeAttribute('disabled')});
+            $('input,select',$('form')).each(function(){this.removeAttribute('disabled')});
             $('[name="Update"]').each(function(){this.checked = false});
             $('#updateProgressAlert').fadeOut(500);
           }, 1200);
