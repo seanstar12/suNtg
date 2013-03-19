@@ -37,6 +37,13 @@ body {
   width: 750px;
 }
 
+.searchItem {
+  background-color: rgb(235,235,235);
+  margin-bottom: 10px;
+  padding: 5px;
+  -webkit-border-radius: 5px;
+}
+
 .portTable {
   width: 650px;
 }

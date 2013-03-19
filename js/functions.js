@@ -605,17 +605,18 @@ searchTool = {
         url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?'+val+'='+query+'*',
         success: function(data){
           var temp = $('table',data);
+          if (temp.length > 0 ) {  //if has results
+            $('a',temp).each(function(){
+              var href = $(this).attr('href');
+              $(this).attr('href','/NetInfo/' + href);
+            });
 
-          $('a',temp).each(function(){
-            var href = $(this).attr('href');
-            $(this).attr('href','/NetInfo/' + href);
-          });
-
-          $('#srchResults')
-              .append( $('<div/>')
-                .attr('class','searchItem')
-                .html($(temp).addClass('table table-condensed'))
-                .prepend('<h2>' + key + ' Results</h2>'));
+            $('#srchResults')
+                .append( $('<div/>')
+                  .attr('class','searchItem')
+                  .html($(temp).addClass('table table-condensed'))
+                  .prepend('<h2>' + key + ' Results</h2>'));
+          }
         }
       });
     });
