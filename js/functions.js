@@ -583,3 +583,46 @@ form = {
     });
   }
 }
+
+var searchTool = {};
+
+searchTool = {
+  
+  terms: {'Xtag':'dbsSMSUTag','DNS Name':'dbsName','Location':'dbsCurBldg'},
+  
+  search: function(query){
+    this.query = query;
+    console.log(query);
+    $('.Content').html('').append( $('<div/>')
+                            .attr('class','srchResults')
+                            .attr('id','srchResults'));
+
+    $.each(this.terms, function(key,val){
+      $.ajax({
+        type: 'POST',
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?'+val+'='+query+'*',
+        success: function(data){
+          var temp = $('table',data);
+
+          $('a',temp).each(function(){
+            var href = $(this).attr('href');
+            $(this).attr('href','/NetInfo/' + href);
+          });
+
+          $('#srchResults')
+              .append( $('<div/>')
+                .attr('class','searchItem')
+                .html($(temp).addClass('table table-condensed'))
+                .prepend('<h2>' + key + ' Results</h2>'));
+        }
+      });
+    });
+  },
+
+  bindSearch: function(){
+    $('#srchBox').submit(function(e){
+        e.preventDefault();
+        searchTool.search($('#searchBox').val());
+      });
+  }
+}

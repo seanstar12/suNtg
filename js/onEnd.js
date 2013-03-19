@@ -11,8 +11,8 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
          ' <li><a id="logOut" href="#">Log Out</a></li><li><a id="settings"href="#">Settings</a></li>' +
          ' <li><a id="reload" href="#">Reload</a></li></ul></div> ' +
 
-         ' <form class="navbar-search pull-right" action="">' +
-         ' <input type="text" class="search-query span2" placeholder="Search"></form>' +
+         ' <form class="navbar-search pull-right" id="srchBox" action="">' +
+         ' <input type="text" class="search-query span2" id="searchBox" placeholder="Search"></form>' +
 
 
          ' <ul class="nav"><li><a href="/Tools/Default.aspx">Tools</a></li> ' +
@@ -76,7 +76,7 @@ var nav = [
 
 urlCheck('PortList.asp', function(){new Navigation('mainNav','nav nav-link',nav).createMenu()});
 
-
+searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
 
