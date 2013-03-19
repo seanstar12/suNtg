@@ -11,8 +11,8 @@ chrome.extension.onMessage.addListener( function(request,sender,response) {
   }
 });
 
-//  var t = document.createElement('script');
-//  t.innerHTML = "var url = \"" + chrome.extension.getURL('') + "\";";
-//  document.documentElement.insertBefore(t);
+  var t = document.createElement('script');
+  t.innerHTML = "var url = \"" + chrome.extension.getURL('') + "\";";
+  document.documentElement.insertBefore(t);
 
 

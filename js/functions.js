@@ -525,7 +525,7 @@ form = {
                   .append($('<div/>')
                     .addClass('bar')
                     .attr('id','updateProgressBar')
-                    .css('width','1%')
+                    .css('width','5%')
                   )
                 );
     
@@ -594,7 +594,6 @@ searchTool = {
   
   search: function(query){
     this.query = query;
-    console.log(query);
     $('.Content').html('').append( $('<div/>')
                             .attr('class','srchResults')
                             .attr('id','srchResults'));
@@ -627,5 +626,11 @@ searchTool = {
         e.preventDefault();
         searchTool.search($('#searchBox').val());
       });
-  }
+    $('body').keydown(function(e){
+      if (e.keyCode == 32 && e.altKey){
+        e.preventDefault();
+        $('#searchBox').select();
+      }
+    });
+  },
 }
