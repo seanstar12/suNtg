@@ -52,6 +52,9 @@ body {
 .portTable {
   width: 650px;
 }
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: rgb(255,180,180);
+}
 
 #updateProgressMsg {
   color: #1F5C99;
