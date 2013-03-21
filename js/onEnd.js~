@@ -19,7 +19,6 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
          ' <li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
          ' <li><a href="/NetInfo/FloorPlans.asp">Floor Plans</a></li> ' +
          ' <li><a href="/NetInfo/BuildingInventory.asp">Inventory</a></li> ' +
-         ' <li><a id="yearlyInventory" href="#">Yearly Enventory</a></li> ' +
          ' </ul></div></div></div></div> ';
 
 var head = document.getElementsByClassName('header')[0];
@@ -66,11 +65,6 @@ head.innerHTML = b;
 
 //urlCheck('PortList.asp',btnDates);
 
-$('#yearlyInventory').on('click',function(){
-  if (confirm('Are you sure you want to run this?\nIt pulls in a lot of data...')) {
-    getYearlyData();
-  }
-});
 
 var nav = [
     new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
@@ -87,6 +81,11 @@ urlCheck('PortList.asp', function(){
 
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
+
+
+
+
+
 
 // Start of on change for port list. changes the color of the row when changed
 //$('[name="Update"]').live('change', function(){

@@ -68,6 +68,7 @@ nT.msu = {
       xhrFields: {withCredentials: true},
       url: 'https://ntg.missouristate.edu/Login/Login.aspx',
       context: this,
+      global: false,
       data: {
         '__LASTFOCUS':'',
         '__VIEWSTATE':tempDiv.querySelector('#__VIEWSTATE').value,
@@ -78,12 +79,11 @@ nT.msu = {
         'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
         'ctl00$MainContent$ImageButton1.x':'15',
         'ctl00$MainContent$ImageButton1.y':'23'
-      },
-      global: false,
-      success: function(){
+        } 
+    }).done(function(){
         this.postLoginSuccess();
-      }
     });
+    
   },
 
   postLoginSuccess: function() {
@@ -101,19 +101,22 @@ nT.msu = {
   },
 
   refresh: function (){
-    $.ajax({
-      type: 'GET',
-      cache: false,
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+Date.now(),
-      success: function () {
-        var date = new Date();
-        if (nT.storage.get('other','debug') == 1) {
-          console.log('Refresh with success: '+ date.toTimeString());
+    var searchVars = ['/EquipmentDetail.asp?Tag=X3403&',
+                    '/EquipmentList.asp?dbsSMSUTag=X3604&'];
+    $.each(searchVars, function(){
+      $.ajax({
+        type: 'GET',
+        cache: false,
+        url: 'https://ntg.missouristate.edu/NetInfo/' + this + Date.now(),
+        error: function(){
+          localStorage.requestFailureCount ++;
         }
-      },
-      error: function(){
-        localStorage.requestFailureCount ++;
-      }
+      }).done(function(){
+          var date = new Date();
+          if (nT.storage.get('other','debug') == 1) {
+            console.log('Refresh with success: '+ date.toTimeString());
+          }
+      });
     });
   },
 
@@ -146,6 +149,7 @@ nT.msu = {
 
     if (typeof(this.loggedInFinished) == "function") {
       this.loggedInFinished(cbVar);
+      this.refresh();
       delete this.loggedInFinished;
     }
   },
