@@ -627,10 +627,457 @@ searchTool = {
         searchTool.search($('#searchBox').val());
       });
     $('body').keydown(function(e){
-      if (e.keyCode == 191 && e.altKey){
+      if (e.keyCode == 32 && e.altKey){
         e.preventDefault();
         $('#searchBox').select();
       }
     });
   },
 }
+
+function getYearlyData() {
+  var xTagsL = ['119189','118655','122222222','118655'];
+  $('.Outer_Nav').toggle(400);
+  $('.Page').append('<div id="dumpster"></div>');
+  
+  $('<div/>').addClass('alert alert-info')
+              .attr('id','updateProgressAlert')
+              .css('display','none')
+              .prependTo('#dumpster')
+              .html('<h4>Searching XTAGS:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>'+
+              '<a class="close" data-dismiss="alert" href="#">&times;</a>')
+              .toggle(10)
+              .append( $('<div/>')
+                .addClass('progress progress-striped active')
+                .attr('id','updateProgressCont')
+                .append($('<div/>')
+                  .addClass('bar')
+                  .attr('id','updateProgressBar')
+                  .css('width','5%')
+                )
+              );
+
+  $('<table/>').attr('class','table table-hover')
+              .attr('id','resultTable')
+              .appendTo('#dumpster')
+              .append( $('<thead><tr></tr></thead><tbody id="success"></tbody><tbody id="error"></tbody>')
+              );
+  $.each(['#','Serial','Description', 'Building','Closet','Date'], function(i, v){
+    $('#dumpster thead tr').append($('<td/>').html(v));
+  });
+ 
+  var totalCache = compServTags.length; 
+  //var totalCache = xTags.length;
+  var progress = 0;
+  var errorCount = 0;
+  var validCount = 0;
+
+  //compServTags  //xTags
+  
+  $.each(compServTags, function(i,l){
+    $.ajax({
+      type: 'GET',
+      cache: false,
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+this,
+      error: function(){
+        console.log('Error:> ' + this);
+        
+      }
+    }).done(function(data, str){
+      var bank = $('table',data);
+      
+      if ($('#dbInventory_s_SMSUTag',bank).val() != ''){
+        var el = [];
+        el.push( $('#dbInventory_s_SMSUTag',bank).val());
+        el.push( $('#dbInventory_s_SerialNumber',bank).val());
+        el.push( $('#dbInventory_n_DescriptionID',bank).val());
+        el.push( $('#dbInventory_s_CurBldg',bank).val());
+        el.push( $('#dbInventory_s_CurCloset',bank).val());
+        el.push( $('#dbInventory_d_VerifyDt',bank).val());
+        
+        validCount++;
+        var tBody = $('#success');
+        var tr = $('<tr/>').addClass('success');                                    
+        setTimeout(function(){
+          $(tr).toggleClass('success');
+        },200);
+        $.each(el, function(key,val){
+          tr.append($('<td/>').html(val)); 
+        });
+
+        $(tBody).prepend(tr);
+
+        //console.log(this + '  ' + el[0] + ' ' + el[1] + ' ' + el[2] + ' ' + el[3] + ' ' + el[4] );
+        
+      } 
+      else {
+        errorCount++;
+      if (str == 'success'){  
+        $('#error').prepend(
+          $('<tr><td>'+this+'</td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>').addClass('error')
+        );                                  
+        //$.each(el, function(key,val){
+        //  tr.append($('<td/>').html(val)); 
+        //});
+            
+        $(tBody).prepend(tr);
+        
+        console.log('%c' + this + ' Oh noes! Not Found','color: #f91483');
+      }
+     } 
+      progress++;
+      //console.log(progress + '  ' + totalCache);
+      
+      if (progress/totalCache <= 1){
+        $('#updateProgressMsg').html(" "+ this +"");
+        $('#updateProgressBar').css('width', (((progress) / totalCache)*100)+'%');
+      }
+      if (progress/totalCache == 1){
+        progress = 0;
+
+        $('#updateProgressAlert').toggleClass('alert-info').toggleClass('alert-success');
+        $('h4',$('#updateProgressAlert')).html('Found ' + validCount + ', but couldn\'t find ' + errorCount);
+        $('#updateProgressCont').attr('class','progress progress-success');
+        
+        //setTimeout(function(){
+        //  $('#updateProgressAlert').fadeOut(500);
+        //}, 3000);
+      } 
+      }.bind(this));
+  
+  });
+}
+var yearlyInventory = {
+  tableRows: ['#','Serial','Description', 'Building','Closet','Date'],
+
+  addAlert: function() {
+    $('.Outer_Nav').toggle(400);
+    $('.Page').append('<div id="dumpster"></div>');
+    
+    $('#container').append('<div id="dumpster"></div>');
+  
+    $('<div/>').addClass('alert alert-info')
+                .attr('id','updateProgressAlert')
+                .css('display','none')
+                .toggle(10)
+                .prependTo('#dumpster')
+                .html('<h4>Searching XTAGS:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>'+
+                  '<a class="close" data-dismiss="alert" href="#">&times;</a>')
+                .append( $('<div/>')
+                  .addClass('progress progress-striped active')
+                  .attr('id','updateProgressCont')
+                  .append($('<div/>')
+                    .addClass('bar')
+                    .attr('id','updateProgressBar')
+                    .css('width','1%')
+                  )
+                );
+  },
+
+  addTable: function() {    
+    $('<table/>').attr('class','table table-hover')
+                   .attr('id','resultTable')
+                   .appendTo('#dumpster')
+                   .append( $('<thead><tr></tr></thead><tbody id="success"></tbody><tbody id="error"></tbody>')
+                  );
+    $.each(this.tableRows, function(i, v){
+      $('#dumpster thead tr').append($('<td/>').html(v));
+    });
+  },
+  
+  getData: function(xTags) {
+    var errorCount =0, validCount = 0, progress =0, totalCache = xTags.length;
+    $.each(xTags, function(i,l){
+    $.ajax({
+      type: 'GET',
+      cache: false,
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+this,
+      error: function(){
+        console.log('Error:> ' + this);
+      }
+    }).done(function(data, str){
+      var bank = $('table',data);
+      console.log(data);
+      if ($('#dbInventory_s_SMSUTag',bank).val() != ''){
+        var el = [];
+        el.push( $('#dbInventory_s_SMSUTag',bank).val());
+        el.push( $('#dbInventory_s_SerialNumber',bank).val());
+        el.push( $('#dbInventory_n_DescriptionID',bank).val());
+        el.push( $('#dbInventory_s_CurBldg',bank).val());
+        el.push( $('#dbInventory_s_CurCloset',bank).val());
+        el.push( $('#dbInventory_d_VerifyDt',bank).val());
+        console.log(el);
+        validCount++;
+        var tBody = $('#success');
+        var tr = $('<tr/>').addClass('success');                                    
+        setTimeout(function(){
+          $(tr).toggleClass('success');
+        },200);
+
+        $.each(el, function(key,val){
+          tr.append($('<td/>').html(val)); 
+        });
+
+        $(tBody).prepend(tr);
+        
+      } 
+      else {
+        errorCount++;
+      if (str == 'success'){  
+        $('#error').prepend(
+          $('<tr><td>'+this+'</td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>').addClass('error')
+        );                                  
+
+        $(tBody).prepend(tr);
+        
+        console.log('%c' + this + ' Oh noes! Not Found','color: #f91483');
+      }
+     } 
+      progress++;
+      
+      if (progress/totalCache <= 1){
+        $('#updateProgressMsg').html(" "+ this +"");
+        $('#updateProgressBar').css('width', (((progress) / totalCache)*100)+'%');
+      }
+      if (progress/totalCache == 1){
+        progress = 0;
+
+        $('#updateProgressAlert').toggleClass('alert-info').toggleClass('alert-success');
+        $('h4',$('#updateProgressAlert')).html('Found ' + validCount + ', but couldn\'t find ' + errorCount);
+        $('#updateProgressCont').attr('class','progress progress-success');
+        
+        //setTimeout(function(){
+        //  $('#updateProgressAlert').fadeOut(500);
+        //}, 3000);
+      } 
+      }.bind(this));
+  
+  });
+  },
+
+  init: function(xTags){
+    console.log(xTags);
+    this.addAlert();
+    this.addTable();
+    this.getData(xTags);
+  }
+}
+var xTags = 
+  [
+    "78387",
+    "81981",
+    "101393",
+    "102955",
+    "103254",
+    "104296",
+    "106044",
+    "108945",
+    "110220",
+    "111341",
+    "111778",
+    "112027",
+    "113114",
+    "113475",
+    "114536",
+    "114537",
+    "115173",
+    "116214",
+    "116814",
+    "117581",
+    "117665",
+    "117696",
+    "117764",
+    "118181",
+    "118215",
+    "118216",
+    "118218",
+    "118247",
+    "118298",
+    "118301",
+    "118327",
+    "118403",
+    "118450",
+    "118451",
+    "118454",
+    "118455",
+    "118465",
+    "118490",
+    "118491",
+    "118600",
+    "118625",
+    "118626",
+    "118627",
+    "118628",
+    "118629",
+    "118636",
+    "118637",
+    "118638",
+    "118639",
+    "118640",
+    "118641",
+    "118653",
+    "118654",
+    "118655",
+    "118656",
+    "118657",
+    "118658",
+    "118659",
+    "118660",
+    "118661",
+    "118662",
+    "118663",
+    "118664",
+    "118665",
+    "118666",
+    "118667",
+    "118668",
+    "118669",
+    "118670",
+    "118671",
+    "118672",
+    "118673",
+    "118674",
+    "118675",
+    "118676",
+    "118677",
+    "118678",
+    "118679",
+    "118680",
+    "118681",
+    "118682",
+    "118683",
+    "118684",
+    "118685",
+    "118686",
+    "118687",
+    "118688",
+    "118689",
+    "118690",
+    "118691",
+    "118692",
+    "118693",
+    "118694",
+    "118695",
+    "118696",
+    "118697",
+    "118698",
+    "118699",
+    "118700",
+    "118701",
+    "118702",
+    "118703",
+    "118817",
+    "118820",
+    "118836",
+    "118837",
+    "119029",
+    "119030",
+    "119031",
+    "119032",
+    "119035",
+    "119037",
+    "112180",
+    "122220",
+    "122221",
+    "122222",
+    "122281",
+    "122282",
+    "122453",
+    "122566",
+    "122567",
+    "122568",
+    "f1143",
+    "f1227",
+    "f1228",
+    "f1229",
+    "f1230"
+  ];
+
+var compServTags = [
+    "104137",
+    "106599",
+    "112561",
+    "112562",
+    "113296",
+    "115631",
+    "115837",
+    "115841",
+    "116287",
+    "117289",
+    "117873",
+    "118200",
+    "118297",
+    "118319",
+    "118344",
+    "118345",
+    "118354",
+    "118408",
+    "118437",
+    "118438",
+    "118482",
+    "118483",
+    "118487",
+    "118550",
+    "118814",
+    "118815",
+    "118816",
+    "118833",
+    "118834",
+    "118852",
+    "118874",
+    "118875",
+    "118877",
+    "118900",
+    "118920",
+    "118921",
+    "118929",
+    "118930",
+    "118931",
+    "118971",
+    "118972",
+    "119067",
+    "119068",
+    "119069",
+    "119130",
+    "119131",
+    "119170",
+    "119180",
+    "119181",
+    "119182",
+    "119183",
+    "119184",
+    "119185",
+    "119186",
+    "119187",
+    "119188",
+    "119189",
+    "119190",
+    "119191",
+    "119192",
+    "119193",
+    "119194",
+    "119195",
+    "119196",
+    "119227",
+    "119228",
+    "119229",
+    "119237",
+    "119238",
+    "119296",
+    "119487",
+    "119488",
+    "F0001144",
+    "F0001186",
+    "F0001187",
+    "F0001188",
+    "F0001189",
+    "F0001207",
+    "F0001218",
+    "F0001325",
+    "F0001326",
+    "F0001388",
+    "F0001403",
+    "F0001404",
+    "F0001405",
+    "F0001406"
+    ];

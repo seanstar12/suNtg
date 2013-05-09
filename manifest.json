@@ -32,7 +32,7 @@
     "js/bootstrap.js",
     "js/functions.js",
     "js/reload.js",
-    "js/meny.min.js",
+    "js/xTags.js",
     "reload.html",
     "portal.html",
     "images/spinner.gif",
@@ -52,7 +52,7 @@
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/onEnd.js"],
+      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/xTags.js","js/onEnd.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_end"
     }

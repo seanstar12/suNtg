@@ -4,31 +4,15 @@
   <meta charset="utf-8" />
   <title>NTG Options</title>
   <link rel="stylesheet" type="text/css" href="lib/chromebootstrap/chrome-bootstrap.css" />
-  <script src="/js/include.js" type="text/javascript"></script>
-  <script src="/js/zepto.min.js" type="text/javascript"></script>
   <script src="/js/jquery-1.8.3.min.js" type="text/javascript"></script>
-  <script src="/js/options.js" type="text/javascript"></script>
   <script src="/js/jsonSettings.js" type="text/javascript"></script>
+  <script src="/js/include.js" type="text/javascript"></script>
+  <script src="/js/options.js" type="text/javascript"></script>
 </head>
 <body class="frame">
   <div class="navigation">
     <h1><span id="toolLabel">NTG Tool</span></h1>
-    <ul class="menu">
-      <li class="selected">
-        <a href="#userSettings">User</a>
-      </li>
-      <!--<li>
-        <a href="#interface">Interface</a>
-      </li>
-      <li>
-        <a href="#bugs">Bug Fixes</a>
-      </li>
-    </ul> -->
-    <ul class="menu">
-      <li>
-        <a href="#about">About</a>
-      </li>
-    </ul>
+    <ul class="menu"></ul>
   </div>
   <div class="mainview view">
     <div id="userSettings" class="selected">

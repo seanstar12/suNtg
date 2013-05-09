@@ -108,7 +108,8 @@ var setConf = {
 	 	}
 	}
 var d = setConf.loadTemplates();
-d;
+//d;
+//console.log(d);
 	
 		/*		
 				//this.Menu = this.templates.menu;

@@ -1,4 +1,5 @@
 addScripts(['js/jquery-1.8.3.min.js',
+            'js/xTags.js',
             'js/functions.js',
             'js/bootstrap.js',
             'css/bootstrap.css',

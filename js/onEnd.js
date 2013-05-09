@@ -15,17 +15,37 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
          ' <input type="text" class="search-query span2" id="searchBox" placeholder="Search"></form>' +
 
 
-         ' <ul class="nav"><li><a href="/Tools/Default.aspx">Tools</a></li> ' +
-         ' <li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
-         ' <li><a href="/NetInfo/FloorPlans.asp">Floor Plans</a></li> ' +
-         ' <li><a href="/NetInfo/BuildingInventory.asp">Inventory</a></li> ' +
-         ' <li><a id="yearlyInventory" href="#">Yearly Enventory</a></li> ' +
-         ' </ul></div></div></div></div> ';
+//         ' <ul class="nav"><li><a href="/Tools/Default.aspx">Tools</a></li> ' +
+//         ' <li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
+//         ' <li><a href="/NetInfo/FloorPlans.asp">Floor Plans</a></li> ' +
+//         ' <li><a href="/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99">Inventory</a></li> ' +
+//         ' <li><a id="yearlyInventory" href="#">Yearly Enventory</a></li> ' +
+//         ' </ul></div></div></div></div> ';
+          ' <ul class="nav" id="custNavBar"></ul> ' +
+          ' </div></div></div></div> ';
+
+var headItems = [{'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'}, 
+                  {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
+                  {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
+                  {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'}, 
+                  {'title':'Yearly Enventory','id':'yearlyInventory','value':'#'}, 
+                ];
+
+
+//console.log(headItems);
+
+//console.log(JSON.stringify(headItems));
+
 
 var head = document.getElementsByClassName('header')[0];
 head.setAttribute('class','Header');
 head.innerHTML = b;
 
+for (var i = 0; i < headItems.length; i++){
+  //console.log(headItems[i]['title']);
+  $('#custNavBar').append(
+                         $('<li>', {id: headItems[i]['id']}).html('<a href='+ headItems[i]['value'] +'>' +headItems[i]['title']+ '</a>'));
+}
 //$('.header').html(b).attr('class','Header');
 
 //Pretty Buttons
@@ -67,8 +87,17 @@ head.innerHTML = b;
 //urlCheck('PortList.asp',btnDates);
 
 $('#yearlyInventory').on('click',function(){
-  if (confirm('Are you sure you want to run this?\nIt pulls in a lot of data...')) {
-    getYearlyData();
+  var pr = prompt("0: I've made a mistake.\n1: Networking Xtags\n2: Comp Serv Tags");
+  var tags = "";
+  switch (pr) {
+    case 0:
+      break;
+    case 1: 
+      yearlyInventory.init(xTags.xTags);
+      break;
+    case 2:
+  yearlyInventory.init(xTags.compServTags);
+      break;
   }
 });
 
