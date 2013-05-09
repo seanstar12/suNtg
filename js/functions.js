@@ -641,6 +641,61 @@ searchTool = {
   },
 }
 
+var bldgUpdate = {};
+
+bldgUpdate = {
+
+  data: [],
+
+  search: function(bldgQuery){
+    this.bldgQuery = bldgQuery;
+    
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsCurBldg='+bldgQuery+'*',
+      success: function(data){
+        var temp = $('table',data);
+        if (temp.length > 0 ) {  //if has results
+          $('a',temp).each(function(){
+            var href = $(this).attr('href');
+              if (href.indexOf("asp?Tag=") > 0 ){ 
+                bldgUpdate.data.push(href.split('=')[1]); //janky. don't care. working on for building auto update
+              }
+          });
+          
+          //if (bldgUpdate.data.length > 0) console.log(bldgUpdate.data);
+
+//          $('#srchResults')
+//              .append( $('<div/>')
+//                .attr('class','searchItem')
+//                .html($(temp).addClass('table table-condensed table-hover'))
+//                .prepend('<h2>' + 'things' + ' Results</h2>'));
+        }
+      }
+    });
+
+  },
+
+  date: function(date){
+    var url = "https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp";
+
+    $.each(bldgUpdate.data, function(i,val){
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          'tag':'xxxxxxx'
+        },
+        success: function(data){
+
+        }
+
+      });
+    
+    });
+  }
+}
+
 function getYearlyData() {
   var xTagsL = ['119189','118655','122222222','118655'];
   $('.Outer_Nav').toggle(400);
