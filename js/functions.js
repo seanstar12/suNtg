@@ -603,12 +603,18 @@ searchTool = {
         type: 'POST',
         url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?'+val+'='+query+'*',
         success: function(data){
+          var tags = [];
           var temp = $('table',data);
           if (temp.length > 0 ) {  //if has results
             $('a',temp).each(function(){
               var href = $(this).attr('href');
               $(this).attr('href','/NetInfo/' + href);
+              if (href.indexOf("asp?Tag=") > 0 && key == "Location"){ 
+                tags.push(href.split('=')[1]); //janky. don't care. working on for building auto update
+              }
             });
+            
+            if (tags.length > 0) console.log(tags);
 
             $('#srchResults')
                 .append( $('<div/>')
