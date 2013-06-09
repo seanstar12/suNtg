@@ -25,7 +25,7 @@
   ],
   "web_accessible_resources": [
     "js/jquery-1.8.3.min.js",
-    "js/bootstrap.js",
+    "js/bootstrap.min.js",
     "js/functions.js",
     "js/reload.js",
     "js/tabber-minimized.js",
