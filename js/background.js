@@ -1,207 +1,155 @@
-function checkForURL(tabId, changeInfo, tab) {
-  if (tab.url.indexOf('ntg.missouristate') > -1) {
-    chrome.pageAction.show(tabId);
+var bg = {};
+bg = {
+  
+  authPageCheck: function(tabId, changeInfo, tab){
+     // set's icon and checks for auth page. made no sense to have two listeners
+     // when they both run on every page.
 
-      var data = nT.storage.obj();
-      data.credentials = "";
-      data.data = "reqFunc";
-      setTimeout(function(){
-        chrome.tabs.sendMessage(tab.id, data,function(response){});
-      }, 200);
-  }
-}
-
-function msuRefresh(){
-  $.ajax({
-    type: 'GET',
-    cache: false,
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=X3604&'+Date.now(),
-    success: function () {
-      var date = new Date();
-      console.log('MSU Refresh with success: '+ date.toTimeString());
-    },
-    error: function(){
-      console.log(xmlhttp);
-      console.log("Returned Login Page -- We Have Failed.");
-      localStorage.requestFailureCount ++;
-    }
-  });
-}
-
-function loggedIn(){
-  if (localStorage.hasSettings){
-    $.ajax({
-      type: 'GET',
-      url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-      success: loggedInSuccess,
-    });
-  }
-}
-
-function loggedInSuccess(data) {
+    var temp = tab.url.toLowerCase();
+    var siteUrl = 'https://ntg.missouristate.edu'
     
-    data = data.replace(/<script(.|\s)*?\/script>/g, '');
-    data = data.replace(/<a(.|\s)*?\/a>/g, '');
-    //console.log(data);
-    if ($('#ctl00_MainContent_UserID',data).length > 0 ) {
-      localStorage.loggedIn = false;
-      console.log('Attempting Log In');
-      msuGet();
-      //console.log('Ran msuGet()');
-    } else  {
-      localStorage.loggedIn = true;
-      //console.log('You\'re logged in.');
-      msuRefresh();
+    if (tab.url.indexOf('ntg.missouristate') > -1 && changeInfo.status === 'loading') {
+        chrome.pageAction.show(tabId);
     }
-}
-
-function msuGet() {
-  //console.log('Getting Session Vars');
-  if (nT.storage.get('credentials','username').length > 3 && nT.storage.get('credentials','password').length > 3) {
     
-    $.ajax({
-      url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-      success: function(req) { msuGetProcess(req); },
-    });
-  }
-  else chrome.tabs.create({url: "options.html"});
-}
+    if (temp.indexOf('login/login.aspx') > -1 && changeInfo.status === 'loading') {
+      var tabArgs = null;
+      
+      if ((tab.url).indexOf('URL=') > 0){
+        //if (debug == 1) 
+        console.log('Login.aspx: New Url='+decodeURIComponent((tab.url).split('URL=')[1]));
+        tabArgs = {url:siteUrl+decodeURIComponent((tab.url).split('URL=')[1])};
+      } 
+      else if ((tab.url).indexOf('Url=') > 0){
+        //if (debug == 1) 
+        console.log('Login.aspx: New Url='+decodeURIComponent((tab.url).split('ReturnUrl=')[1]));
+        tabArgs = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
+      }
 
-function msuGetProcess(req) {
-  console.log('msuGet -> msuGetProcess');
-  var tempDiv = document.createElement('div');
-  tempDiv.innerHTML = req.replace(/<img(.|\s)*?\/>/g, '');
-  tempDiv.innerHTML = req.replace(/<a(.|\s)*?\/a>/g, '');
-  tempDiv.innerHTML = req.replace(/<script(.|\s)*?\/script>/g, '');
-  
-  // tempDiv now has a DOM structure:
-  tempDiv.childNodes;
+      //if (autoLogin == 1) 
+      nT.msu.logIn(bg.pageRefresh(tabArgs));
+    }
+    if (temp.indexOf('accessdenied.aspx') > -1 ) {
+      //if (debug == 1) 
+      console.log('AccessDenied.aspx: New Url='+((tab.url).split('Referer=')[1]));
+      bg.pageRefresh({url:siteUrl+((tab.url).split('Referer=')[1])});
+    }
+  },
 
-  localStorage.eventval = tempDiv.querySelector('#__EVENTVALIDATION').value;
-  localStorage.viewstate = tempDiv.querySelector('#__VIEWSTATE').value;
-  
-//  console.log(localStorage.eventval);
-//  console.log(localStorage.viewstate);
+  pageRefresh: function(tabArgs){
+    console.log('pageRefresh');
+    chrome.tabs.update(tabArgs);
+  },
 
-  // remove unneeded div
-  delete tempDiv;
-  
-  msuPost();
-}
+  onAlarm: function(alarm){
+    if(debug ==1) {
+      console.log('onAlarm:> '+JSON.stringify(alarm));
+    }
+    if (alarm.name == 'keepAliveTimed'){
+      chrome.alarms.clearAll();
+    }
+    else if (alarm.name == 'keepAlive'){
+      nT.msu.loggedIn(bg.onAlarmCallback);
+    }
+  },
 
-function msuPost(){
-  console.log('msuGetProcess -> msuPost()');
-  var req = $.ajax({
-    type: 'POST',
-    xhrFields: {
-            withCredentials: true
-    },
-    url: 'https://ntg.missouristate.edu/Login/Login.aspx',
-    data: {
-      '__LASTFOCUS':'',
-      '__VIEWSTATE':localStorage.viewstate,
-      '__EVENTTARGET':'',
-      '__EVENTARGUMENT':'',
-      '__EVENTVALIDATION':localStorage.eventval,
-      'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
-      'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
-      'ctl00$MainContent$ImageButton1.x':'15',
-      'ctl00$MainContent$ImageButton1.y':'23'
-    },
-    success :  function(callback) { 
-        console.log(req.getAllResponseHeaders());
-        console.log('msuGetProcess:success');
-        localStorage.loginCount++;
-        localStorage.loggedIn = true;
-    }, 
-  });
-}  
-
-function onInit() {
-  //console.log('Initializing Plugin');
-  localStorage.loggedIn = false;
-  localStorage.loginCount = 0;
-  //localStorage.initTime = Number(Date.now());
-  //localStorage.quitTime = Number(Number(Date.now()) + Number(nT.storage.get('session','keepAliveTimeout')*60));
-  //console.log("Init: "+Number(localStorage.initTime) + " Quit: "+Number(localStorage.quitTime));
-  //console.log("Quit - Init: " + (localStorage.quitTime - localStorage.initTime));
-  startRequest({scheduleRequest:true});
-  
-  chrome.alarms.create('watchdog', {periodInMinutes: 6}); // watchdog incase of crash
-}
-
-function scheduleRequest() {
-  console.log('Making Request');
-  //console.log('init: '+localStorage.initTime+' quit: '+localStorage.quitTime+' now: '+Date.now());
-  localStorage.currentTime = Number(Date.now());
-        chrome.alarms.create('refresh',{periodInMinutes: 1});
-      //chrome.alarms.create('refresh',{periodInMinutes: 1});
-  chrome.alarms.get('refresh', function(alarm){console.log('Alarm: '+alarm.scheduledTime);});
-}
-
-function startRequest(params) {
-  if (params.scheduleRequest){
-    if (nT.storage.get('session','keepAlive')){
-      if (nT.storage.get('session','keepAliveTimeout') > 0){
-        console.log('startRequest:> keepAliveTimeout:> schedule');
-        scheduleRequest();
+  onAlarmCallback: function(value) {
+    if (value == 1){
+      nT.msu.refresh();
+    } else if(value == 0){
+      if (nT.storage.get('session','autoLogin') == 1){ 
+        nT.msu.logIn();
       }
       else {
-        console.log('keepAlive:> else schedule');
-        scheduleRequest();
+        chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
+          if (stuff[0] == null){ 
+            if (nT.storage.get('other','nag') == 1){
+              console.log('I need credentials to log you back in. Log in here:');
+              alert('You\'re Logged Out! Imma open up the login page for you. ');
+            }
+            if (nT.storage.get('session','newTab') == 1){
+              chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
+            }
+          }
+        });
       }
     }
-  }
-  if (localStorage.hasSettings){
-    if (nT.storage.get('session','logIn') == 1){
-      loggedIn();
-    }
-  }
-}
+  },
 
-function onAlarm(alarm) {
-  if (alarm) {
-        startRequest({scheduleRequest:true});
-        console.log('Alarm', alarm);
-  }
-  else if (alarm.name == 'watchdog') {
-    onWatchdog();
-  } else startRequest({scheduleRequest:true});
-}
+  loggedInCallBack: function(value){
+    if(value == 0) nT.msu.logIn();
+  },
 
-function onWatchdog(){
-  chrome.alarms.get('refresh', function(alarm) {
-    if (!alarm) {
-      console.log('Refresh alarm is missing.');
-      startRequest({scheduleRequest:true});
-    }
-  });
-}
-
-chrome.tabs.onUpdated.addListener(checkForURL); // icon set
-chrome.runtime.onInstalled.addListener(onInit); // set watchdog and failure count
-chrome.alarms.onAlarm.addListener(onAlarm); // starting chrome alarm for reload
-
-chrome.extension.onMessage.addListener(function(msg,_,sendResponse) {
-  console.log('Got message' + JSON.stringify(msg));
-  chrome.tabs.getSelected(null, function(tab) {
-    if (msg.data == "loginPage"){
-      loggedIn();
-      if(localStorage.loggedIn) chrome.tabs.sendMessage(tab.id, {data: "reload"}, function(response) {});
-    }
+  init: function(){
+    //chrome.tabs.create({url:'background.html'});
     
-    else if (msg.data == "optionsSave"){
-      onInit();
+    localStorage.loginCount = 0;
+    if (localStorage.settings == null){
+      nT.storage.defaults();
     }
-    
-    else if (msg.data == "reqFunc"){
-      var data = nT.storage.obj();
-      data.credentials = "";
-      data.data = "reqFunc";
-      chrome.tabs.sendMessage(tab.id, data,function(response){
+    if (nT.storage.get('session','keepAlive') == 1){
+      if (nT.storage.get('session','keepAliveTimeout') > 0){
+        chrome.alarms.create('keepAliveTimed',
+          {when:(Date.now() + (nT.storage.get('session','keepAliveTimeout')*60000))});
+      }
+      chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('session','keepAliveRate'))});
+    }
+    //if (autoLogin == 1) {
+      nT.msu.loggedIn(bg.loggedInCallBack);
+    //}
+    if(debug == 1) chrome.alarms.getAll(function(alarms){console.log(JSON.stringify(alarms));});
+  }
+}
 
-      });
-    }
-  });
+function onInstalled(details){
+  if (localStorage.settings == null) nT.storage.defaults();
+   
+  if (details.reason == "update"){
+    chrome.alarms.clearAll();
+    bg.init();
+
+    //resets the ntgTool icon in the bar. (it gets set on page update so we have to force it here)
+    chrome.tabs.query({active:true,windowId: chrome.windows.WINDOW_ID_CURRENT}, function(tab){
+      chrome.pageAction.show(tab[0].id);
+    });
+  } 
+  else if (details.reason == "chrome_update"){
+    chrome.alarms.clearAll();
+    bg.init();
+  }
+  else if (details.reason == "install"){
+    chrome.tabs.create({url:'options.html'});
+    bg.init();
+  }
+  
+  console.log('onInstalled: ' + details.reason);
+}
+
+function onStartup(){
+  console.log('Starting NTG Tool');
+  bg.init();
+}
+
+if (localStorage.settings != null){ 
+  //var debug = nT.storage.get('other','debug');
+  var debug = 1;
+  //var autoLogin = 1;
+  var autoLogin = nT.storage.get('session','autoLogin');
+  //console.log(nT.storage.get('session','autoLogin'));
+}
+
+chrome.runtime.onStartup.addListener(onStartup);
+chrome.runtime.onInstalled.addListener(onInstalled);
+chrome.alarms.onAlarm.addListener(bg.onAlarm);
+chrome.tabs.onUpdated.addListener(bg.authPageCheck);
+
+chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
+  if (msg.data == "optionsSave"){
+    chrome.alarms.clearAll();
+    bg.init();
+  }
+  else if (msg.data = "reqFeatures"){
+    sendResponse(nT.storage.config());
+  }
 });
 

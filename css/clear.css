@@ -1,0 +1,14 @@
+.header {
+  display: none;
+}
+
+.FavCol h3,
+.NetHeading,
+.ColumnSet h3 {
+  background: none !important;
+}
+
+div.Outer_Nav {
+  border-left: solid 179px #fff !important;
+}
+

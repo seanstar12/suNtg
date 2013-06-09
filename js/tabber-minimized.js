@@ -38,3 +38,4 @@ function tabberAutomaticOnLoad(tabberArgs)
 {var oldOnLoad;if(!tabberArgs){tabberArgs={};}
 oldOnLoad=window.onload;if(typeof window.onload!='function'){window.onload=function(){tabberAutomatic(tabberArgs);};}else{window.onload=function(){oldOnLoad();tabberAutomatic(tabberArgs);};}}
 if(typeof tabberOptions=='undefined'){tabberAutomaticOnLoad();}else{if(!tabberOptions['manualStartup']){tabberAutomaticOnLoad(tabberOptions);}}
+

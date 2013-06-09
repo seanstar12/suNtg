@@ -2,33 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>su@NTG</title>
+  <title>NTG Options</title>
   <link rel="stylesheet" type="text/css" href="lib/chromebootstrap/chrome-bootstrap.css" />
-  <script src="/js/include.js" type="text/javascript"></script>
-  <script src="/js/zepto.min.js" type="text/javascript"></script>
   <script src="/js/jquery-1.8.3.min.js" type="text/javascript"></script>
-  <script src="/js/options.js" type="text/javascript"></script>
   <script src="/js/jsonSettings.js" type="text/javascript"></script>
+  <script src="/js/include.js" type="text/javascript"></script>
+  <script src="/js/options.js" type="text/javascript"></script>
 </head>
 <body class="frame">
   <div class="navigation">
-    <h1><span id="toolLabel">su@NTG</span></h1>
-    <ul class="menu">
-      <li class="selected">
-        <a href="#userSettings">User</a>
-      </li>
-      <!--<li>
-        <a href="#interface">Interface</a>
-      </li>
-      <li>
-        <a href="#bugs">Bug Fixes</a>
-      </li>
-    </ul> -->
-    <ul class="menu">
-      <li>
-        <a href="#about">About</a>
-      </li>
-    </ul>
+    <h1><span id="toolLabel">NTG Tool</span></h1>
+    <ul class="menu"></ul>
   </div>
   <div class="mainview view">
     <div id="userSettings" class="selected">
@@ -36,7 +20,7 @@
         <h1>User Settings <small>Because you're beautiful</small></h1>
       </header>
       <div class="content">
-        <section class="su" style="display:none;">
+        <section>
           <h3>Credentials</h3>
           <div class="checkbox">
             <input type="checkbox" name="autoLogin" id="autoLogin" >
@@ -82,7 +66,7 @@
                 <option value="10">10 Min</option>
               </select>
               <label for="keepAliveRate">&emsp;GET page rate (Server logs you out after ~10 min)</label><br />
-            </section><!--
+            </section>
             <div class="checkbox">
               <input type="checkbox" name="formAuto" id="formAuto">
               <label for="formAuto">&emsp;ATTEMPT to Force form autofill (sometimes it just doesn't wanna.)</label>
@@ -97,8 +81,8 @@
             </div>
             <div class="checkbox">
               <input type="checkbox" name="idle" id="idle" disabled>
-              <label for="idle">&emsp;Experimental Idle Feature (NOT complete Reload after change)</label>
-            </div> 
+              <label for="idle">&emsp;Experimental Idle Feature (NOT complete -- Reload after change)</label>
+            </div>
             <section>
               <select name="idleTimeout" id="idleTimeout" type="select" disabled class="idle">
                 <option value="15" disabled class="debug">15 sec</option>
@@ -128,13 +112,12 @@
               <input type="checkbox" name="cleanTheme" id="cleanTheme">
               <label for="cleanTheme">&emsp;Clean Theme</label>
             </div>
--->            <div class="checkbox su" style="display:none;">
+            <div class="checkbox">
               <input type="checkbox" name="debug" id="debug">
               <label for="debug">&emsp;Debug Enable</label>
             </div>
           </div>
-       </section>
-
+        </section>
         <div class="controls">
           <div class="spacer"></div>
           <button class="saveButton">Save</button>
@@ -145,9 +128,10 @@
         <div class="page">
           <h1>Warning</h1>
           <div class="content-area">
-            This plugin is in the development stage. It's running in a 'safe-mode'<br/>
-            with some features disabled. It can still cause some serious damage if <br/>
-            you are irresponsible. Don't be dumb.
+            This plugin saves your username and password so that it can log back in <br/>
+            after the browser has closed. This information is stored in the plugin's <br/>
+            key/pair system as a JSON string. It is sandboxed and only available to <br/>
+            this plugin, but you have proper warning.
           </div>
           <div class="action-area">
             <div class="action-area-right">

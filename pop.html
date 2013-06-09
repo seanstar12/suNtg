@@ -13,19 +13,20 @@
           <form id ="massAllo"class="inputForm">
             <div class="formEl">
               <input type="radio" name="dataType" id="radioXtag" value="dataXtag"><label for="radioXtag">Xtag</label>
-              <input type="radio" name="dataType" id="radioSerial" value="dataSerial"><label for="radioSerial">Serials</label>
+              <input disabled type="radio" name="dataType" id="radioSerial" value="dataSerial"><label for="radioSerial">Serials</label>
             </div>
             <div class="formEl">
               <input type="checkbox" name="customData" id="custDate"><label for="custDate">Custom Date</label></div>
             <div class="formEl">
-              <input type="date" name="custDateField" id="customDateField">
+              <input type="text" name="custDateField" id="customDateField">
             </div>
             <div class="formEl">
               <input type="text" name="bldPrefix" value="" size ="4" placeholder="BLDG">
+              <input type="text" name="closet" value="" size ="4" placeholder="Closet">
             </div>
             <div class="formEl">
               <div id="formXtags">
-                <div class="xTagSet"><input type="text" id="xtagText_1" name="xtagText_1"size="5" placeholder="XTag"><input type="text" id="dnsName_1" name="dnsName_1"size="15" placeholder="DNS Name"><input type="text" id="ipAddr_1" name="ipAddr_1"size="14" placeholder="IP Address"></div>
+                <div class="xTagSet"><input type="text" id="xtagText_1" class="Tag" name="xtagText_1"size="5" placeholder="XTag"><input type="text" class="DNS" id="dnsName_1" name="dnsName_1"size="15" placeholder="DNS Name"><input class="IP" type="text" id="ipAddr_1" name="ipAddr_1"size="14" placeholder="IP Address"></div>
               </div>
             </div> 
             <div class="formEl">
@@ -63,6 +64,8 @@
     <div id="warning"></div>
   </body>
   <script src="js/jquery-1.8.3.min.js"></script>
+  <script src="js/jquery-plugins.js"></script>
   <script src="js/tabber-minimized.js"></script>
   <script src="js/pop.js"></script>
+  <script src="js/functions.js"></script>
 </html>

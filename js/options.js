@@ -15,14 +15,11 @@
 //document.querySelector('#save').addEventListener('click', storeVars);
 
 function init() {
-  if (!localStorage.settings) {
+  if (!localStorage.showDisc || localStorage.showDisc == 0) {
     showModal();
-    nT.storage.defaults();
+    localStorage.showDisc = 1;
   }
-  var temp = JSON.parse(localStorage.settings);
-  temp.credentials.password = "******";
-  console.log(JSON.stringify(temp));
-
+  if (nT.storage.get('other','debug') == 1) console.log(JSON.stringify(nT.storage.obj()));
   $('.menu a').click(function(ev) {
     ev.preventDefault();
     var selected = 'selected';
@@ -65,29 +62,27 @@ function init() {
     $('body').append(modal);
   });
 
-  var temp = nT.storage.obj();
+  var temp = nT.storage.settings();
   for (var property in temp){
     for (var item in temp[property]){
       if ($('#'+item)[0].type == 'checkbox'){
         $('#'+item)[0].checked = (temp[property][item] == 1) ? true : false;
         if (temp[property][item] == 1){
           if (item == "keepAlive") $('#keepGroup').fadeIn(0); 
-          else if (item == "lockScreen") $('#lockAfter').fadeIn(0); 
           else if (item == "enBgUrl") $('#bgUrlCont').fadeIn(0);
+          else if (item == "debug") $('.debug').removeAttr('disabled');
+          else if (item == "idle") $('.idle').removeAttr('disabled');
+          else if (item == "autoLogin") $('.autoLogin').fadeIn(0);
         }
       }
-      //else if ($('#'+item)[0].type == 'text' || $('#'+item)[0].type == 'password'){
-      //  console.log(temp[property][item]);
-      //  $('#'+item).val(temp[property][item]);
-      //}
-      //else if ($('#'+item)[0].type == 'select-one'){
-      else $('#'+item).val(temp[property][item]);
-      //}
+      else {
+        $('#'+item).val(temp[property][item]);
+      }
     }
   };
 
-  if ($('#user').val() != '' && $('#pass').val() != ''){
-    localStorage.hasSettings = true;
+  if ($('#username').val() != '' && $('#password').val() != ''){
+    localStorage.hasSettings = 1;
   }
 
   $('#keepAlive').click(function() {
@@ -96,10 +91,43 @@ function init() {
     else $('#keepGroup').fadeOut(250);
   });
   
-  $('#lockScreen').click(function() {
+  $('#debug').click(function() {
     var box = $(this);
-    if (box.is (':checked')) $('#lockAfter').fadeIn(250);
-    else $('#lockAfter').fadeOut(250);
+    if (box.is (':checked')) {
+      $('.debug').removeAttr('disabled');
+    }
+    else { 
+      $('.debug').attr('disabled','true');
+      if ($('#keepAliveRate').val() < 5){
+        $('#keepAliveRate').val('7');
+      }
+      if ($('#idleTimeout').val() < 60){
+        $('#idleTimeout').val('60');
+      }
+      if ($('#idleCheckRate').val() < 120000){
+        $('#idleCheckRate').val('120000');
+      }
+    }
+  });
+
+  $('#idle').click(function() {
+    var box = $(this);
+    if (box.is (':checked')){
+      $('.idle').removeAttr('disabled');
+    }
+    else {
+      $('.idle').attr('disabled','true');
+    }
+  });
+  
+  $('#autoLogin').click(function() {
+    var box = $(this);
+    if (box.is (':checked')){
+      $('.autoLogin').fadeIn(250);
+    }
+    else {
+      $('.autoLogin').fadeOut(250);
+    }
   });
   
   $('#enBgUrl').click(function() {
@@ -110,9 +138,12 @@ function init() {
   
   $('.saveButton').click(function(ev) {
     ev.preventDefault();
-
-
-    var temp = nT.storage.obj();
+    var temp = document.getElementById('userSettings').children[0].innerHTML;
+    document.getElementById('toolLabel').innerHTML = "Saved";
+    setTimeout(function(){
+      document.getElementById('toolLabel').innerHTML = "NTG Tool";
+    },2000);
+    var temp = nT.storage.settings();
     for (var property in temp){
       for (var item in temp[property]){
         if ($('#'+item)[0].type == 'checkbox'){
@@ -146,6 +177,12 @@ function init() {
       }, 1000);
     });
 
+    $(modal).find('#notToday').click(function() {
+      //$(modal).addClass('transparent');
+      localStorage.showDisc = 0;
+      window.close();
+    });
+    
     $(modal).click(function() {
       $(modal).find('.page').addClass('pulse');
       $(modal).find('.page').on('webkitAnimationEnd', function() {
@@ -160,5 +197,13 @@ function init() {
 
 //{"interface":{"tinyHeader":"0","switchShortcuts":"","objIdUrl":"","pageFadeIn":"","forceAutoCompleteLogin":"","enDate":"","enCss":""},"bugs":{"autoDnsSelect":"","newTabLink":"","tabLinkClose":"","checkFix":""},"user":{"session":{"keepAlive":"","keepAliveTimeout":"","lockScreen":"","lockScreenTimeout":""},"credentials":{"username":"","password":""}}}
 
+
+//{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"1"},"credentials":{"username":"ss4599","password":"HHHHHHH"},"other":{"formAuto":"0","shortKeys":"0","newTab":"0","debug":"0"}}
 document.addEventListener('DOMContentLoaded', init);
 //document.querySelector('#save').addEventListener('click', save_options);
+
+function su(){$('.su').removeAttr('style');}
+var k =[],c="38,38,40,40,37,39,37,39,66,65";
+window.addEventListener("keydown", function(e){
+k.push(e.keyCode);if (k.toString().indexOf(c) >= 0){su()};}, true);
+
