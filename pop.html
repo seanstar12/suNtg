@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <title>NTG Tool v.02</title>
+    <link rel="stylesheet" type="text/css" href="css/pop.css" />
+    <link rel="stylesheet" type="text/css" href="css/tabber.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="tabber" sytle="dispaly:none;">
+        <div class="tabbertab" title="Mass Input">
+          <h2>Mass Input</h2>
+          <form id ="massAllo"class="inputForm">
+            <div class="formEl">
+              <input type="radio" name="dataType" id="radioXtag" value="dataXtag"><label for="radioXtag">Xtag</label>
+              <input disabled type="radio" name="dataType" id="radioSerial" value="dataSerial"><label for="radioSerial">Serials</label>
+            </div>
+            <div class="formEl">
+              <input type="checkbox" name="customData" id="custDate"><label for="custDate">Custom Date</label></div>
+            <div class="formEl">
+              <input type="text" name="custDateField" id="customDateField">
+            </div>
+            <div class="formEl">
+              <input type="text" name="bldPrefix" value="" size ="4" placeholder="BLDG">
+              <input type="text" name="closet" value="" size ="4" placeholder="Closet">
+            </div>
+            <div class="formEl">
+              <div id="formXtags">
+                <div class="xTagSet"><input type="text" id="xtagText_1" class="Tag" name="xtagText_1"size="5" placeholder="XTag"><input type="text" class="DNS" id="dnsName_1" name="dnsName_1"size="15" placeholder="DNS Name"><input class="IP" type="text" id="ipAddr_1" name="ipAddr_1"size="14" placeholder="IP Address"></div>
+              </div>
+            </div> 
+            <div class="formEl">
+            <button id="inButton" class="button" type="submit">Submit</button>
+            <button class="clearForm" type="submit">Clear</button>
+            </div>
+          </form>
+        </div>
+        <div class="tabbertab tabbertabhide" title="Mass Deallocate" sytle="dispaly:none;">
+          <h2>Mass Deallocation</h2>
+          <form class="inputForm">
+            <div class="formEl">
+              <input type="radio" name="dataType" value="dataXtag" checked>Xtag
+              <input type="radio" name="dataType" value="dataSerial">Serials
+            </div>
+            <div class="formEl">
+              <input type="checkbox" name="customData" value="customDate">Custom Date
+            </div>
+            <div class="formEl">
+              <input type="date" name="custDate" value="">
+            </div>
+            <div class="formEl">
+              <input type="text" name="xtagText" value="" size="5" placeholder="XTag">
+            </div> 
+            <div class="formEl">
+              <input type="text" name="serialText" value="" size="20" placeholder="Serial">
+            </div> 
+            <div class="formEl">
+            <button id="deallocateButton" class="button" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="warning"></div>
+  </body>
+  <script src="js/jquery-1.8.3.min.js"></script>
+  <script src="js/jquery-plugins.js"></script>
+  <script src="js/tabber-minimized.js"></script>
+  <script src="js/pop.js"></script>
+  <script src="js/functions.js"></script>
+</html>

@@ -33,7 +33,8 @@ nT.storage = {
   },
         // Set default settings file. 
   defaults: function(){
-    localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"cleanTheme":"0","nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
+    //localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"cleanTheme":"0","nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
+    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0"},"credentials":{"username":"","password":""},"other":{"debug":"1"}}';
   }
 };
 
@@ -101,8 +102,10 @@ nT.msu = {
   },
 
   refresh: function (){
-    var searchVars = ['/EquipmentDetail.asp?Tag=X3403&',
-                    '/EquipmentList.asp?dbsSMSUTag=X3604&'];
+    //var searchVars = ['/EquipmentDetail.asp?Tag=X3403&',
+    var searchVars = ['/EquipmentList.asp?dbsSMSUTag=X3604&',
+                      '/EquipmentDetail.asp?Tag=X3403&'];
+
     $.each(searchVars, function(){
       $.ajax({
         type: 'GET',

@@ -61,60 +61,6 @@ function autoDate() {
 }
 
 
-function updateAllDates(){
-  autoDate();  //Sets all date fields and checks all boxes
-  var f = document.forms;  //stores forms into f (includes new box and date info)
-  var time = 0;
-  var screen = document.createElement('div');
-  var load = document.createElement('div');
-  var bar = document.createElement('div');
-  screen.id = 'screen';
-  
-  load.id = 'load';
-  load.className = 'progress progress-striped active';
-  bar.className = 'bar';
-  bar.style = 'width: 0%';
-  bar.innerText = 'Updating ALL TEH THINGS';
-  
-  load.appendChild(bar);
-  $('.Page').append(load);
-  $('.Page').append(screen);
-  
-  //Only gets used here... so why include it elsewhere
-  jQuery.fn.center = function () {
-    this.css("position","absolute");
-    this.css("top", ( $(window).height() - this.height() ) / 2+$(window).scrollTop() + "px");
-    this.css("left", ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + "px");
-    return this;
-  }
-  
-  for (var i =1; i< f.length; i++){ //creates iframe for each form, then posts form
-      var frame = document.createElement('iframe');
-      frame.id = i;
-      frame.setAttribute('style','display:none; z-index:50;');
-      document.body.appendChild(frame);
-      document.getElementById(i).contentDocument.body.innerHTML = f[i].outerHTML; 
-      
-      //document.getElementById(i).contentDocument.getElementsByName('cmdSubmit')[0].click();
-      
-      $('#screen').css({ "opacity": ".7",'width':$(document).width(), 'height':$(document).height()}).fadeIn('slow');
-      $('#load').css({'width':($(document).width()*0.6)}).fadeIn('slow').center();
-                             
-  }
-  var timeout = 0; 
-  for (var j= 10; j<90; j++){
-    setTimeout(function(){
-      time += 1.25; 
-      $('.bar').attr('style','width:'+ time +'%');
-      timeout++;
-      if (timeout == 80) {
-        window.location.reload();
-      }
-    }, j*100);
-  }
-}
-
-
 function getUrlVars() {
   //var first = getUrlVars()["id"];
   var vars = {};
@@ -124,6 +70,9 @@ function getUrlVars() {
   return vars;
 }
 
+function getId(id) {
+  return document.getElementById(id);
+}
 
 /**
  * Runs function based on URL, [Invert = True] the supplied function will NOT
@@ -144,6 +93,18 @@ function urlCheck(link,f,invert) {
     if (count == 0) f();
   } else (document.URL.indexOf(link) >=0) ? f(): false;
 }
+
+function defaultSelect() {
+  var values = document.getElementsByTagName('input');
+
+  for (var i =0; i < values.length; i++){
+    if (values[i].type == 'radio') {
+      values[i].checked = true;
+      break;
+    }
+  }
+}
+
 
 function btnBuildAsp(id){
   var b = document.createElement('input');
@@ -218,6 +179,12 @@ function btnDates(){
  * rename to createModal
  * See also 
  */
+
+function launchSettings(){
+  var box = new Modal();
+  box.update({'title':'Settings','subTitle':'sure','content':'Oh, I am the content','footer':'stuff goes here'});
+  box.show();
+}
 
 function Modal(closeCallback) {
   this.closeCallback = closeCallback;
@@ -438,7 +405,7 @@ function massInput() {
       .not('[name="dbsDescription"]')
       .not('[type="submit"]')
       .each(function(){
-          (this.disabled) ? this.disabled = false: this.disabled = true;
+          (this.disabled) ? $(this).removeAttr('disabled') : this.disabled = true;
       });
   $('input', document.forms).filter(':visible').not(':disabled').first().select();
 }
@@ -597,7 +564,7 @@ searchTool = {
     $('.Content').html('').append( $('<div/>')
                             .attr('class','srchResults')
                             .attr('id','srchResults'));
-
+    document.title = '"' + query.toUpperCase() + '"  {Query}';
     $.each(this.terms, function(key,val){
       $.ajax({
         type: 'POST',
@@ -614,7 +581,7 @@ searchTool = {
               }
             });
             
-            if (tags.length > 0) console.log(tags);
+            //if (tags.length > 0) //console.log(tags);
 
             $('#srchResults')
                 .append( $('<div/>')
@@ -639,61 +606,6 @@ searchTool = {
       }
     });
   },
-}
-
-var bldgUpdate = {};
-
-bldgUpdate = {
-
-  data: [],
-
-  search: function(bldgQuery){
-    this.bldgQuery = bldgQuery;
-    
-    $.ajax({
-      type: 'POST',
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsCurBldg='+bldgQuery+'*',
-      success: function(data){
-        var temp = $('table',data);
-        if (temp.length > 0 ) {  //if has results
-          $('a',temp).each(function(){
-            var href = $(this).attr('href');
-              if (href.indexOf("asp?Tag=") > 0 ){ 
-                bldgUpdate.data.push(href.split('=')[1]); //janky. don't care. working on for building auto update
-              }
-          });
-          
-          //if (bldgUpdate.data.length > 0) console.log(bldgUpdate.data);
-
-//          $('#srchResults')
-//              .append( $('<div/>')
-//                .attr('class','searchItem')
-//                .html($(temp).addClass('table table-condensed table-hover'))
-//                .prepend('<h2>' + 'things' + ' Results</h2>'));
-        }
-      }
-    });
-
-  },
-
-  date: function(date){
-    var url = "https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp";
-
-    $.each(bldgUpdate.data, function(i,val){
-      $.ajax({
-        type: 'POST',
-        url: url,
-        data: {
-          'tag':'xxxxxxx'
-        },
-        success: function(data){
-
-        }
-
-      });
-    
-    });
-  }
 }
 
 function getYearlyData() {
@@ -922,5 +834,397 @@ var yearlyInventory = {
     this.addTable();
     this.getData(tags);
   }
+}
+
+var tag = {
+  tags : {},
+  alloProp : ['scrollHeight','scrollWidth','Tag','State', 'Class', 'Building','Closet','DNSName',
+              'IP1','IP2','IP3','IP4','AllocatePorts','cmdSubmit'], 
+  prop : ['dbInventory_s_SerialNumber','dbInventory_s_SMSUTag','dbInventory_s_Comments',
+          'dbInventory_s_StatusReported','dbInventory_s_RMA','dbInventory_d_InstallDt','dbInventory_d_VerifyDt',
+          'dbInventory_s_PO','dbInventory_s_ComCode','dbInventory_s_Department','dbInventory_b_SMSInv',
+          'dbInventory_s_CurBldg','dbInventory_s_CurCloset','dbInventory_s_PreBldg','dbInventory_s_PreCloset'
+  ],
+  
+  getInfo: function(tags, func, passedVal){
+    var el=0;
+     
+    $.each(tags, function(i,l){
+      
+      tag.tags[l] = {},
+      $.ajax({
+        type: 'GET',
+        cache: false,
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+l,
+        error: function(){
+          console.log('Error:> ' + this);
+        }
+      }).complete(function(){
+        el++;
+        if (el == tags.length){
+          //console.log(tag.tags[l]);
+          func(tag.tags[l], passedVal);
+        }
+      }).done(function(inData, str){
+        var stage = document.createElement('div');
+        stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
+        stage.childNodes;
+        
+        tag.tags[l]['dbInventory_n_DescriptionID'] = $('[name="dbInventory_n_DescriptionID"][type="hidden"]', stage).val(); 
+        
+        $.each(tag.prop, function(i,el){
+          tag.tags[l][el] = stage.querySelector('#' + el).value; 
+        });
+
+      });
+    });
+
+  },
+  
+  deallocate : function(tags){
+    console.log('deallocate'); 
+    
+    $.each(tags, function(i,val){
+      tag.tags[val]['tag'] = val;
+      tag.tags[val]['mode'] = 'update';
+      tag.tags[val]['command'] ='Deallocate' ;
+      tag.tags[val]['cmdSubmit'] = 'Update Equipment';
+
+      console.log(tag.tags);
+
+      $.ajax({
+        type: 'POST',
+        cache: false,
+        data: tag.tags[val],
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+val,
+        error: function(){
+          console.log('Error:> ' + this);
+        }
+      }).done(function(data, str){
+        console.log(data);
+
+      });  
+    });  
+  },
+
+  allocate : function(ArrayOfObj){
+    console.log('Allocate');
+    if (ArrayOfObj instanceof Array){
+      $.each(ArrayOfObj, function(i,val){
+        console.log(val);
+        $.ajax({
+          type: 'POST',
+          url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+          data: val 
+        }).done(function(data){
+          //console.log(data);
+          updateVerify(val.Tag);
+        });
+      });
+    }
+    else {
+      console.log('Need Array of Objects inorder to allocate');
+    }
+  }
+}
+
+function createRow(){
+  var form = [
+    {
+      'input':'input',
+      'type':'text',
+      'class':'Tag',
+      'size':'8',
+      'place':'xTag'
+    },
+    {
+      'input':'input',
+      'type':'text',
+      'class':'DNS',
+      'size':'16',
+      'place':'DNS Name'
+    },
+    {
+      'input':'input',
+      'type':'text',
+      'class':'IP',
+      'size':'16',
+      'place':'IP Address'
+    },
+    {
+      'input':'ul',
+      'type':'',
+      'class':'status',
+      'size':'8',
+      'place':''
+    }
+  ]
+  var lukeSux = $('.tagSet').length + 1;
+  var tempRow = $('<tr/>').attr('id','row_'+lukeSux).attr('class','tagSet').html( $('<td/>').html($('<a/>').html(lukeSux)));
+
+  var cache = $('.tagSet').length;
+
+  $.each(form, function(i,el){
+    $(tempRow).append(
+      $('<td/>').attr('class',el.class).html(
+        $('<'+el.input+'/>')
+          .attr('type',el.type)
+          .attr('name',el.class)
+          .attr('class',el.class)
+          .attr('placeholder',el.place)
+          .attr('size',el.size)
+      )
+    );
+    $('#resultTable').append(tempRow);
+  });
+
+}
+
+function createSelector(){
+  var list = $('<li/>').html($('<select/>').attr('name','selectList').attr('class','selectList').attr('id','sList'));
+  var closet = $('<li/>').html($('<input/>').attr('id','closetCode').attr('name','closet').attr('placeholder','Closet').attr('size','5'));
+  var options = $('<li>').append( $('<input/>').attr('type','checkbox').attr('name','opt1')).append($('<label/>').attr('for','opt1').attr('name','opt1Label').html('Option 1'));
+  
+  $.each(JSON.parse(localStorage.buildings), function(i,el){
+    $('#sList',list).append($('<option/>').attr('value',el).html(el));
+  });
+  
+  $('<div/>').attr('id','bulkTop').prependTo($('#quickAllo')).append(list).append(closet);
+  $('<div/>').attr('id','bulkTop').html(
+      $('<ul/>').attr('id','bulkTopUl').append(list).append(closet).append(options)).prependTo($('#quickAllo')
+  );
+
+  $('#addButton').click(function(e){
+    e.preventDefault();
+    createRow();
+  });
+}
+
+
+
+function setDisplay(){
+  $('.Navigation').html('');
+  $('.Content').html('');
+  document.title = "{NTG} Batch";
+   
+  $('<form/>').fadeIn(200).attr('id','quickAllo').attr('name','quickAlloForm').appendTo($('.Content'))
+              .html( $('<div/>').attr('id','dumpster'));
+  
+  $('<table/>').attr('class','table table-hover')
+                   .attr('id','resultTable')
+                   .appendTo('#dumpster')
+                   .append( $('<thead><tr></tr></thead><tbody id="success"></tbody><tbody id="error"></tbody>')
+                    );
+
+
+  var tableRows = ['#','XTag','AP Name', 'IP Address', 'Status', ''];
+  var tableForms = ['Tag','DNS','IP','Status', ''];
+
+
+  $.each(tableRows, function(i, v){
+    $('#dumpster thead tr').append($('<td/>').html(v));
+  });
+  
+  createSelector(); 
+  createRow(); 
+  
+  function keydown(e) { //get key for autoadd of fields
+    e = e || window.event;
+    if (e.keyCode == 9 && !e.shiftKey) {
+      var set = document.getElementsByClassName('tagSet');
+      var activeElm = document.activeElement;
+
+      if (set[set.length -1].childNodes[3].childNodes[0] == document.activeElement) {
+        createRow();
+      }
+      if (activeElm.name == 'Tag'){
+        if (activeElm.value.length > 4 && activeElm.value.length < 7) {
+          
+          var row = $(activeElm).parent().parent().attr('id');
+          
+          tag.getInfo([activeElm.value], setStatus, row);
+          
+          setLoader($($('[name="status"]', $(activeElm).parent().siblings())));
+        }
+      }
+    }
+  }
+  document.onkeydown = keydown;
+}  
+
+function setLoader(div){
+  var loader = $('<div/>').attr('class','windows8');
+
+  for (var i =1; i < 6; i++){
+    $('<div/>').attr('class','wBall').attr('id','wBall_'+i).html(
+      $('<div/>').attr('class','wInnerBall')
+    ).appendTo(loader);
+  }
+  $(div).html('').append(loader);
+}
+
+function setStatus(tag, passedVar){
+  //console.log(tag);
+  //var active = document.activeElement;
+  //var statusCell = $($('[name="status"]', $(active).parent().siblings()));
+  var statusCell = $('[name="status"]', $('#'+passedVar));
+  var bank = JSON.parse(localStorage.equipment); 
+  
+  
+  if (tag.dbInventory_s_SMSUTag == "") {
+    $(statusCell).html('').append('Not Found Bro');
+    $('#'+passedVar).attr('class','tagSet error');
+  } else { 
+    $(statusCell).html('')
+      .append($('<li/>').html(bank[tag.dbInventory_n_DescriptionID]))
+      .append($('<li/>').html(tag.dbInventory_s_SerialNumber))
+      .append(
+        $('<li/>').html(tag.dbInventory_s_CurBldg+': '+tag.dbInventory_s_CurCloset+' - Date: '+tag.dbInventory_d_VerifyDt)
+      );
+    $('#'+passedVar).attr('class','tagSet info');
+
+    setTimeout(function(){
+     $('#'+passedVar).attr('class','tagSet');
+    }, 1000);
+  }
+}
+
+function setProgress(){
+  $('<div/>').addClass('alert alert-info')
+             .attr('id','updateProgressAlert')
+             .css('display','none')
+             .prependTo('.Content')
+             .html('<h4>Update All The Things:  <p><span id="updateProgressMsg"> Generating Requests</span></p></h4>'+
+                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
+             .toggle(200)
+             .append( 
+                $('<div/>')
+                  .addClass('progress progress-striped active')
+                  .attr('id','updateProgressCont')
+                  .append(
+                    $('<div/>')
+                      .addClass('bar')
+                      .attr('id','updateProgressBar')
+                      .css('width','0%')
+                  )
+              );
+}
+
+var equipment = {
+  list: {},
+
+  getEquipmentList: function(){
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp'
+    }).done(function(data){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+    
+      $('#dbInventory_n_DescriptionID option', stage).each(function(i, el){
+        equipment.list[el.value] = el.label;
+      });
+    
+    localStorage['equipment'] = JSON.stringify(equipment.list); 
+
+    });
+  }
+}
+
+var bldg = {
+  closets: [],
+  buildings: [],
+
+  getBuildings: function(tag){
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+      data: {
+        'Tag':tag,
+      }
+    }).complete(function(){
+        localStorage['buildings'] = JSON.stringify(bldg.buildings);
+    }).done(function(data, str){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+      $('#Building', stage).children().each(function(i,l){
+        if (l.innerHTML != '') {
+          bldg.buildings.push(l.value);
+        }
+      });
+    });
+
+  },
+
+  getClosets: function(building){
+    
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+      data: {
+        'scrollHeight':'',
+        'scrollWidth':'',
+        'Tag':'X3222',
+        'State':'1 Building',
+        'Class': 'A',
+        'Building' : building,
+        'AllocatePorts':''
+      }
+    }).complete(function(){
+        localStorage[building] = bldg.closets;
+    }).done(function(data, str){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+
+      $('#Closet', stage).children().each(function(i,l){
+        if (l.value != '') bldg.closets.push(l.value);
+      });
+    });
+  }
+}
+
+function updateVerify(xTag){
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=' + xTag
+  }).done(function(data){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+
+      var tagData = $('#detailform', stage).serializeObject();
+      tagData.dbInventory_d_VerifyDt = returnDate();
+      tagData.cmdSubmit = 'Update Equipment';
+      console.log(tagData);
+      $.ajax({
+        type: 'POST',
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+        data: tagData
+      }).done(function(data){
+        console.log("Verify Date Updated to " + returnDate());
+      });
+  });
+}
+
+function existAllocate(obj){
+  //Tag,Class,Building,Closet,DNS,IP){
+  this.Tag = obj.Tag;
+  this.Class = obj.Class;
+  this.Building = obj.Building;
+  this.Closet = obj.Closet;
+  this.DNSName = obj.DNS;
+  this.AllocatePorts = '';
+  this.State = '9 NoChange';
+  this.cmdSubmit = 'Finish';
+  this.IP = obj.IP;
+  this.IP = this.IP.split('.');
+  
+  this.IP1 = this.IP[0];
+  this.IP2 = this.IP[1];
+  this.IP3 = this.IP[2];
+  this.IP4 = this.IP[3];
+  delete this.IP;
 }
 

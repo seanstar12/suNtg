@@ -1,8 +1,8 @@
 {
-  "name": "NTG Tool",
-  "version": "0.4.0",
+  "name": "su@NTG",
+  "version": "0.4.17",
   "manifest_version": 2,
-  "description": "Helpful functions for the NTG domain.",
+  "description": "Because life could suck less.",
   "options_page": "options.html",
   "icons": {
     "16": "images/icon16.png",
@@ -16,14 +16,10 @@
     "default_icon": "images/icon.png"
   },
   "permissions": [
-    "tabs", "*://*.missouristate.edu/",
-    "notifications",
-    "background",
-    "idle",
-    "unlimitedStorage",
-    "webNavigation",
-    "webRequest",
     "alarms",
+    "tabs", 
+    "*://*.missouristate.edu/",
+    "background",
     "cookies",
     "storage" 
   ],
@@ -32,10 +28,11 @@
     "js/bootstrap.js",
     "js/functions.js",
     "js/reload.js",
-    "js/xTags.js",
+    "js/tabber-minimized.js",
+    "js/pop.js",
+    "js/jquery-plugins.js",
     "reload.html",
     "portal.html",
-    "images/spinner.gif",
     "js/jquery-ui.min.js",
     "js/jquery.form.js",
     "css/bootstrap.css",
@@ -46,13 +43,13 @@
   ],
   "content_scripts": [
     {
-      "js": ["js/functions.js","js/onStart.js"],
+      "js": ["js/onStart.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "css":["css/clear.css","css/ntgTool.css"],
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/xTags.js","js/onEnd.js"],
+      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/onEnd.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_end"
     }

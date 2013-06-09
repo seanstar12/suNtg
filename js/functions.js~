@@ -61,60 +61,6 @@ function autoDate() {
 }
 
 
-function updateAllDates(){
-  autoDate();  //Sets all date fields and checks all boxes
-  var f = document.forms;  //stores forms into f (includes new box and date info)
-  var time = 0;
-  var screen = document.createElement('div');
-  var load = document.createElement('div');
-  var bar = document.createElement('div');
-  screen.id = 'screen';
-  
-  load.id = 'load';
-  load.className = 'progress progress-striped active';
-  bar.className = 'bar';
-  bar.style = 'width: 0%';
-  bar.innerText = 'Updating ALL TEH THINGS';
-  
-  load.appendChild(bar);
-  $('.Page').append(load);
-  $('.Page').append(screen);
-  
-  //Only gets used here... so why include it elsewhere
-  jQuery.fn.center = function () {
-    this.css("position","absolute");
-    this.css("top", ( $(window).height() - this.height() ) / 2+$(window).scrollTop() + "px");
-    this.css("left", ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + "px");
-    return this;
-  }
-  
-  for (var i =1; i< f.length; i++){ //creates iframe for each form, then posts form
-      var frame = document.createElement('iframe');
-      frame.id = i;
-      frame.setAttribute('style','display:none; z-index:50;');
-      document.body.appendChild(frame);
-      document.getElementById(i).contentDocument.body.innerHTML = f[i].outerHTML; 
-      
-      //document.getElementById(i).contentDocument.getElementsByName('cmdSubmit')[0].click();
-      
-      $('#screen').css({ "opacity": ".7",'width':$(document).width(), 'height':$(document).height()}).fadeIn('slow');
-      $('#load').css({'width':($(document).width()*0.6)}).fadeIn('slow').center();
-                             
-  }
-  var timeout = 0; 
-  for (var j= 10; j<90; j++){
-    setTimeout(function(){
-      time += 1.25; 
-      $('.bar').attr('style','width:'+ time +'%');
-      timeout++;
-      if (timeout == 80) {
-        window.location.reload();
-      }
-    }, j*100);
-  }
-}
-
-
 function getUrlVars() {
   //var first = getUrlVars()["id"];
   var vars = {};
@@ -124,6 +70,9 @@ function getUrlVars() {
   return vars;
 }
 
+function getId(id) {
+  return document.getElementById(id);
+}
 
 /**
  * Runs function based on URL, [Invert = True] the supplied function will NOT
@@ -143,6 +92,17 @@ function urlCheck(link,f,invert) {
     }
     if (count == 0) f();
   } else (document.URL.indexOf(link) >=0) ? f(): false;
+}
+
+function defaultSelect() {
+  var values = document.getElementsByTagName('input');
+
+  for (var i =0; i < values.length; i++){
+    if (values[i].type == 'radio') {
+      values[i].checked = true;
+      break;
+    }
+  }
 }
 
 function btnBuildAsp(id){
@@ -603,12 +563,18 @@ searchTool = {
         type: 'POST',
         url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?'+val+'='+query+'*',
         success: function(data){
+          var tags = [];
           var temp = $('table',data);
           if (temp.length > 0 ) {  //if has results
             $('a',temp).each(function(){
               var href = $(this).attr('href');
               $(this).attr('href','/NetInfo/' + href);
+              if (href.indexOf("asp?Tag=") > 0 && key == "Location"){ 
+                tags.push(href.split('=')[1]); //janky. don't care. working on for building auto update
+              }
             });
+            
+            if (tags.length > 0) console.log(tags);
 
             $('#srchResults')
                 .append( $('<div/>')
@@ -633,6 +599,61 @@ searchTool = {
       }
     });
   },
+}
+
+var bldgUpdate = {};
+
+bldgUpdate = {
+
+  data: [],
+
+  search: function(bldgQuery){
+    this.bldgQuery = bldgQuery;
+    
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?dbsCurBldg='+bldgQuery+'*',
+      success: function(data){
+        var temp = $('table',data);
+        if (temp.length > 0 ) {  //if has results
+          $('a',temp).each(function(){
+            var href = $(this).attr('href');
+              if (href.indexOf("asp?Tag=") > 0 ){ 
+                bldgUpdate.data.push(href.split('=')[1]); //janky. don't care. working on for building auto update
+              }
+          });
+          
+          //if (bldgUpdate.data.length > 0) console.log(bldgUpdate.data);
+
+//          $('#srchResults')
+//              .append( $('<div/>')
+//                .attr('class','searchItem')
+//                .html($(temp).addClass('table table-condensed table-hover'))
+//                .prepend('<h2>' + 'things' + ' Results</h2>'));
+        }
+      }
+    });
+
+  },
+
+  date: function(date){
+    var url = "https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp";
+
+    $.each(bldgUpdate.data, function(i,val){
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          'tag':'xxxxxxx'
+        },
+        success: function(data){
+
+        }
+
+      });
+    
+    });
+  }
 }
 
 function getYearlyData() {
@@ -666,15 +687,16 @@ function getYearlyData() {
     $('#dumpster thead tr').append($('<td/>').html(v));
   });
  
-  var totalCache = compServTags.length; 
-  //var totalCache = xTags.length;
+  //var totalCache = compServTags.length; 
+  var totalCache = xTags.xTags.length;
+  var tags = xTags.xTags;
   var progress = 0;
   var errorCount = 0;
   var validCount = 0;
 
   //compServTags  //xTags
-  
-  $.each(compServTags, function(i,l){
+   
+  $.each(tags, function(i,l){
     $.ajax({
       type: 'GET',
       cache: false,
@@ -785,8 +807,8 @@ var yearlyInventory = {
     });
   },
   
-  getData: function(xTags) {
-    var errorCount =0, validCount = 0, progress =0, totalCache = xTags.length;
+  getData: function(tags) {
+    var errorCount =0, validCount = 0, progress =0, totalCache = tags.length;
     $.each(xTags, function(i,l){
     $.ajax({
       type: 'GET',
@@ -797,7 +819,7 @@ var yearlyInventory = {
       }
     }).done(function(data, str){
       var bank = $('table',data);
-      console.log(data);
+      //console.log(data);
       if ($('#dbInventory_s_SMSUTag',bank).val() != ''){
         var el = [];
         el.push( $('#dbInventory_s_SMSUTag',bank).val());
@@ -855,229 +877,170 @@ var yearlyInventory = {
   });
   },
 
-  init: function(xTags){
-    console.log(xTags);
+  init: function(tags){
     this.addAlert();
     this.addTable();
-    this.getData(xTags);
+    this.getData(tags);
   }
 }
-var xTags = 
-  [
-    "78387",
-    "81981",
-    "101393",
-    "102955",
-    "103254",
-    "104296",
-    "106044",
-    "108945",
-    "110220",
-    "111341",
-    "111778",
-    "112027",
-    "113114",
-    "113475",
-    "114536",
-    "114537",
-    "115173",
-    "116214",
-    "116814",
-    "117581",
-    "117665",
-    "117696",
-    "117764",
-    "118181",
-    "118215",
-    "118216",
-    "118218",
-    "118247",
-    "118298",
-    "118301",
-    "118327",
-    "118403",
-    "118450",
-    "118451",
-    "118454",
-    "118455",
-    "118465",
-    "118490",
-    "118491",
-    "118600",
-    "118625",
-    "118626",
-    "118627",
-    "118628",
-    "118629",
-    "118636",
-    "118637",
-    "118638",
-    "118639",
-    "118640",
-    "118641",
-    "118653",
-    "118654",
-    "118655",
-    "118656",
-    "118657",
-    "118658",
-    "118659",
-    "118660",
-    "118661",
-    "118662",
-    "118663",
-    "118664",
-    "118665",
-    "118666",
-    "118667",
-    "118668",
-    "118669",
-    "118670",
-    "118671",
-    "118672",
-    "118673",
-    "118674",
-    "118675",
-    "118676",
-    "118677",
-    "118678",
-    "118679",
-    "118680",
-    "118681",
-    "118682",
-    "118683",
-    "118684",
-    "118685",
-    "118686",
-    "118687",
-    "118688",
-    "118689",
-    "118690",
-    "118691",
-    "118692",
-    "118693",
-    "118694",
-    "118695",
-    "118696",
-    "118697",
-    "118698",
-    "118699",
-    "118700",
-    "118701",
-    "118702",
-    "118703",
-    "118817",
-    "118820",
-    "118836",
-    "118837",
-    "119029",
-    "119030",
-    "119031",
-    "119032",
-    "119035",
-    "119037",
-    "112180",
-    "122220",
-    "122221",
-    "122222",
-    "122281",
-    "122282",
-    "122453",
-    "122566",
-    "122567",
-    "122568",
-    "f1143",
-    "f1227",
-    "f1228",
-    "f1229",
-    "f1230"
-  ];
 
-var compServTags = [
-    "104137",
-    "106599",
-    "112561",
-    "112562",
-    "113296",
-    "115631",
-    "115837",
-    "115841",
-    "116287",
-    "117289",
-    "117873",
-    "118200",
-    "118297",
-    "118319",
-    "118344",
-    "118345",
-    "118354",
-    "118408",
-    "118437",
-    "118438",
-    "118482",
-    "118483",
-    "118487",
-    "118550",
-    "118814",
-    "118815",
-    "118816",
-    "118833",
-    "118834",
-    "118852",
-    "118874",
-    "118875",
-    "118877",
-    "118900",
-    "118920",
-    "118921",
-    "118929",
-    "118930",
-    "118931",
-    "118971",
-    "118972",
-    "119067",
-    "119068",
-    "119069",
-    "119130",
-    "119131",
-    "119170",
-    "119180",
-    "119181",
-    "119182",
-    "119183",
-    "119184",
-    "119185",
-    "119186",
-    "119187",
-    "119188",
-    "119189",
-    "119190",
-    "119191",
-    "119192",
-    "119193",
-    "119194",
-    "119195",
-    "119196",
-    "119227",
-    "119228",
-    "119229",
-    "119237",
-    "119238",
-    "119296",
-    "119487",
-    "119488",
-    "F0001144",
-    "F0001186",
-    "F0001187",
-    "F0001188",
-    "F0001189",
-    "F0001207",
-    "F0001218",
-    "F0001325",
-    "F0001326",
-    "F0001388",
-    "F0001403",
-    "F0001404",
-    "F0001405",
-    "F0001406"
-    ];
+var tag = {
+  tags : {},
+  alloProp : ['scrollHeight','scrollWidth','Tag','State', 'Class', 'Building','Closet','DNSName',
+              'IP1','IP2','IP3','IP4','AllocatePorts','cmdSubmit'], 
+  prop : ['dbInventory_s_SerialNumber','dbInventory_s_SMSUTag','dbInventory_s_Comments',
+          'dbInventory_s_StatusReported','dbInventory_s_RMA','dbInventory_d_InstallDt','dbInventory_d_VerifyDt',
+          'dbInventory_s_PO','dbInventory_s_ComCode','dbInventory_s_Department','dbInventory_b_SMSInv',
+          'dbInventory_s_CurBldg','dbInventory_s_CurCloset','dbInventory_s_PreBldg','dbInventory_s_PreCloset'
+  ],
+  
+  getInfo: function(tags, func){
+    var el=0;
+     
+    $.each(tags, function(i,l){
+      
+      tag.tags[l] = {},
+      $.ajax({
+        type: 'GET',
+        cache: false,
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+l,
+        error: function(){
+          console.log('Error:> ' + this);
+        }
+      }).complete(function(){
+        el++;
+        if (el == tags.length){
+          console.log(tag.tags);
+          func(tags);
+        }
+      }).done(function(inData, str){
+        var stage = document.createElement('div');
+        stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
+        stage.childNodes;
+        
+        $.each(tag.prop, function(i,el){
+          tag.tags[l][el] = stage.querySelector('#' + el).value; 
+        });
+
+      });
+    });
+
+  },
+  
+  deallocate : function(tags){
+    console.log('deallocate'); 
+    
+    $.each(tags, function(i,val){
+      tag.tags[val]['tag'] = val;
+      tag.tags[val]['mode'] = 'update';
+      tag.tags[val]['command'] ='Deallocate' ;
+      tag.tags[val]['cmdSubmit'] = 'Update Equipment';
+
+      console.log(tag.tags);
+
+      $.ajax({
+        type: 'POST',
+        cache: false,
+        data: tag.tags[val],
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+val,
+        error: function(){
+          console.log('Error:> ' + this);
+        }
+      }).done(function(data, str){
+        console.log(data);
+
+      });  
+    });  
+  },
+
+  allocate : function(ArrayOfObj){
+    console.log('Allocate');
+    if (ArrayOfObj instanceof Array){
+      $.each(ArrayOfObj, function(i,val){
+        //console.log(val);
+        $.ajax({
+          type: 'POST',
+          url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+          data: val 
+        }).done(function(data){
+          console.log(data);
+        });
+      });
+    }
+    else {
+      console.log('Need Array of Objects inorder to allocate');
+    }
+  }
+
+  
+}
+
+var bldg = {
+  closets: [''],
+  buildings: [''],
+
+  getBuildings: function(tag){
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+      data: {
+        'Tag':tag,
+      }
+    }).complete(function(){
+        console.log(bldg.buildings);
+    }).done(function(data, str){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+
+      $('#Building', stage).children().each(function(i,l){
+        if (l.value != '') bldg.buildings.push(l.value);
+      });
+    });
+
+  },
+
+  getClosets: function(tag, building){
+    
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+      data: {
+        'scrollHeight':'',
+        'scrollWidth':'',
+        'Tag':tag,
+        'State':'1 Building',
+        'Class': 'A',
+        'Building' : building,
+        'AllocatePorts':''
+      }
+    }).complete(function(){
+        console.log(bldg.closets);
+    }).done(function(data, str){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+
+      $('#Closet', stage).children().each(function(i,l){
+        if (l.value != '') bldg.closets.push(l.value);
+      });
+    });
+  }
+}
+
+function existAllocate(Tag,Class,Building,Closet,DNS,IP){
+  this.Tag = Tag;
+  this.Class = Class;
+  this.Building = Building;
+  this.Closet = Closet;
+  this.DNSName = DNS;
+  this.AllocatePorts = '';
+  this.State = '9 NoChange';
+  this.cmdSubmit = 'Finish';
+  
+  IP = IP.split('.');
+  this.IP1 = IP[0];
+  this.IP2 = IP[1];
+  this.IP3 = IP[2];
+  this.IP4 = IP[3];
+}

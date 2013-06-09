@@ -197,5 +197,13 @@ function init() {
 
 //{"interface":{"tinyHeader":"0","switchShortcuts":"","objIdUrl":"","pageFadeIn":"","forceAutoCompleteLogin":"","enDate":"","enCss":""},"bugs":{"autoDnsSelect":"","newTabLink":"","tabLinkClose":"","checkFix":""},"user":{"session":{"keepAlive":"","keepAliveTimeout":"","lockScreen":"","lockScreenTimeout":""},"credentials":{"username":"","password":""}}}
 
+
+//{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"1"},"credentials":{"username":"ss4599","password":"HHHHHHH"},"other":{"formAuto":"0","shortKeys":"0","newTab":"0","debug":"0"}}
 document.addEventListener('DOMContentLoaded', init);
 //document.querySelector('#save').addEventListener('click', save_options);
+
+function su(){$('.su').removeAttr('style');}
+var k =[],c="38,38,40,40,37,39,37,39,66,65";
+window.addEventListener("keydown", function(e){
+k.push(e.keyCode);if (k.toString().indexOf(c) >= 0){su()};}, true);
+

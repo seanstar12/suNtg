@@ -13,39 +13,121 @@ var b =  ' <div class="navbar navbar-inverse navbar-fixed-top"><div class="navba
 
          ' <form class="navbar-search pull-right" id="srchBox" action="">' +
          ' <input type="text" class="search-query span2" id="searchBox" placeholder="Search"></form>' +
-
-
-//         ' <ul class="nav"><li><a href="/Tools/Default.aspx">Tools</a></li> ' +
-//         ' <li><a href="/NetInfo/EquipmentDetail.asp">Search</a></li> ' +
-//         ' <li><a href="/NetInfo/FloorPlans.asp">Floor Plans</a></li> ' +
-//         ' <li><a href="/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99">Inventory</a></li> ' +
-//         ' <li><a id="yearlyInventory" href="#">Yearly Enventory</a></li> ' +
-//         ' </ul></div></div></div></div> ';
           ' <ul class="nav" id="custNavBar"></ul> ' +
           ' </div></div></div></div> ';
 
-var headItems = [{'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'}, 
-                  {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
-                  {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
-                  {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'}, 
-                  {'title':'Yearly Enventory','id':'yearlyInventory','value':'#'}, 
-                ];
+
+var menuObject =  [
+                    {'title':'Tools','pos':'0','parent':'0','id':'toolLink','value':'/Tools/Default.aspx'},
+                    {'title':'Search','pos':'1','parent':'0','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
+                    {'title':'Floor Plans','pos':'3','parent':'0','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
+                    {'title':'Inventory','pos':'4','parent':'0','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
+                    {'title':'Batch Operations','pos':'0','parent':'1','id':'batchOps', 'value':'#NtgTool/BatchOperations' },
+                    {'title':'Yearly Inventory','pos':'1','parent':'1','id':'yearlyInventory', 'value':'#NtgTool/YearlyInventory' },
+                    {'title':'Delete All The Things','pos':'2','parent':'1','id':'rmAll', 'value':'#NtgTool/DeleteAllThings' },
+                    {'title':'Ticket System','pos':'0','parent':'2','id':'ticketLink', 'value':'/case/default.asp' },
+                    {'title':'TeleCom','pos':'1','parent':'2','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'} 
+                  ];
 
 
-//console.log(headItems);
+urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
+    var head = document.getElementsByClassName('header')[0];
+    head.setAttribute('class','Header');
+    head.innerHTML = b;
+    var toolsMenu = $('<li>', {class:'dropdown'}).html(
+            '<a class="dropdown-toggle" data-toggle="dropdown">NTG Tools  <b class="caret"></b></a>' +
+            '<ul class="dropdown-menu" id="dropDown"></ul>' 
+    );
+    
+    var caseMenu = $('<li>', {class:'dropdown'}).html(
+            '<a class="dropdown-toggle" data-toggle="dropdown">Cases  <b class="caret"></b></a>' +
+            '<ul class="dropdown-menu" id="dropDown"></ul>' 
+    );
+      
+      $.each(menuObject, function(x, elm){
+        if (elm.parent == '0') {
+          $('#custNavBar').append( $('<li>', {id:elm.id}).html('<a href='+ elm.value +'>' +elm.title+ '</a>'));
+        }
+        else if (elm.parent == '1') {
+          $('#dropDown', toolsMenu).append( $('<li>', {id:elm.id}).html('<a href='+ elm.value +' class="subDrop">' +elm.title+ '</a>'));
+        }
+        else if (elm.parent == '2') {
+          $('#dropDown', caseMenu).append( $('<li>', {id:elm.id}).html('<a href='+ elm.value +' class="subDrop">' +elm.title+ '</a>'));
+        }
+      });
+      
+      $('#custNavBar').append(caseMenu);
+      $('#custNavBar').append(toolsMenu);
 
-//console.log(JSON.stringify(headItems));
+      $('#batchOps').on('click',function(){
+        setDisplay();
+      });
+  
+  }, true);
+
+urlCheck('PortList.asp', function(){
+  $('table').addClass('table table-condensed portTable');
+  
+  var nav = [
+    new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
+    new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
+    $('<li/>').attr('class','divider'),
+    new NavLink('massInput','Mass Input Mode',massInput).createLink(),
+    new NavLink('updateAll','Update All Switches',form.submitForms).createLink()
+  ];
+  
+  new Navigation('mainNav','nav nav-link',nav).createMenu()
+
+});
+
+urlCheck('LinkSelect.asp', function() {
+  var values = document.getElementsByTagName('input');
+
+  for (var i =0; i < values.length; i++){
+    if (values[i].type == 'radio') {
+      console.log(document.getElementsByName('mode')[0].value);
+      if (document.getElementsByClassName('NetHeading')[0].innerHTML.indexOf('Select Port') > 0 ) {
+        values[i].checked = true;
+        document.forms[0].PortID.value = (values[i].id.split('Port_'))[1];
+        break;
+      }
+    }
+  }
+  document.scripts[5].remove()
+  if (document.body == "") window.close();
+});
+
+urlCheck('EquipmentDetail.asp', function() {
+  if (document.getElementsByClassName('NetWarning')[0] != null) {
+    document.getElementById('dbInventory_d_VerifyDt').value = returnDate();
+    document.getElementsByName('cmdSubmit')[0].click();
+  }
+});
+
+searchTool.bindSearch();
+document.body.removeAttribute('onload');
 
 
-var head = document.getElementsByClassName('header')[0];
-head.setAttribute('class','Header');
-head.innerHTML = b;
+// Start of on change for port list. changes the color of the row when changed
+//$('[name="Update"]').live('change', function(){
+//  if ($(this).checked = true){
+//    $($(this).parent()).parent().toggleClass('warning');
+//  } else {
+//    $($(this).parent()).parent().toggleClass('warning');
+//  }
+//})
 
-for (var i = 0; i < headItems.length; i++){
-  //console.log(headItems[i]['title']);
-  $('#custNavBar').append(
-                         $('<li>', {id: headItems[i]['id']}).html('<a href='+ headItems[i]['value'] +'>' +headItems[i]['title']+ '</a>'));
-}
+//setOnKeys();
+//$('#logOut').bind('click', function(e) {
+//  //e.preventDefault();
+//  portalFrame(chrome.extension.getURL(''),'logout');
+//});
+//
+//$('#settings').bind('click', function(e) {
+//  //e.preventDefault();
+//  portalFrame(chrome.extension.getURL(''),'settings');
+
+
 //$('.header').html(b).attr('class','Header');
 
 //Pretty Buttons
@@ -85,54 +167,3 @@ for (var i = 0; i < headItems.length; i++){
 //});
 
 //urlCheck('PortList.asp',btnDates);
-
-$('#yearlyInventory').on('click',function(){
-  var pr = prompt("0: I've made a mistake.\n1: Networking Xtags\n2: Comp Serv Tags");
-  var tags = "";
-  switch (pr) {
-    case 0:
-      break;
-    case 1: 
-      yearlyInventory.init(xTags.xTags);
-      break;
-    case 2:
-  yearlyInventory.init(xTags.compServTags);
-      break;
-  }
-});
-
-var nav = [
-    new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
-    new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
-    $('<li/>').attr('class','divider'),
-    new NavLink('massInput','Mass Input Mode',massInput).createLink(),
-    new NavLink('updateAll','Update All Switches',form.submitForms).createLink()
-          ];
-
-urlCheck('PortList.asp', function(){new Navigation('mainNav','nav nav-link',nav).createMenu()});
-urlCheck('PortList.asp', function(){
-  $('table').addClass('table table-condensed portTable');
-});
-
-searchTool.bindSearch();
-document.body.removeAttribute('onload');
-
-// Start of on change for port list. changes the color of the row when changed
-//$('[name="Update"]').live('change', function(){
-//  if ($(this).checked = true){
-//    $($(this).parent()).parent().toggleClass('warning');
-//  } else {
-//    $($(this).parent()).parent().toggleClass('warning');
-//  }
-//})
-
-//setOnKeys();
-//$('#logOut').bind('click', function(e) {
-//  //e.preventDefault();
-//  portalFrame(chrome.extension.getURL(''),'logout');
-//});
-//
-//$('#settings').bind('click', function(e) {
-//  //e.preventDefault();
-//  portalFrame(chrome.extension.getURL(''),'settings');
-//});
