@@ -54,17 +54,25 @@ ul.specialOp a:hover {
 }
 
 #bulkTop ul li {
-  padding-right: 5px;  
+  padding-right: 40px;  
+  float: left;
 }
 
-ul.status {
+#bulkOps {
+  width: 780px;
+  padding: 10px;
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.status ul {
   padding: 0px;
   margin: 0px;
-  font-size: 10px;
+  font-size: 12px;
   list-style-type:none;
 }
 
-ul.status li {
+.status li {
   line-height: 6px;
 }
 

@@ -797,16 +797,17 @@ var yearlyInventory = {
       } 
       else {
         errorCount++;
-      if (str == 'success'){  
-        $('#error').prepend(
-          $('<tr><td>'+this+'</td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>').addClass('error')
-        );                                  
+        if (str == 'success'){  
+          $('#error').prepend(
+            $('<tr><td>'+this+'</td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>').addClass('error')
+          );                                  
 
-        $(tBody).prepend(tr);
-        
-        console.log('%c' + this + ' Oh noes! Not Found','color: #f91483');
-      }
-     } 
+          $(tBody).prepend(tr);
+          
+          console.log('%c' + this + ' Oh noes! Not Found','color: #f91483');
+        }
+      } 
+
       progress++;
       
       if (progress/totalCache <= 1){
@@ -836,223 +837,383 @@ var yearlyInventory = {
   }
 }
 
-var tag = {
-  tags : {},
-  alloProp : ['scrollHeight','scrollWidth','Tag','State', 'Class', 'Building','Closet','DNSName',
-              'IP1','IP2','IP3','IP4','AllocatePorts','cmdSubmit'], 
-  prop : ['dbInventory_s_SerialNumber','dbInventory_s_SMSUTag','dbInventory_s_Comments',
+function Tag() {
+  this.alloProp = ['scrollHeight','scrollWidth','Tag','State', 'Class', 'Building','Closet','DNSName',
+              'IP1','IP2','IP3','IP4','AllocatePorts','cmdSubmit']; 
+
+  this.prop = ['dbInventory_s_SerialNumber','dbInventory_s_SMSUTag','dbInventory_s_Comments',
           'dbInventory_s_StatusReported','dbInventory_s_RMA','dbInventory_d_InstallDt','dbInventory_d_VerifyDt',
           'dbInventory_s_PO','dbInventory_s_ComCode','dbInventory_s_Department','dbInventory_b_SMSInv',
           'dbInventory_s_CurBldg','dbInventory_s_CurCloset','dbInventory_s_PreBldg','dbInventory_s_PreCloset'
-  ],
-  
-  getInfo: function(tags, func, passedVal){
-    var el=0;
-     
-    $.each(tags, function(i,l){
-      
-      tag.tags[l] = {},
-      $.ajax({
-        type: 'GET',
-        cache: false,
-        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+l,
-        error: function(){
-          console.log('Error:> ' + this);
-        }
-      }).complete(function(){
-        el++;
-        if (el == tags.length){
-          //console.log(tag.tags[l]);
-          func(tag.tags[l], passedVal);
-        }
-      }).done(function(inData, str){
-        var stage = document.createElement('div');
-        stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
-        stage.childNodes;
-        
-        tag.tags[l]['dbInventory_n_DescriptionID'] = $('[name="dbInventory_n_DescriptionID"][type="hidden"]', stage).val(); 
-        
-        $.each(tag.prop, function(i,el){
-          tag.tags[l][el] = stage.querySelector('#' + el).value; 
-        });
+  ];
+}
 
-      });
-    });
-
-  },
-  
-  deallocate : function(tags){
-    console.log('deallocate'); 
+Tag.prototype.getInfo = function(tag, func, passedVal){
+    var tagProps = {};
     
-    $.each(tags, function(i,val){
-      tag.tags[val]['tag'] = val;
-      tag.tags[val]['mode'] = 'update';
-      tag.tags[val]['command'] ='Deallocate' ;
-      tag.tags[val]['cmdSubmit'] = 'Update Equipment';
-
-      console.log(tag.tags);
-
-      $.ajax({
-        type: 'POST',
-        cache: false,
-        data: tag.tags[val],
-        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+val,
-        error: function(){
-          console.log('Error:> ' + this);
-        }
-      }).done(function(data, str){
-        console.log(data);
-
-      });  
-    });  
-  },
-
-  allocate : function(ArrayOfObj){
-    console.log('Allocate');
-    if (ArrayOfObj instanceof Array){
-      $.each(ArrayOfObj, function(i,val){
-        console.log(val);
-        $.ajax({
-          type: 'POST',
-          url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
-          data: val 
-        }).done(function(data){
-          //console.log(data);
-          updateVerify(val.Tag);
-        });
+    $.ajax({
+      cache: false,
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+tag,
+    })
+    .fail(function(){
+      console.log('Error:> ' + this);
+    }.bind(this))
+    .done(function(inData, str){
+      // create pseudo dom
+      var stage = document.createElement('div');
+      stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+      
+      // Because site is dumb, pull this differently than rest 
+      tagProps['dbInventory_n_DescriptionID'] = $('[name="dbInventory_n_DescriptionID"][type="hidden"]', stage).val(); 
+      tagProps['isAllocated'] = $('.NavSubItem [href*="deallocate"]', stage).length ? true : false;
+      
+      // pull tag properties
+      $.each(this.prop, function(i,el){
+        tagProps[el] = stage.querySelector('#' + el).value; 
       });
-    }
-    else {
-      console.log('Need Array of Objects inorder to allocate');
-    }
+        
+      func(tagProps, passedVal);
+    }.bind(this));
   }
+  
+  //has to be from getInfo callback. tag.getInfo(['tag'], tag.deallocate(['tag']))
+Tag.prototype.deallocate = function(){
+    var data = {};
+
+    // only deallocated allocated items
+    if (this.isAllocated != 'true') return;
+
+    console.log('deallocate'); 
+
+    data['data'] = 'X' + this.Tag;
+    data['mode'] = 'update';
+    data['command'] ='Deallocate' ;
+    data['cmdSubmit'] = 'Update Equipment';
+
+    console.log(data);
+
+    $.ajax({
+      type: 'POST',
+      cache: false,
+      data: data,
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+data['data'],
+    }).fail(function(){
+      console.log('Error:> ' + this);
+    }).done(function(data, str){
+      console.log('is deallocated'); 
+      console.log(data);
+    });  
+  }
+
+Tag.prototype.allocate = function(){
+  var data = {};
+
+  delete this.isAllocated;
+  delete this.prop;
+  delete this.alloProp;
+
+  for(var key in this) {
+    switch (typeof this[key]) {
+      case 'function':
+      case 'object':
+       continue;
+    }
+    data[key] = this[key];
+  }
+
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+    data: data,
+  }).done(function(data){
+    //console.log(data);
+    updateVerify(this.Tag);
+  }.bind(this));
+}
+
+Tag.prototype.setProperties = function(obj){
+  //(Tag,Building,Closet,DNS,IP){
+  this.isAllocated = obj.isAllocated;
+  this.Tag = 'X' + obj.Tag;
+  this.Class = "A"; //Access Point : Access Mode
+  this.Building = obj.Building;
+  this.Closet = obj.Closet;
+  this.DNSName = obj.DNS;
+  this.AllocatePorts = '';
+  this.State = '9 NoChange';
+  this.cmdSubmit = 'Finish';
+  console.log('woot');
+  this.IP = obj.IP;
+  console.log(obj.IP);
+  console.log('woot2');
+  if (this.IP.indexOf('.')) {
+    console.log('woot3');
+    this.IP = this.IP.split('.');
+  
+    console.log('woot4');
+    this.IP1 = this.IP[0];
+    this.IP2 = this.IP[1];
+    this.IP3 = this.IP[2];
+    this.IP4 = this.IP[3];
+    delete this.IP;
+  }
+  else {
+    this.IP1 = this.IP2 = this.IP3 = this.IP4 = '0';
+  }
+}
+
+Tag.prototype.hasEmpty = function() {
+  if (this.DNSName.length > 0
+   || this.Tag.length > 0) {
+    return false;
+  }
+
+  return true;
 }
 
 function createRow(){
-  var form = [
-    {
-      'input':'input',
-      'type':'text',
-      'class':'Tag',
-      'size':'8',
-      'place':'xTag'
-    },
-    {
-      'input':'input',
-      'type':'text',
-      'class':'DNS',
-      'size':'16',
-      'place':'DNS Name'
-    },
-    {
-      'input':'input',
-      'type':'text',
-      'class':'IP',
-      'size':'16',
-      'place':'IP Address'
-    },
-    {
-      'input':'ul',
-      'type':'',
-      'class':'status',
-      'size':'8',
-      'place':''
-    }
-  ]
-  var lukeSux = $('.tagSet').length + 1;
-  var tempRow = $('<tr/>').attr('id','row_'+lukeSux).attr('class','tagSet').html( $('<td/>').html($('<a/>').html(lukeSux)));
+  var rowNum = $('.tagSet').length + 1;
 
-  var cache = $('.tagSet').length;
+  var source = '\
+        <tr id="row_{{num}}" class="tagSet">\
+          <td>\
+            <a>{{num}}</a>\
+          </td>\
+          <td class="Tag">\
+            <input type="text" name="Tag" class="Tag" placeholder="Tag" size="8" required>\
+          </td>\
+          <td class="DNS">\
+            <input type="text" name="DNS" class="DNS" placeholder="DNS Name" size="16" required>\
+          </td>\
+          <td class="IP">\
+            <input type="text" name="IP" class="IP" placeholder="IP Address" size="16" required>\
+          </td>\
+          <td class="status">\
+          </td>\
+        </tr>';
 
-  $.each(form, function(i,el){
-    $(tempRow).append(
-      $('<td/>').attr('class',el.class).html(
-        $('<'+el.input+'/>')
-          .attr('type',el.type)
-          .attr('name',el.class)
-          .attr('class',el.class)
-          .attr('placeholder',el.place)
-          .attr('size',el.size)
-      )
-    );
-    $('#resultTable').append(tempRow);
-  });
+  var template = Handlebars.compile(source);
 
+  var compiledTemplate = template({num: rowNum});
+  $('#resultTable').append($(compiledTemplate));
 }
 
-function createSelector(){
-  var list = $('<li/>').html($('<select/>').attr('name','selectList').attr('class','selectList').attr('id','sList'));
-  var closet = $('<li/>').html($('<input/>').attr('id','closetCode').attr('name','closet').attr('placeholder','Closet').attr('size','5'));
-  var options = $('<li>').append( $('<input/>').attr('type','checkbox').attr('name','opt1')).append($('<label/>').attr('for','opt1').attr('name','opt1Label').html('Option 1'));
-  
-  $.each(JSON.parse(localStorage.buildings), function(i,el){
-    $('#sList',list).append($('<option/>').attr('value',el).html(el));
-  });
-  
-  $('<div/>').attr('id','bulkTop').prependTo($('#quickAllo')).append(list).append(closet);
-  $('<div/>').attr('id','bulkTop').html(
-      $('<ul/>').attr('id','bulkTopUl').append(list).append(closet).append(options)).prependTo($('#quickAllo')
-  );
+// For twitterbootstrap: prepends 'X' before the form
+function addPreTag(el) {
+  var hasPreTag = $(el).siblings().hasClass('add-on');
 
-  $('#addButton').click(function(e){
-    e.preventDefault();
+  if (hasPreTag) return;
+  
+  if(!$(el).parent().hasClass('input-prepend')) {
+    $(el).wrap($('<div class="input-prepend" />'));
+    $(el).focus();
+  }
+
+  $(el).parent().prepend($('<span class="add-on"/>').html('X'));
+}
+
+function removePreTag(el) {
+  $('span',$(el).parent()).remove();
+}
+
+
+function batchOpsKeydown(e) { //get key for autoadd of fields e = e || window.event;
+
+  // tab key
+  if (e.keyCode != 9 || e.shiftKey)
+    return;
+
+  var activeElm = $(document.activeElement);
+  var activeElmVal = activeElm.val();
+  
+  var itemsInSet = $('.tagSet').length -1;
+  var indexOfActive = activeElm.parents('.tagSet').index();
+  var isIP =  activeElm.parent().hasClass('IP');
+
+  if (indexOfActive == itemsInSet && isIP) {
     createRow();
-  });
-}
-
-
-
-function setDisplay(){
-  $('.Navigation').html('');
-  $('.Content').html('');
-  document.title = "{NTG} Batch";
-   
-  $('<form/>').fadeIn(200).attr('id','quickAllo').attr('name','quickAlloForm').appendTo($('.Content'))
-              .html( $('<div/>').attr('id','dumpster'));
+  }
   
-  $('<table/>').attr('class','table table-hover')
-                   .attr('id','resultTable')
-                   .appendTo('#dumpster')
-                   .append( $('<thead><tr></tr></thead><tbody id="success"></tbody><tbody id="error"></tbody>')
-                    );
+  //Prepend DNS Name Stuff
+  if ($('#preDNS').is(':checked')
+   && activeElm.attr('name') == 'DNS' 
+   && activeElmVal.indexOf($('#sList').val()) < 0 ){
+    activeElm.val($('#sList').val() + activeElmVal.toUpperCase());
+  }
 
+  var standardXTag = /^[xX]?[0-9]{4,5}$/g;
+  var SMSUTag = /^[0-9]{6,10}$/g;
 
-  var tableRows = ['#','XTag','AP Name', 'IP Address', 'Status', ''];
-  var tableForms = ['Tag','DNS','IP','Status', ''];
+  //Xtag Status // preTag set stuff
+  if (activeElm.attr('name') == 'Tag') {
+    var validTag = false;
+    var row = activeElm.parents('.tagSet').attr('id');
 
-
-  $.each(tableRows, function(i, v){
-    $('#dumpster thead tr').append($('<td/>').html(v));
-  });
-  
-  createSelector(); 
-  createRow(); 
-  
-  function keydown(e) { //get key for autoadd of fields
-    e = e || window.event;
-    if (e.keyCode == 9 && !e.shiftKey) {
-      var set = document.getElementsByClassName('tagSet');
-      var activeElm = document.activeElement;
-
-      if (set[set.length -1].childNodes[3].childNodes[0] == document.activeElement) {
-        createRow();
+    // check for standard xTag
+    if (standardXTag.exec(activeElmVal)) {
+      validTag = true;
+      if (activeElmVal[0].toLowerCase() == 'x') {
+        activeElm.val(activeElmVal.substr(1, activeElmVal.length));
       }
-      if (activeElm.name == 'Tag'){
-        if (activeElm.value.length > 4 && activeElm.value.length < 7) {
-          
-          var row = $(activeElm).parent().parent().attr('id');
-          
-          tag.getInfo([activeElm.value], setStatus, row);
-          
-          setLoader($($('[name="status"]', $(activeElm).parent().siblings())));
-        }
+      else {
+        activeElmVal = 'x' + activeElmVal;
       }
+
+      addPreTag(activeElm);
+    }   
+    else if (SMSUTag.exec(activeElmVal)) {
+      validTag = true;
+      removePreTag(activeElm);
+    }
+
+    if (validTag) {
+      var tag = new Tag;
+      tag.getInfo(activeElmVal, setStatus, row);
+      setLoader($('.status', activeElm.parents('.tagSet')));
+    }
+    else {
+      setStatus({error: true}, row);
     }
   }
-  document.onkeydown = keydown;
+}
+
+//Page for batch operations of Allocation and Deallocation
+function batchOps(){
+  $('.Navigation').html('');
+
+  document.title = "{NTG} Batch";
+  
+  document.onkeydown = batchOpsKeydown;
+
+  var context = {
+    selectListValues: JSON.parse(localStorage.buildings),
+    tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
+    tableOptions: {
+        'Allocate':'allo',
+        'Deallocate Only':'deallo'
+    }
+  }
+
+  renderBatchOps(context);
 }  
 
-function setLoader(div){
+function renderBatchOps(context) {
+  var source = '\
+<form id="quickAllo" name="quickAlloForm" style="display: block;">\
+  <div id="bulkTop">\
+    <ul id="bulkTopUl">\
+      <li>\
+        <select name="selectList" class="selectList" id="sList">\
+          {{#each selectListValues}}\
+            <option value="{{this}}">{{this}}</option>\
+          {{/each}}\
+        </select>\
+      </li>\
+      <li>\
+        <input id="closetCode" name="closet" placeholder="Closet" size="5">\
+      </li>\
+      <li>\
+        <select name="selectMode" class="selectList" id="mList">\
+          {{#each tableOptions}}\
+            <option value="{{this}}">{{@key}}</option>\
+          {{/each}}\
+        </select>\
+      </li>\
+      <li>\
+        <input type="checkbox" name="prependDNS" id="preDNS" checked>\
+        <label for="preDNS">Prepend Building to DNS</label>\
+      </li>\
+    </ul>\
+  </div>\
+  <div id="bulkOps">\
+    <table class="table table-hover" id="resultTable">\
+      <thead>\
+        <tr>\
+        {{#each tableRows}}\
+          <td>{{this}}</td>\
+        {{/each}}\
+        </tr>\
+      </thead>\
+      <tbody>\
+        <tr id="row_1" class="tagSet">\
+          <td>\
+            <a>1</a>\
+          </td>\
+          <td class="Tag">\
+            <input type="text" name="Tag" class="Tag" value="5050" placeholder="Tag" size="8" required>\
+          </td>\
+          <td class="DNS">\
+            <input type="text" name="DNS" class="DNS" value="HAMH525-W1" placeholder="DNS Name" size="16" required>\
+          </td>\
+          <td class="IP">\
+            <input type="text" name="IP" class="IP" value="146.7.147.100" placeholder="IP Address" size="16" required>\
+          </td>\
+          <td class="status">\
+            <ul type="" name="status" class="status" placeholder="" size="8"></ul>\
+          </td>\
+        </tr>\
+      </tbody>\
+    </table> \
+    <div class"formButtons">\
+      <button type="button" class="btn" id="imaButton">Stap</button>\
+      <button type="button" class="btn btn-primary" id="submitBulkOps">I want to go to there</button>\
+    </div>\
+  </div>\
+</form>';
+
+
+  $('#submitBulkOps').click(processBatchOps);
+
+
+  var template = Handlebars.compile(source);
+  var compiledTemplate = template(context);
+  $('.Content').html(compiledTemplate);
+}
+
+function processBatchOps(){
+  var c = $('#quickAllo').serializeObject();
+  var xtags = [];
+   
+  if (typeof c.Tag == 'object') {
+    $.each(c.Tag, function(i,el){
+      if (c.Tag[i].length > 0 && c.DNS[i].length > 0 && c.IP[i].length >= 0) {
+        xtags[i] = new Tag;
+        xtags[i].setProperties({
+          'Tag': c.Tag[i],
+          'Building': c.selectList,
+          'Closet': c.closet.toUpperCase(),
+          'DNS': c.DNS[i],
+          'IP': c.IP[i],
+          'isAllocated': c.isAllocated[i]
+        });
+      }
+    });
+  } else {
+    xtags[0] = new Tag;
+    xtags[0].setProperties({
+      'Tag': c.Tag,
+      'Building': c.selectList,
+      'Closet': c.closet.toUpperCase(),
+      'DNS': c.DNS,
+      'IP': c.IP,
+      'isAllocated': c.isAllocated
+    });
+  }
+
+  $.each(xtags, function (i, tag) {
+    if(tag.hasEmpty()) {
+      console.log('is empty');
+      return;
+    }
+    console.log('processing');
+
+    tag.deallocate();
+    tag.allocate();
+  });
+}
+
+function setLoader(el){
   var loader = $('<div/>').attr('class','windows8');
 
   for (var i =1; i < 6; i++){
@@ -1060,31 +1221,38 @@ function setLoader(div){
       $('<div/>').attr('class','wInnerBall')
     ).appendTo(loader);
   }
-  $(div).html('').append(loader);
+  $(el).html('').append(loader);
 }
 
-function setStatus(tag, passedVar){
-  //console.log(tag);
-  //var active = document.activeElement;
-  //var statusCell = $($('[name="status"]', $(active).parent().siblings()));
-  var statusCell = $('[name="status"]', $('#'+passedVar));
-  var bank = JSON.parse(localStorage.equipment); 
+function setStatus(tag, row){
+  var statusCell = $('.status', $('#'+row));
+  var bank = JSON.parse(localStorage.equipment)[tag.dbInventory_n_DescriptionID]; 
+  tag.bank = bank;
   
-  
-  if (tag.dbInventory_s_SMSUTag == "") {
+  if (tag.error || tag.dbInventory_s_SMSUTag == "") {
     $(statusCell).html('').append('Not Found Bro');
-    $('#'+passedVar).attr('class','tagSet error');
+    $('#'+row).attr('class','tagSet error');
   } else { 
-    $(statusCell).html('')
-      .append($('<li/>').html(bank[tag.dbInventory_n_DescriptionID]))
-      .append($('<li/>').html(tag.dbInventory_s_SerialNumber))
-      .append(
-        $('<li/>').html(tag.dbInventory_s_CurBldg+': '+tag.dbInventory_s_CurCloset+' - Date: '+tag.dbInventory_d_VerifyDt)
-      );
-    $('#'+passedVar).attr('class','tagSet info');
+    var source = '\
+      <ul>\
+        <li>{{bank}}</li>\
+        <li>{{dbInventory_s_SerialNumber}}</li>\
+        <li>{{dbInventory_s_CurBldg}}: {{dbInventory_s_CurCloset}} - Date: {{dbInventory_d_VerifyDt}}</li>\
+      </ul>\
+      {{#if isAllocated}}\
+        <input type="hidden" name="isAllocated" value="{{isAllocated}}" />\
+      {{else}}\
+        <input type="hidden" name="isAllocated" value="false" />\
+      {{/if}}';
+
+    var template = Handlebars.compile(source);
+    var compiledTemplate = template(tag);
+    $(statusCell).html(compiledTemplate);
+
+    $('#'+row).attr('class','tagSet info');
 
     setTimeout(function(){
-     $('#'+passedVar).attr('class','tagSet');
+     $('#'+row).removeClass('info');
     }, 1000);
   }
 }
@@ -1125,7 +1293,7 @@ var equipment = {
         equipment.list[el.value] = el.label;
       });
     
-    localStorage['equipment'] = JSON.stringify(equipment.list); 
+      localStorage['equipment'] = JSON.stringify(equipment.list); 
 
     });
   }
@@ -1206,25 +1374,5 @@ function updateVerify(xTag){
         console.log("Verify Date Updated to " + returnDate());
       });
   });
-}
-
-function existAllocate(obj){
-  //Tag,Class,Building,Closet,DNS,IP){
-  this.Tag = obj.Tag;
-  this.Class = obj.Class;
-  this.Building = obj.Building;
-  this.Closet = obj.Closet;
-  this.DNSName = obj.DNS;
-  this.AllocatePorts = '';
-  this.State = '9 NoChange';
-  this.cmdSubmit = 'Finish';
-  this.IP = obj.IP;
-  this.IP = this.IP.split('.');
-  
-  this.IP1 = this.IP[0];
-  this.IP2 = this.IP[1];
-  this.IP3 = this.IP[2];
-  this.IP4 = this.IP[3];
-  delete this.IP;
 }
 

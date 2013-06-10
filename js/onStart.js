@@ -18,6 +18,7 @@ function addScripts(files){
 
 addScripts(['js/jquery-1.8.3.min.js',
             'js/jquery-plugins.js',
+            'js/handlebars.js',
             'js/bootstrap.min.js',
             'js/functions.js',
             'css/bootstrap.css',

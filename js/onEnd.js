@@ -60,7 +60,7 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
       $('#custNavBar').append(toolsMenu);
 
       $('#batchOps').on('click',function(){
-        setDisplay();
+        batchOps();
       });
   
   }, true);
@@ -167,3 +167,13 @@ document.body.removeAttribute('onload');
 //});
 
 //urlCheck('PortList.asp',btnDates);
+
+
+// only used as reference delete me
+
+//var source   = "<p>{{lastName}}, {{firstName}}</p>";
+//var template = Handlebars.compile(source);
+//console.log('test');
+//console.log(template({firstName: "Alan", lastName: "Johnson"}));
+
+//batchOps();

@@ -28,6 +28,7 @@
     "js/bootstrap.min.js",
     "js/functions.js",
     "js/reload.js",
+    "js/handlebars.js",
     "js/tabber-minimized.js",
     "js/pop.js",
     "js/jquery-plugins.js",
@@ -49,7 +50,7 @@
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/onEnd.js"],
+      "js": ["js/jquery-1.8.3.min.js","js/functions.js","js/handlebars.js","js/onEnd.js"],
       "matches": ["https://ntg.missouristate.edu/*"],
       "run_at": "document_end"
     }
