@@ -849,62 +849,64 @@ function Tag() {
 }
 
 Tag.prototype.getInfo = function(tag, func, passedVal){
-    var tagProps = {};
+  var tagProps = {};
+  
+  $.ajax({
+    cache: false,
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+tag,
+  })
+  .fail(function(){
+    console.log('Error:> ' + this);
+  }.bind(this))
+  .done(function(inData, str){
+    // create pseudo dom
+    var stage = document.createElement('div');
+    stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
+    stage.childNodes;
     
-    $.ajax({
-      cache: false,
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+tag,
-    })
-    .fail(function(){
-      console.log('Error:> ' + this);
-    }.bind(this))
-    .done(function(inData, str){
-      // create pseudo dom
-      var stage = document.createElement('div');
-      stage.innerHTML = inData.replace(/<img(.|\s)*?\/>/g,'');
-      stage.childNodes;
+    // Because site is dumb, pull this differently than rest 
+    tagProps['dbInventory_n_DescriptionID'] = $('[name="dbInventory_n_DescriptionID"][type="hidden"]', stage).val(); 
+    tagProps['isAllocated'] = $('.NavSubItem [href*="deallocate"]', stage).length ? true : false;
+    
+    // pull tag properties
+    $.each(this.prop, function(i,el){
+      tagProps[el] = stage.querySelector('#' + el).value; 
+    });
       
-      // Because site is dumb, pull this differently than rest 
-      tagProps['dbInventory_n_DescriptionID'] = $('[name="dbInventory_n_DescriptionID"][type="hidden"]', stage).val(); 
-      tagProps['isAllocated'] = $('.NavSubItem [href*="deallocate"]', stage).length ? true : false;
-      
-      // pull tag properties
-      $.each(this.prop, function(i,el){
-        tagProps[el] = stage.querySelector('#' + el).value; 
-      });
-        
-      func(tagProps, passedVal);
-    }.bind(this));
-  }
+    func(tagProps, passedVal);
+  }.bind(this));
+}
   
   //has to be from getInfo callback. tag.getInfo(['tag'], tag.deallocate(['tag']))
-Tag.prototype.deallocate = function(){
-    var data = {};
+Tag.prototype.deallocate = function(callback){
+  var data = {};
+  var self = this;
 
-    // only deallocated allocated items
-    if (this.isAllocated != 'true') return;
-
-    console.log('deallocate'); 
-
-    data['data'] = 'X' + this.Tag;
-    data['mode'] = 'update';
-    data['command'] ='Deallocate' ;
-    data['cmdSubmit'] = 'Update Equipment';
-
-    console.log(data);
-
-    $.ajax({
-      type: 'POST',
-      cache: false,
-      data: data,
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+data['data'],
-    }).fail(function(){
-      console.log('Error:> ' + this);
-    }).done(function(data, str){
-      console.log('is deallocated'); 
-      console.log(data);
-    });  
+  // only deallocated allocated items
+  if (this.isAllocated == 'false') {
+    callback.apply(this);  
+    return;
   }
+
+  console.log('deallocate'); 
+
+  data['data'] = 'X' + this.Tag;
+  data['mode'] = 'update';
+  data['command'] ='Deallocate' ;
+  data['cmdSubmit'] = 'Update Equipment';
+
+  $.ajax({
+    type: 'POST',
+    cache: false,
+    data: data,
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+data['data'],
+  }).fail(function(){
+    console.log('Error:> ' + this);
+  }).done(function(data, str){
+    console.log('is deallocated'); 
+    callback.apply(this);
+  }.bind(this));  
+}
 
 Tag.prototype.allocate = function(){
   var data = {};
@@ -927,7 +929,7 @@ Tag.prototype.allocate = function(){
     url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
     data: data,
   }).done(function(data){
-    //console.log(data);
+    console.log('is allocated'); 
     updateVerify(this.Tag);
   }.bind(this));
 }
@@ -935,7 +937,7 @@ Tag.prototype.allocate = function(){
 Tag.prototype.setProperties = function(obj){
   //(Tag,Building,Closet,DNS,IP){
   this.isAllocated = obj.isAllocated;
-  this.Tag = 'X' + obj.Tag;
+  this.Tag = 'X' +obj.Tag;
   this.Class = "A"; //Access Point : Access Mode
   this.Building = obj.Building;
   this.Closet = obj.Closet;
@@ -943,15 +945,10 @@ Tag.prototype.setProperties = function(obj){
   this.AllocatePorts = '';
   this.State = '9 NoChange';
   this.cmdSubmit = 'Finish';
-  console.log('woot');
   this.IP = obj.IP;
-  console.log(obj.IP);
-  console.log('woot2');
-  if (this.IP.indexOf('.')) {
-    console.log('woot3');
+  if (this.IP.length) {
     this.IP = this.IP.split('.');
-  
-    console.log('woot4');
+
     this.IP1 = this.IP[0];
     this.IP2 = this.IP[1];
     this.IP3 = this.IP[2];
@@ -1085,7 +1082,11 @@ function batchOps(){
   document.title = "{NTG} Batch";
   
   document.onkeydown = batchOpsKeydown;
-
+  
+  if (localStorage.buildings == null || localStorage.buildings == ''){
+    bldg.getBuildings();
+    equipment.getEquipmentList();
+  }
   var context = {
     selectListValues: JSON.parse(localStorage.buildings),
     tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
@@ -1141,13 +1142,13 @@ function renderBatchOps(context) {
             <a>1</a>\
           </td>\
           <td class="Tag">\
-            <input type="text" name="Tag" class="Tag" value="5050" placeholder="Tag" size="8" required>\
+            <input type="text" name="Tag" class="Tag" value="" placeholder="Tag" size="8" required>\
           </td>\
           <td class="DNS">\
-            <input type="text" name="DNS" class="DNS" value="HAMH525-W1" placeholder="DNS Name" size="16" required>\
+            <input type="text" name="DNS" class="DNS" value="" placeholder="DNS Name" size="16" required>\
           </td>\
           <td class="IP">\
-            <input type="text" name="IP" class="IP" value="146.7.147.100" placeholder="IP Address" size="16" required>\
+            <input type="text" name="IP" class="IP" value="" placeholder="IP Address" size="16" required>\
           </td>\
           <td class="status">\
             <ul type="" name="status" class="status" placeholder="" size="8"></ul>\
@@ -1162,16 +1163,34 @@ function renderBatchOps(context) {
   </div>\
 </form>';
 
-
-  $('#submitBulkOps').click(processBatchOps);
-
-
   var template = Handlebars.compile(source);
   var compiledTemplate = template(context);
   $('.Content').html(compiledTemplate);
+
+  $('#submitBulkOps').click(function() {
+    processBatchOps();
+  });
 }
 
 function processBatchOps(){
+
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
   var c = $('#quickAllo').serializeObject();
   var xtags = [];
    
@@ -1182,7 +1201,7 @@ function processBatchOps(){
         xtags[i].setProperties({
           'Tag': c.Tag[i],
           'Building': c.selectList,
-          'Closet': c.closet.toUpperCase(),
+          'Closet': c.closet,
           'DNS': c.DNS[i],
           'IP': c.IP[i],
           'isAllocated': c.isAllocated[i]
@@ -1194,7 +1213,7 @@ function processBatchOps(){
     xtags[0].setProperties({
       'Tag': c.Tag,
       'Building': c.selectList,
-      'Closet': c.closet.toUpperCase(),
+      'Closet': c.closet,
       'DNS': c.DNS,
       'IP': c.IP,
       'isAllocated': c.isAllocated
@@ -1208,8 +1227,7 @@ function processBatchOps(){
     }
     console.log('processing');
 
-    tag.deallocate();
-    tag.allocate();
+    tag.deallocate(tag.allocate);
   });
 }
 
@@ -1354,6 +1372,12 @@ var bldg = {
 }
 
 function updateVerify(xTag){
+
+  if(!xTag) {
+    console.log('no xtag for updateVerify');
+    return;
+  }
+
   $.ajax({
     type: 'POST',
     url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=' + xTag
@@ -1365,7 +1389,6 @@ function updateVerify(xTag){
       var tagData = $('#detailform', stage).serializeObject();
       tagData.dbInventory_d_VerifyDt = returnDate();
       tagData.cmdSubmit = 'Update Equipment';
-      console.log(tagData);
       $.ajax({
         type: 'POST',
         url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
