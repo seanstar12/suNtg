@@ -496,6 +496,15 @@ form = {
                   )
                 );
     
+//  var source = '\
+//        <div id="updateProgressAlert" class="alert alert-info" style="display: none;">\
+//          <h4>Updating Switches:  <span id="updateProgressMsg"> Generating Request</span> </h4>\
+//          <a class="close" data-dismiss="alert" href="#">&times;</a>\
+//          <div class="progress progress-striped active" id="updateProgressCont">\
+//            <div class="bar" id="updateProgressBar" style="width:5%;"></div>\
+//          </div>\
+//        </div>';
+
     $('form').not('#srchBox').each(
       function(j, jel){
         var pData = "";
@@ -513,6 +522,8 @@ form = {
       }
     );
   },
+  
+
 
   submitPortList: function(portData, formTotal, currForm) {
     this.formTotal = formTotal;
@@ -969,6 +980,34 @@ Tag.prototype.hasEmpty = function() {
   return true;
 }
 
+function updateVerify(xTag){
+
+  if(!xTag) {
+    console.log('no xtag for updateVerify');
+    return;
+  }
+
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=' + xTag
+  }).done(function(data){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+
+      var tagData = $('#detailform', stage).serializeObject();
+      tagData.dbInventory_d_VerifyDt = returnDate();
+      tagData.cmdSubmit = 'Update Equipment';
+      $.ajax({
+        type: 'POST',
+        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+        data: tagData
+      }).done(function(data){
+        console.log("Verify Date Updated to " + returnDate());
+      });
+  });
+}
+
 function createRow(){
   var rowNum = $('.tagSet').length + 1;
 
@@ -1083,12 +1122,13 @@ function batchOps(){
   
   document.onkeydown = batchOpsKeydown;
   
-  if (localStorage.buildings == null || localStorage.buildings == ''){
-    bldg.getBuildings();
-    equipment.getEquipmentList();
+  if (localStorage.building == null || localStorage.building == ''){
+    fetch.data('building');  
+    fetch.data('equipment');  
+    fetch.data('objIds');  
   }
   var context = {
-    selectListValues: JSON.parse(localStorage.buildings),
+    selectListValues: JSON.parse(localStorage.building),
     tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
     tableOptions: {
         'Allocate':'allo',
@@ -1157,7 +1197,6 @@ function renderBatchOps(context) {
       </tbody>\
     </table> \
     <div class"formButtons">\
-      <button type="button" class="btn" id="imaButton">Stap</button>\
       <button type="button" class="btn btn-primary" id="submitBulkOps">I want to go to there</button>\
     </div>\
   </div>\
@@ -1296,27 +1335,6 @@ function setProgress(){
               );
 }
 
-var equipment = {
-  list: {},
-
-  getEquipmentList: function(){
-    $.ajax({
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp'
-    }).done(function(data){
-      var stage = document.createElement('div');
-      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
-      stage.childNodes;
-    
-      $('#dbInventory_n_DescriptionID option', stage).each(function(i, el){
-        equipment.list[el.value] = el.label;
-      });
-    
-      localStorage['equipment'] = JSON.stringify(equipment.list); 
-
-    });
-  }
-}
-
 var bldg = {
   closets: [],
   buildings: [],
@@ -1371,31 +1389,93 @@ var bldg = {
   }
 }
 
-function updateVerify(xTag){
-
-  if(!xTag) {
-    console.log('no xtag for updateVerify');
-    return;
-  }
-
-  $.ajax({
-    type: 'POST',
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=' + xTag
-  }).done(function(data){
+// Grabs equipment info from an ajax command using types
+var fetch = {
+  //Uses data function to fetch different the different data types from below
+  type: {
+          'equipment': {
+            'url':'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+            'return': temp = {},
+            'data':{},
+            'func':function(stage){$("#dbInventory_n_DescriptionID option",stage).each(function(i,el){this.return[el.value] = el.label}.bind(this))}
+          }, 
+          'building': {
+            'url':'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+            'return':temp=[],
+            'data':{'Tag':'X3333'},
+            'func': function(stage){$("#Building",stage).children().each(function(i,l){if(l.innerHTML!='') this.return.push(l.value)}.bind(this))}
+          }, 
+          'objIds': {
+            'url':'https://ntg.missouristate.edu/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
+            'return':temp={},
+            'data':{},
+            'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[el.value]=$('label',$(el).parents('tr'))[0].outerText}.bind(this))}
+          }, 
+        }, 
+  data: function(type) {
+    $.ajax({
+      type:'POST',
+      url: this.type[type].url,
+      data: this.type[type].data
+    }).done(function(data){
+      
       var stage = document.createElement('div');
       stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
       stage.childNodes;
+     
+      this.type[type].func(stage);
+      localStorage[type] = JSON.stringify(this.type[type].return); //yeah, this shit works.
+       
+    }.bind(this));
+  }
+}
 
-      var tagData = $('#detailform', stage).serializeObject();
-      tagData.dbInventory_d_VerifyDt = returnDate();
-      tagData.cmdSubmit = 'Update Equipment';
-      $.ajax({
-        type: 'POST',
-        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
-        data: tagData
-      }).done(function(data){
-        console.log("Verify Date Updated to " + returnDate());
-      });
-  });
+
+function LinkSet() {
+  this.modes = {
+                  'Device Select': 
+                    {
+                      'mode':'Device Select',
+                      'LocalPort':'',
+                      'dbnIP3':'',
+                      'dbnIP4':'',
+                      'dbsName':'',
+                      'dbsCurBldg':'',
+                      'dbsCurCloset':''
+                    },
+                  'Unit Select': {
+                      'mode':'Unit Select',
+                      'LocalPort':'',
+                      'dbsName':'',
+                      'ObjID':''
+                    },
+                'Port Select': {
+                      'mode':'Port Select',
+                      'LocalPort':'',
+                      'dbsName':'',
+                      'ObjID':'',
+                      'UnitID':''
+                    },
+                'Confirmation':{
+                      'mode':'Confirmation',
+                      'LocalPort':'',
+                      'DNSName':'',
+                      'ObjID':'',
+                      'PortID':'',
+                      'If3Used':'',
+                      'If2Used':'',
+                      'R1':'V1'
+                    },
+                'Finished': {
+                      'mode':'Finished',
+                      'LocalPort':'',
+                      'DNSName':'',
+                      'ObjID':'',
+                      'PortID':'',
+                      'If3Used':'',
+                      'If2Used':''
+                    }
+              };
+  this.properties = '';
 }
 
