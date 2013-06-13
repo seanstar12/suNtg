@@ -33,6 +33,11 @@ function addScripts(files){
   }
 }
 
+function dbInit() {  
+  fetch.data('building');  
+  fetch.data('equipment');  
+  fetch.data('objIds');  
+}
 function portalFrame(crUrl, urlVar) {
   var f = document.createElement('frame');
   f.src = crUrl + 'portal.html?id=' + urlVar;
@@ -1122,11 +1127,6 @@ function batchOps(){
   
   document.onkeydown = batchOpsKeydown;
   
-  if (localStorage.building == null || localStorage.building == ''){
-    fetch.data('building');  
-    fetch.data('equipment');  
-    fetch.data('objIds');  
-  }
   var context = {
     selectListValues: JSON.parse(localStorage.building),
     tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
