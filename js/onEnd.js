@@ -4,7 +4,7 @@ var menuObject =  [
                     {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
                     {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
                     {'parent': true, 'title':'Case System', 'sub':[
-                      {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/default.asp' },
+                      {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/queryCase.asp' },
                       {'title':'TeleCom','parent':'Case System','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'}]},
                     {'parent': true, 'title':'NTG Tools', 'sub':[
                       {'title':'Batch Operations','parent':'NTG Tool','id':'batchOps', 'value':'#NtgTool/BatchOperations' },

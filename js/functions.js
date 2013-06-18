@@ -1016,28 +1016,7 @@ function updateVerify(xTag){
 function createRow(){
   var rowNum = $('.tagSet').length + 1;
 
-  var source = '\
-        <tr id="row_{{num}}" class="tagSet">\
-          <td>\
-            <a>{{num}}</a>\
-          </td>\
-          <td class="Tag">\
-            <input type="text" name="Tag" class="Tag" placeholder="Tag" size="8" required>\
-          </td>\
-          <td class="DNS">\
-            <input type="text" name="DNS" class="DNS" placeholder="DNS Name" size="16" required>\
-          </td>\
-          <td class="IP">\
-            <input type="text" name="IP" class="IP" placeholder="IP Address" size="16" required>\
-          </td>\
-          <td class="status">\
-          </td>\
-        </tr>';
-
-  var template = Handlebars.compile(source);
-
-  var compiledTemplate = template({num: rowNum});
-  $('#resultTable').append($(compiledTemplate));
+  $('#resultTable').append(Handlebars.templates.tagCreateRow({num: rowNum}));
 }
 
 // For twitterbootstrap: prepends 'X' before the form
@@ -1140,71 +1119,7 @@ function batchOps(){
 }  
 
 function renderBatchOps(context) {
-  var source = '\
-<form id="quickAllo" name="quickAlloForm" style="display: block;">\
-  <div id="bulkTop">\
-    <ul id="bulkTopUl">\
-      <li>\
-        <select name="selectList" class="selectList" id="sList">\
-          {{#each selectListValues}}\
-            <option value="{{this}}">{{this}}</option>\
-          {{/each}}\
-        </select>\
-      </li>\
-      <li>\
-        <input id="closetCode" name="closet" placeholder="Closet" size="5">\
-      </li>\
-      <li>\
-        <select name="selectMode" class="selectList" id="mList">\
-          {{#each tableOptions}}\
-            <option value="{{this}}">{{@key}}</option>\
-          {{/each}}\
-        </select>\
-      </li>\
-      <li>\
-        <input type="checkbox" name="prependDNS" id="preDNS" checked>\
-        <label for="preDNS">Prepend Building to DNS</label>\
-      </li>\
-    </ul>\
-  </div>\
-  <div id="bulkOps">\
-    <table class="table table-hover" id="resultTable">\
-      <thead>\
-        <tr>\
-        {{#each tableRows}}\
-          <td>{{this}}</td>\
-        {{/each}}\
-        </tr>\
-      </thead>\
-      <tbody>\
-        <tr id="row_1" class="tagSet">\
-          <td>\
-            <a>1</a>\
-          </td>\
-          <td class="Tag">\
-            <input type="text" name="Tag" class="Tag" value="" placeholder="Tag" size="8" required>\
-          </td>\
-          <td class="DNS">\
-            <input type="text" name="DNS" class="DNS" value="" placeholder="DNS Name" size="16" required>\
-          </td>\
-          <td class="IP">\
-            <input type="text" name="IP" class="IP" value="" placeholder="IP Address" size="16" required>\
-          </td>\
-          <td class="status">\
-            <ul type="" name="status" class="status" placeholder="" size="8"></ul>\
-          </td>\
-        </tr>\
-      </tbody>\
-    </table> \
-    <div class"formButtons">\
-      <button type="button" class="btn btn-primary" id="submitBulkOps">I want to go to there</button>\
-    </div>\
-  </div>\
-</form>';
-
-  var template = Handlebars.compile(source);
-  var compiledTemplate = template(context);
-  $('.Content').html(compiledTemplate);
+  $('.Content').html(Handlebars.templates.renderBatchOps(context));
 
   $('#submitBulkOps').click(function() {
     processBatchOps();
@@ -1290,21 +1205,8 @@ function setStatus(tag, row){
     $(statusCell).html('').append('Not Found Bro');
     $('#'+row).attr('class','tagSet error');
   } else { 
-    var source = '\
-      <ul>\
-        <li>{{bank}}</li>\
-        <li>{{dbInventory_s_SerialNumber}}</li>\
-        <li>{{dbInventory_s_CurBldg}}: {{dbInventory_s_CurCloset}} - Date: {{dbInventory_d_VerifyDt}}</li>\
-      </ul>\
-      {{#if isAllocated}}\
-        <input type="hidden" name="isAllocated" value="{{isAllocated}}" />\
-      {{else}}\
-        <input type="hidden" name="isAllocated" value="false" />\
-      {{/if}}';
-
-    var template = Handlebars.compile(source);
-    var compiledTemplate = template(tag);
-    $(statusCell).html(compiledTemplate);
+    
+    $(statusCell).html(Handlebars.templates.tagSetStatus(tag));
 
     $('#'+row).attr('class','tagSet info');
 
