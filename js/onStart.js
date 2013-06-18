@@ -16,11 +16,12 @@ function addScripts(files){
 }
 
 
-addScripts(['js/jquery-1.8.3.min.js',
-            'js/jquery-plugins.js',
-            'js/handlebars.js',
-            'js/bootstrap.min.js',
+addScripts(['js/handlebars.js',
+            'js/jquery-1.8.3.min.js',
             'js/functions.js',
+            'js/jquery-plugins.js',
+            'js/bootstrap.min.js',
+            'js/templates.js',
             'css/bootstrap.css',
             'css/ntgTool.css']);
 
