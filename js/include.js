@@ -39,14 +39,24 @@ nT.storage = {
 };
 
 nT.msu = {
+
   logIn: function (callback){
     this.logInCallback = callback;
-    if (true){
-      if (nT.storage.get('credentials','username') != null && nT.storage.get('credentials','password') != null){
-        console.log('New Login Running');
-        this.getValidation();
-      } else console.log('Credentials not set');
-    } else console.log('Login Count TOO High. Fix it later');
+    if (localStorage.loginCount > 15){
+      nT.msu.logOut(nT.msu.runLogIn);
+      localStorage.loginCount = 0;
+    } else {
+      nT.msu.runLogIn();
+    }
+  },
+
+
+  runLogIn: function(){
+    console.log('runLogIn '+ localStorage.loginCount);
+    if (nT.storage.get('credentials','username') != null && nT.storage.get('credentials','password') != null){
+      console.log('New Login Running');
+      nT.msu.getValidation();
+    } else console.log('Credentials not set');
   },
 
   getValidation: function() {
@@ -94,7 +104,9 @@ nT.msu = {
     }
     localStorage.loggedIn = 1;
     localStorage.loginCount ++;
-  
+    
+    this.refresh();
+     
     if (typeof(this.logInCallback) == "function") {
       this.logInCallback();
       delete this.logInCallback;
@@ -157,12 +169,12 @@ nT.msu = {
     }
   },
 
-  logOut: function(){
+  logOut: function(callback){
     //removes auth cookies
     if (nT.storage.get('other','debug') == 1) console.log("logOut:> Logged Out");
     chrome.cookies.getAll({domain: 'ntg.missouristate.edu'}, function(e) {
       e.forEach(function(el){
-        chrome.cookies.remove({url: 'https://' + el.domain, name: el.name });
+        chrome.cookies.remove({url: 'https://' + el.domain, name: el.name }, callback);
       });
     });
   }
