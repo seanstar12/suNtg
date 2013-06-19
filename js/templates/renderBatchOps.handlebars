@@ -1,0 +1,60 @@
+<form id="quickAllo" name="quickAlloForm" style="display: block;">
+  <div id="bulkTop">
+    <ul id="bulkTopUl">
+      <li>
+        <select name="selectList" class="selectList" id="sList">
+          {{#each selectListValues}}
+            <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+      </li>
+      <li>
+        <input id="closetCode" name="closet" placeholder="Closet" size="5">
+      </li>
+      <li>
+        <select name="selectMode" class="selectList" id="mList">
+          {{#each tableOptions}}
+            <option value="{{this}}">{{@key}}</option>
+          {{/each}}
+        </select>
+      </li>
+      <li>
+        <input type="checkbox" name="prependDNS" id="preDNS" checked>
+        <label for="preDNS">Prepend Building to DNS</label>
+      </li>
+    </ul>
+  </div>
+  <div id="bulkOps">
+    <table class="table table-hover" id="resultTable">
+      <thead>
+        <tr>
+        {{#each tableRows}}
+          <td>{{this}}</td>
+        {{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="row_1" class="tagSet">
+          <td>
+            <a>1</a>
+          </td>
+          <td class="Tag">
+            <input type="text" name="Tag" class="Tag" value="" placeholder="Tag" size="8" required>
+          </td>
+          <td class="DNS">
+            <input type="text" name="DNS" class="DNS" value="" placeholder="DNS Name" size="16" required>
+          </td>
+          <td class="IP">
+            <input type="text" name="IP" class="IP" value="" placeholder="IP Address" size="16" required>
+          </td>
+          <td class="status">
+            <ul type="" name="status" class="status" placeholder="" size="8"></ul>
+          </td>
+        </tr>
+      </tbody>
+    </table> 
+    <div class"formButtons">
+      <button type="button" class="btn btn-primary" id="submitBulkOps">I want to go to there</button>
+    </div>
+  </div>
+</form>

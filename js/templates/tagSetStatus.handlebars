@@ -1,0 +1,10 @@
+<ul>
+  <li>{{bank}}</li>
+  <li>{{dbInventory_s_SerialNumber}}</li>
+  <li>{{dbInventory_s_CurBldg}}: {{dbInventory_s_CurCloset}} - Date: {{dbInventory_d_VerifyDt}}</li>
+</ul>
+{{#if isAllocated}}
+  <input type="hidden" name="isAllocated" value="{{isAllocated}}" />
+{{else}}
+  <input type="hidden" name="isAllocated" value="false" />
+{{/if}}

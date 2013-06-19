@@ -1,0 +1,62 @@
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        
+        <a class="brand" href="https://ntg.missouristate.edu">Networking</a>
+        
+        <div class="nav-collapse collapse"> 
+          <div class ="btn-group pull-right"> 
+            <button class="btn dropdown-toggle btn-small btn-inverse"data-toggle="dropdown">
+              <span class="caret"></span>
+            </button>
+            
+            <ul class="dropdown-menu">
+              <li>
+                <a id="logOut" href="#">Log Out</a>
+              </li>
+              
+              <li>
+                <a id="settings"href="#">Settings</a>
+              </li>
+              <li>
+                <a id="reload" href="#">Reload</a>
+              </li>
+            </ul>
+          </div>
+
+          <form class="navbar-search pull-right" id="srchBox" action="">
+            <input type="text" class="search-query span2" id="searchBox" placeholder="Search">
+          </form>
+          
+          <ul class="nav" id="custNavBar">
+            {{#each .}}
+
+              {{#if parent}}
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">{{title}}  <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                  
+                    {{#each sub}}
+                      <li id="{{id}}">
+                        <a href="{{value}}" class="subDrop">{{title}}</a>
+                    {{/each}}
+                  </ul>
+                </li>
+
+              {{else}}
+                <li id="{{id}}">
+                  <a href="{{value}}" class="subDrop">{{title}}</a>
+                </li>
+              {{/if}}
+            {{/each}}
+          </ul>
+          
+        </div>
+      </div>
+    </div> 
+  </div> 
