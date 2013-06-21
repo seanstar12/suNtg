@@ -102,6 +102,7 @@ var page = [
 ]
 
 document.onload = settingsOnLoad();
+var k =[],c="38,38,40,40,37,39,37,39,66,65";
 
 function settingsOnLoad(){
   console.log('load settings');
@@ -130,7 +131,7 @@ function settingsOnLoad(){
   });
   
   $('.mainview > *:not(.selected)').css('display', 'none');
-window.addEventListener("keydown", function(e){
-k.push(e.keyCode);if (k.toString().indexOf(c) >= 0){$('.su').fadeToggle(500);};}, true);
+  window.addEventListener("keydown", function(e){
+  k.push(e.keyCode);if (k.toString().indexOf(c) >= 0){$('.su').fadeToggle(500);$('.su a').trigger('click')}}, true);
 }
-var k =[],c="38,38,40,40,37,39,37,39,66,65";
+
