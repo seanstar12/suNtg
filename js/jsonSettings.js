@@ -1,11 +1,33 @@
-var setConf = {
-	pages: {
-		settings: {
-			"title": "User Settings","subTitle": "Because you're beautiful","type": "page","menuTitle": "User","id":"userSettings","options":"default","subFields": [ 
-				{"title": "Session","subTitle": "Handles the session","type": "section","id": "sessionSettings","options": "","subFields": [ 
-					{"title" : "Persistent Login","type":	"checkbox","id":	"keepAlive","options": "","subFields": [ 
-						{"title": "Timeout Duration","type": "select","id": "keepAliveTimeout","options": "dependent","subFields": [ 
-							{"title":"10 Min","type": "option","value": "10","options": "" },
+var page = [
+	{
+			"title": "User Settings",
+      "subTitle": "Because you're beautiful",
+      "menuTitle": "User",
+      "id":"userSettings",
+      "default":"selected",
+      "subFields": [ 
+				{
+          "title": "Session",
+          "options": "",
+          "subFields": [ 
+					  {
+              "title" : "Persistent Login",
+              "type":	"checkbox",
+              "id":	"keepAlive",
+              "options": "",
+              "subFields": [ 
+						    {
+                  "title": "Timeout Duration",
+                  "type": "select",
+                  "id": "keepAliveTimeout",
+                  "options": "dependent",
+                  "subFields": [ 
+							      {
+                      "title":"10 Min",
+                      "type": "option",
+                      "value": "10",
+                      "options": "" 
+                    },
                {"title":"15 Min","type": "option","value": "15","options": "" },
                {"title":"30 Min","type": "option","value": "30","options": "" },
                {"title":"60 Min","type": "option","value": "60","options": "" },
@@ -23,126 +45,62 @@ var setConf = {
 					{"title": "Enable Keyboard Shortcuts","type": "checkbox","id": "shortKeys","options": "","subFields": "" } 
 				]},
 				{"title": "Credentials","subTitle": "","type": "section","id": "credentials","options": "su","subFields": [ 
-				{"title" : "Automatic Login","type":"checkbox","id":"autoLogin","options": "dependent","subFields": [ 
+				  {"title" : "Automatic Login","type":"checkbox","id":"autoLogin","options": "dependent","subFields": [ 
 						{"title": "Username","subTitle":"","type":"text","id":"username","options":"","subFields":""},
 						{"title": "Password","subTitle":"","type":"password","id":"password","options":"","subFields":"" } 
 				]} 
 			]} 
-		]},
+		]
+  },
 		
-		about: {
-			"title":"About","subTitle": "Oh Hai","type": "page","menuTitle": "About","id": "about","options":"secondary","subFields":""}
-	},
-			
-	templates: {
-		menu: {
-			"title": "NTG Tool",
-			"subTitle":"",
-			"type":"<ul/>",
-			"tags": {
-				"class":"menu",
-				"id":"navigation"
-			},
-			"id":"sideMenu",
-			"parent":".navigation",
-			"options":"",
-			"subFields": [ 
-				{"type":"<li/>",
-				"id":"",
-				"class":"",
-				"options":"",
-				"subFields": [ 
-					{"type":"<a/>"
-					,"href": "id"
-					,"html":"title"
-				 } 
-				]} 
-		]},
-  	body: {
-			"title":"Body",
-			"subTitle":"",
-				"defaultClass":"selected",
-				"defaultStyle":"",
-				"secondaryClass":"",
-				"secondaryStyle":"",
-				"type":"<div/>",
-				"tags": {
-					"style":"",
-					"id":"hai"
-				},
-				"id":"dsf",
-				"class": "dsf",
-				"parent":".content",
-				"options":"",
-				"subFields": [ 
-					{"type":"<li/>",
-					"id":"",
-					"class":"",
-					"options":"",
-					"subFields": [ 
-						{"type":"<a/>"
-						,"href": "id"
-						,"html":"title"
-					 } 
-					]} 
-			]
-			}
+  {
+		"title":"Secret Stuffs",
+    "subTitle": "You Found Me",
+    "type": "page",
+    "menuTitle": "Secret",
+    "id": "secretStuff",
+    "options":"secondary",
+    "subFields":""
+  },
+  {
+		"title":"About",
+    "subTitle": "Oh Hai",
+    "type": "page",
+    "menuTitle": "About",
+    "id": "about",
+    "options":"secondary",
+    "subFields":""
+  }
+]
 
-	},
-		
-	loadTemplates: function(){
+document.onload = settingsOnLoad();
 
-			var Pages = this.pages;
-			console.log(this.templates);
-			$.each(this.templates, function(){
-				//console.log(this);
-				//console.log(Nav);
-				$.each(Pages, function(i,el){
-					//console.log(this);
-					//console.log();
-					$(this.type, this.tags).html(el.menuTitle).appendTo(this.parent);
-					console.log(el);
-				}.bind(this));
-			});
+function settingsOnLoad(){
+  console.log('load settings');
+  console.log(Handlebars.templates.settingsView(page));
+  $('#imaBody').html(Handlebars.templates.settingsView(page));
+  
+  $('.menu a').click(function(ev) {
+    ev.preventDefault();
+    var selected = 'selected';
 
-	 	}
-	}
-var d = setConf.loadTemplates();
-//d;
-//console.log(d);
-	
-		/*		
-				//this.Menu = this.templates.menu;
-			  //this.Pages = this.pages;
+    $('.mainview > *').removeClass(selected);
+    $('.menu li').removeClass(selected);
+    setTimeout(function() {
+      $('.mainview > *:not(.selected)').css('display', 'none');
+    }, 100);
 
-		/*		$.each(this.Pages, function(){
-					$('.menu').append(
-						$('<li>').append($('<a/>',{text:this.menuTitle, href:'#'+ this.id}))
-					);
-				});
+    $(ev.currentTarget).parent().addClass(selected);
+    var currentView = $($(ev.currentTarget).attr('href'));
+    currentView.css('display', 'block');
+    setTimeout(function() {
+      currentView.addClass(selected);
+    }, 0);
 
-				$.each(this.pages, function(){
-
-
-					var div =	$('<div/>', {id:this.id}).append(
-											$('<header/>').append(
-												$('<h1>').html(this.title + '<small>' + this.subTitle + '</small>')
-											)
-										);
-
-					if (this.options === 'default'){
-						$(div).addClass('selected');
-					}
-					else {	
-						$(div).attr('style','display:none;');
-					}
-					$('.mainview').append(div);
-
-
-				});
-		      //console.log(this.templates.menu.parent);
-		      //return $(this.templates.menu.parent);
-		     // $('<ul><li></li></ul>', {id:this.Menu.id, class:this.Menu.class}).html('TestContent').appendTo('.'+this.Menu.parent);
-		        //console.log(this.templates);
-		        //$('<div/>', {id:'hia'}).appendTo('.content');
-		 */
+    setTimeout(function() {
+      $('body')[0].scrollTop = 0;
+    }, 200);
+  });
+  
+  $('.mainview > *:not(.selected)').css('display', 'none');
+}

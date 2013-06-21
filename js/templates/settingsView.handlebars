@@ -1,0 +1,42 @@
+  <div class="navigation">
+    <h1>
+      <span id="toolLabel">su@Handle</span>
+    </h1>
+    <ul class="menu">
+      {{#each .}}
+      <li class="{{default}}">
+        <a href="#{{id}}">{{menuTitle}}</a>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="mainview view">
+    {{#each .}}
+
+      <div id="{{id}}" class="{{default}}">
+        <header>
+          <h1>{{title}} <small>{{subTitle}}</small></h1>
+        </header>
+        <div class="content">
+          {{#each subFields}}
+          <h2>{{title}}</h2>
+          <section>
+            {{#each subFields}}
+            <div class="{{type}}">
+              <input type="{{type}}" name="{{id}}" id="{{id}}">
+              <label for="{{id}}">&emsp;{{title}}</label>
+            </div>
+            {{/each}}
+          </section>
+          {{/each}}
+          {{#if subFields}}
+          <div class="controls">
+            <div class="spacer"></div>
+            <button class="saveButton">Save</button>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    {{/each}}
+      
+  </div>

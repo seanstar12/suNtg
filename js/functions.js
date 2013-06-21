@@ -1313,6 +1313,12 @@ var fetch = {
             'data':{},
             'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[el.value]=$('label',$(el).parents('tr'))[0].outerText}.bind(this))}
           }, 
+          'dnsObjs': {
+            'url':'https://ntg.missouristate.edu/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
+            'return':temp={},
+            'data':{},
+            'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[$('label',$(el).parents('tr'))[0].outerText]=el.value}.bind(this))}
+          } 
         }, 
   data: function(type) {
     $.ajax({
@@ -1381,3 +1387,64 @@ function LinkSet() {
   this.properties = '';
 }
 
+
+
+function getUnChecked( bldg ){
+  
+  function getSwitches(bldg){
+    var switches = {};
+      $.each(JSON.parse(localStorage.dnsObjs), function(key, value){
+        if (key.indexOf(bldg) > -1){
+          switches[key] = value;
+        }
+      });
+    return switches;    
+
+  }
+  
+  var switches = getSwitches(bldg);
+  $.each(switches, function(sKey, sValue){  
+    
+    retVal[sKey] = {};
+
+    $.ajax({
+        type:'POST',
+        url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp?objid='+ sValue +'&mode=&verbose=true',
+    }).done(function(data){
+        var stage = document.createElement('div');
+        stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+        stage.childNodes;
+    
+        var t = "Unit_" + sValue + "_0_0";
+        var temp = $('[name='+t+']', stage).serializeObject();
+    
+        $.each(temp, function(key, value){
+          if (value == 'checked' && key.indexOf('dbbResRoom') > -1){
+            console.log('Popping: ' + key + '  --  ' + value);
+            temp.dbsDescription.splice(key.split('_0_0_')[1],1);
+            temp.dbnPort.splice(key.split('_0_0_')[1],1);
+          }
+        });
+        console.log(temp);
+        if (temp.dbsDescription.length) {
+          for (var i=0; i < temp.dbsDescription.length; i++){
+            //retVal[tempVar + ' ' +i] = { temp.dbnPort[i]: temp.dbsDescription[i]};
+            //console.log( temp.dbnPort[i]+ ' ' + temp.dbsDescription[i] + ' ' + tempVar);
+    //        console.log(sValue);
+    //        console.log(temp.dbnPort[i].split('_0_0_')[1]);
+    //        console.log(temp.dbsDescription[i]);
+            if (temp.dbsDescription[i] == '' || temp.dbsDescription[i] == null){
+              //temp.dbsDescription[i] = 'Empty Field';
+            }
+            //console.log(temp.dbnPort[i].split('_0_0_')[1]);
+            //console.log(temp.dbsDescription[i]);
+           // retVal[sValue][temp.dbnPort[i].split('_0_0_')[1]] = temp.dbsDescription[i];
+            //retVal[sKey][temp.dbnPort[i].split('_0_0_')[1]] = temp.dbsDescription[i];
+          }
+        }
+    });
+  }.bind(this));
+  
+  console.log(retVal);
+  //return retVal;
+}
