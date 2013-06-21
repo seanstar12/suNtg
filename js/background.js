@@ -8,11 +8,11 @@ bg = {
     var temp = tab.url.toLowerCase();
     var siteUrl = 'https://ntg.missouristate.edu'
     
-    if (tab.url.indexOf('ntg.missouristate') > -1 && changeInfo.status === 'loading') {
+    if (tab.url.indexOf('ntg.missouristate') > -1 && changeInfo.status == 'loading') {
         chrome.pageAction.show(tabId);
     }
     
-    if (temp.indexOf('login/login.aspx') > -1 && changeInfo.status === 'loading') {
+    if (temp.indexOf('login/login.aspx') > -1 && changeInfo.status == 'loading') {
       var tabArgs = null;
       
       if ((tab.url).indexOf('URL=') > 0){
@@ -27,8 +27,9 @@ bg = {
       }
 
       //if (autoLogin == 1) 
-      nT.msu.logIn(bg.pageRefresh(tabArgs));
+      nT.msu.initLogin(bg.pageRefresh(tabArgs));
     }
+
     if (temp.indexOf('accessdenied.aspx') > -1 ) {
       //if (debug == 1) 
       console.log('AccessDenied.aspx: New Url='+((tab.url).split('Referer=')[1]));
@@ -55,7 +56,7 @@ bg = {
 
   onAlarmCallback: function(value) {
     if (value == 1){
-      nT.msu.refresh();
+      this.msu.refresh();
     } else if(value == 0){
       if (nT.storage.get('session','autoLogin') == 1){ 
         nT.msu.logIn();
@@ -77,12 +78,14 @@ bg = {
   },
 
   loggedInCallBack: function(value){
-    if(value == 0) nT.msu.logIn();
+    if(value == 0) nT.msu.initLogin();
   },
 
   init: function(){
     //chrome.tabs.create({url:'background.html'});
     
+    console.log('init:');
+     
     localStorage.loginCount = 0;
     if (localStorage.settings == null){
       nT.storage.defaults();
@@ -95,7 +98,7 @@ bg = {
       chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('session','keepAliveRate'))});
     }
     //if (autoLogin == 1) {
-      nT.msu.loggedIn(bg.loggedInCallBack);
+      nT.msu.isLoggedIn(bg.loggedInCallBack);
     //}
     if(debug == 1) chrome.alarms.getAll(function(alarms){console.log(JSON.stringify(alarms));});
   }

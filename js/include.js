@@ -59,78 +59,21 @@ nT.msu = {
     } else console.log('Credentials not set');
   },
 
-  getValidation: function() {
-    $.ajax({
-      url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
-      context: this,
-      success: function(data){
-        this.postLogin(data);
-      }
-    });
-  },
-
-  postLogin: function(data){
-    var tempDiv = document.createElement('div');
-    tempDiv.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
-    tempDiv.childNodes;
-    
-    $.ajax({
-      type: 'POST',
-      xhrFields: {withCredentials: true},
-      url: 'https://ntg.missouristate.edu/Login/Login.aspx',
-      context: this,
-      global: false,
-      data: {
-        '__LASTFOCUS':'',
-        '__VIEWSTATE':tempDiv.querySelector('#__VIEWSTATE').value,
-        '__EVENTTARGET':'',
-        '__EVENTARGUMENT':'',
-        '__EVENTVALIDATION':tempDiv.querySelector('#__EVENTVALIDATION').value,
-        'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
-        'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
-        'ctl00$MainContent$ImageButton1.x':'15',
-        'ctl00$MainContent$ImageButton1.y':'23'
-        } 
-    }).done(function(){
-        this.postLoginSuccess();
-    });
-    
-  },
-
-  postLoginSuccess: function() {
-    delete tempDiv;
-    if (nT.storage.get('other','debug') == 1) {
-      console.log('Login: Logged In successfully');
-    }
-    localStorage.loggedIn = 1;
-    localStorage.loginCount ++;
-    
-    this.refresh();
-     
-    if (typeof(this.logInCallback) == "function") {
-      this.logInCallback();
-      delete this.logInCallback;
-    }
-  },
 
   refresh: function (){
-    //var searchVars = ['/EquipmentDetail.asp?Tag=X3403&',
     var searchVars = ['/EquipmentList.asp?dbsSMSUTag=X3604&',
                       '/EquipmentDetail.asp?Tag=X3403&'];
 
     $.each(searchVars, function(){
       $.ajax({
-        type: 'GET',
         cache: false,
-        url: 'https://ntg.missouristate.edu/NetInfo/' + this + Date.now(),
+        url: 'https://ntg.missouristate.edu/NetInfo' + this + Date.now(),
         error: function(){
           localStorage.requestFailureCount ++;
         }
       }).done(function(){
           var date = new Date();
-          if (nT.storage.get('other','debug') == 1) {
             console.log('Refresh with success: '+ date.toTimeString());
-          }
       });
     });
   },
@@ -138,10 +81,10 @@ nT.msu = {
   loggedIn: function (callback){
     this.loggedInFinished = callback;
     $.ajax({
-      type: 'GET',
       url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
-      context: this,
-      success: this.loggedInProcess
+      context: this
+    }).done( function(){
+      this.loggedInProcess
     });
   },
 
@@ -169,9 +112,115 @@ nT.msu = {
     }
   },
 
+  //Better written Functions
+  
+  //Verifies credentials are set and then initiates the login process
+  initLogin: function (){
+    if (  
+      nT.storage.get('credentials','username') != null 
+      && nT.storage.get('credentials','password') != null 
+    ){
+      this.getValidation();
+    } else {
+      console.log('Credentials are not set. Log yourself in.');
+    }
+  },
+
+  // Checks to see if the user is logged in. Calls back isLoggedInCallback
+  isLoggedIn: function (callback){
+    this.loggedInFinished = callback;
+
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/Tools/Default.aspx',
+      context: this
+    }).done( function(data){
+      this.isLoggedInCallback(data)
+    });
+  },
+
+  // Callback for isLoggedIn. Returns 1||0 depending if user is logged in.
+  isLoggedInCallback: function(data) {
+    this.isloggedInVal = '';
+
+    var stage = document.createElement('div');
+    stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g, '');
+    stage.childNodes;
+
+    if (stage.getElementsByClassName('LoginForm')[0]) {
+      this.isLoggedInVal = localStorage.loggedIn = 0;
+    } else  {
+      this.isLoggedInVal = localStorage.loggedIn = 1;
+    }
+
+    if (typeof(this.loggedInFinished) == "function") {
+      
+      //passes 1//0 according if logged in or not.
+      this.loggedInFinished(this.isLoggedInVal);
+      delete this.loggedInFinished;
+    }
+  },
+  
+  isLoggedInDebug: function(){
+    this.isLoggedIn( function(data){
+      console.log('isLoggedIn: ' + data );
+    });
+  },
+   
+  getValidation: function() {
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/Login/Login.aspx?ForceLogin=true',
+      context: this,
+    }).done(function (data) {
+        this.postLogin(data);
+    });
+  },
+
+  postLogin: function(domData){
+    var stage = document.createElement('div');
+    stage.innerHTML = domData.replace(/<img(.|\s)*?\/>/g,'');
+    stage.childNodes;
+    
+    var postData =  { '__VIEWSTATE':stage.querySelector('#__VIEWSTATE').value,
+                      '__EVENTVALIDATION':stage.querySelector('#__EVENTVALIDATION').value,
+                      'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
+                      'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
+                      'ctl00$MainContent$ImageButton1.x':'15',
+                      'ctl00$MainContent$ImageButton1.y':'23'
+                    }; 
+
+    $.ajax({
+      type: 'POST',
+      url: 'https://ntg.missouristate.edu/Login/Login.aspx',
+      context: this,
+      data: postData 
+    }).done(this.postLoginSuccess());
+  },
+
+  postLoginSuccess: function() {
+    console.log('Login: Logged In successfully');
+   
+    if (typeof(this.logInCallback) == "function") {
+      this.logInCallback();
+      delete this.logInCallback;
+    }
+  },
+
+  refreshAuthCookies: function (){
+    var searchVars = ['/EquipmentList.asp?dbsSMSUTag=X3604&',
+                      '/EquipmentDetail.asp?Tag=X3403&'];
+
+    $.each(searchVars, function(){
+      $.ajax({
+        url: 'https://ntg.missouristate.edu/NetInfo' + this + Date.now(),
+      }).done(function(){
+          var date = new Date();
+          console.log('Refresh with success: '+ date.toTimeString());
+      });
+    });
+  },
+  
   logOut: function(callback){
     //removes auth cookies
-    if (nT.storage.get('other','debug') == 1) console.log("logOut:> Logged Out");
     chrome.cookies.getAll({domain: 'ntg.missouristate.edu'}, function(e) {
       e.forEach(function(el){
         chrome.cookies.remove({url: 'https://' + el.domain, name: el.name }, callback);

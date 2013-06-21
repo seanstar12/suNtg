@@ -7,6 +7,19 @@ input,
 textarea {
   width: auto;
 }
+
+input[name=dbsDescription] {
+  width: 140px;
+}
+
+td label {
+      display: inline-block;
+}
+
+td input[type="checkbox"] {
+      float:left;
+}
+
 .FLeft h1,
 .FLeft h2,
 .FLeft h3, 

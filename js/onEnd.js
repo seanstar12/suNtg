@@ -65,7 +65,7 @@ urlCheck('EquipmentDetail.asp', function() {
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
-
+$('[name="dbsDescription"]').removeAttr('size');
 // Start of on change for port list. changes the color of the row when changed
 //$('[name="Update"]').live('change', function(){
 //  if ($(this).checked = true){
