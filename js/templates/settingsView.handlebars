@@ -4,9 +4,15 @@
     </h1>
     <ul class="menu">
       {{#each .}}
-      <li class="{{default}}">
-        <a href="#{{id}}">{{menuTitle}}</a>
-      </li>
+        {{#if su}}
+        <li class="{{default}}" style="display:none">
+          <a href="#{{id}}">{{menuTitle}}</a>
+        </li>
+        {{else}}
+        <li class="{{default}}">
+          <a href="#{{id}}">{{menuTitle}}</a>
+        </li>
+        {{/if}}
       {{/each}}
     </ul>
   </div>
@@ -22,10 +28,18 @@
           <h2>{{title}}</h2>
           <section>
             {{#each subFields}}
-            <div class="{{type}}">
-              <input type="{{type}}" name="{{id}}" id="{{id}}">
-              <label for="{{id}}">&emsp;{{title}}</label>
-            </div>
+              {{#if checkbox}}
+                <div class="{{type}}">
+                  <input type="{{type}}" name="{{id}}" id="{{id}}">
+                  <label for="{{id}}">&emsp;{{title}}</label>
+                </div>
+              {{/if}}
+              {{#if textBox}}
+                <div class="{{class}}">
+                  <label for="{{id}}">&emsp;{{title}}</label>
+                  <input type="{{type}}" name="{{id}}" id="{{id}}">
+                </div>
+              {{/if}}
             {{/each}}
           </section>
           {{/each}}

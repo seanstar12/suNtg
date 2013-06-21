@@ -13,6 +13,8 @@ var page = [
 					  {
               "title" : "Persistent Login",
               "type":	"checkbox",
+              "checkbox":	true,
+              "class":"checkInput",
               "id":	"keepAlive",
               "options": "",
               "subFields": [ 
@@ -41,14 +43,16 @@ var page = [
 							{"title":"9 Min","type": "option","value": "9","options": "su" } 
 						]} 
 					]},
-					{"title": "Debug Enable","type": "checkbox","id": "debug","options": "","subFields": "" },
-					{"title": "Enable Keyboard Shortcuts","type": "checkbox","id": "shortKeys","options": "","subFields": "" } 
+					{"title": "Debug Enable","type": "checkbox","checkbox":	true,"id": "debug","options": "","subFields": "" },
+					{"title": "Enable Keyboard Shortcuts","type": "checkbox","checkbox":	true,"id": "shortKeys","options": "","subFields": "" } 
 				]},
-				{"title": "Credentials","subTitle": "","type": "section","id": "credentials","options": "su","subFields": [ 
-				  {"title" : "Automatic Login","type":"checkbox","id":"autoLogin","options": "dependent","subFields": [ 
+				{"title": "Credentials","subTitle": "","class":"checkInput","type": "section","id": "credentials","options": "su","subFields": [ 
+				  {"title" : "Automatic Login","type":"checkbox","checkbox": true, "id":"autoLogin","options": "dependent","subFields": [ 
 						{"title": "Username","subTitle":"","type":"text","id":"username","options":"","subFields":""},
 						{"title": "Password","subTitle":"","type":"password","id":"password","options":"","subFields":"" } 
-				]} 
+				]},
+				{"title": "Username","subTitle":"","class":"textInput","type":"text","textBox":true,"id":"username","options":"","subFields":""},
+				{"title": "Password","subTitle":"","class":"textInput","type":"password","textBox":true,"id":"password","options":"","subFields":"" } 
 			]} 
 		]
   },
@@ -57,10 +61,24 @@ var page = [
 		"title":"Secret Stuffs",
     "subTitle": "You Found Me",
     "type": "page",
+    "su":true,
     "menuTitle": "Secret",
     "id": "secretStuff",
-    "options":"secondary",
-    "subFields":""
+    "default":"su",
+    "subFields": [
+      {
+        "title":"Nifty Things",
+        "subFields": [
+          {
+            "title":"Show Batman's True Identity",
+            "type": "checkbox",
+            "checkbox": true,
+            "class":"checkInput",
+            "id":"iambatman"
+          }
+        ]
+      }
+    ]
   },
   {
 		"title":"About",
@@ -68,8 +86,18 @@ var page = [
     "type": "page",
     "menuTitle": "About",
     "id": "about",
-    "options":"secondary",
-    "subFields":""
+    "subFields": [
+      {
+        "title":"",
+        "subFields": [
+          {
+            "title":"Idk how this is gonna work. But I'll try...",
+            "type": "text",
+            "id":"iambatman"
+          }
+        ]
+      }
+    ]
   }
 ]
 
@@ -77,7 +105,6 @@ document.onload = settingsOnLoad();
 
 function settingsOnLoad(){
   console.log('load settings');
-  console.log(Handlebars.templates.settingsView(page));
   $('#imaBody').html(Handlebars.templates.settingsView(page));
   
   $('.menu a').click(function(ev) {
@@ -103,4 +130,7 @@ function settingsOnLoad(){
   });
   
   $('.mainview > *:not(.selected)').css('display', 'none');
+window.addEventListener("keydown", function(e){
+k.push(e.keyCode);if (k.toString().indexOf(c) >= 0){$('.su').fadeToggle(500);};}, true);
 }
+var k =[],c="38,38,40,40,37,39,37,39,66,65";
