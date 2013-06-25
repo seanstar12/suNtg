@@ -1467,69 +1467,83 @@ function tempCleanQuery(data){
   var stage = document.createElement('div');
   stage.innerHTML = data.replace(/<img[^>]*>/g,'');
   stage.childNodes;
-  //console.log(stage);
     
   $.each($('tr, td, th', stage),function(){
     $(this).removeAttr('style');
     $(this).removeAttr('bgcolor');
   });
  
-  $('#PreCase', stage).remove();
+  $('#PreCase', stage).remove(); //strip out unwanted text
   
   return stage;
 }
 
 function tempSetQueryDisplay(){
-  var header = $('.Header'),
-      navi = $('<div/>').attr('class','Outer_Nav'),
-      content = $('<div/>').attr('class','Content');
-   
-  $(navi).html ( 
-    $('<div/>').attr('class','Navigation').html(
-      $('<div/>').attr('class','LocalNav FSmall').html( 
-        $('<ul/>').html(
-            $('<li/>').addClass('NavHeading').html('Your Cases')
-        ).append(
-            $('<li/>').addClass('').html('Open Cases')
-        ).append(
-            $('<li/>').addClass('').html('Closed Cases')
-        ).append(
-            $('<li/>').addClass('NavHeading').html('All Cases')
-        ).append(
-            $('<li/>').addClass('').html('Open Cases')
-        ).append(
-            $('<li/>').addClass('').html('Closed Cases')
-        )
-      )
-    )
-  );
-  
-  $(navi).append( $('<div/>').addClass('Main'));
+  var navLinks = [
+    {
+      'title': 'Your Cases',
+      'class': 'NavHeading',
+      'id': 'yourCasesHead'
+    },
+    {
+      'title': 'Open Cases',
+      'class': '',
+      'id': 'yourOpenCases'
+    },
+    {
+      'title': 'Closed Cases',
+      'class': '',
+      'id': 'yourClosedCases'
+    },
+    {
+      'title': 'All Cases',
+      'class': 'NavHeading',
+      'id': 'allCasesHead'
+    },
+    {
+      'title': 'Open Cases',
+      'class': '',
+      'id': 'allOpenCases'
+    },
+    {
+      'title': 'Closed Cases',
+      'class': '',
+      'id': 'allClosedCases'
+    }
+  ];
+
+  var header = $('.Header'),  //Store Header for rewrite of page
+      page = Handlebars.templates.pageWithNav(navLinks); // handlebars in teh house
 
   $('.Page').html('').append(
-      $(header)
+      header
     ).append(
-      $(navi)
-    ).append(
-      $(content)
+      page
     );
+  
 }
 
 function tempGetQuery(){
+  
+  setLoader($('.Content'));
+  
   $.ajax({
     type: 'POST',
     url: 'https://ntg.missouristate.edu/case/queryCase.asp'
   }).done(function(data){
-    $('.Main').html($('form',tempCleanQuery(data)));
+    $('.Content').html($('form',tempCleanQuery(data)));
   });
 }
 
 function tempGetCase(id){
+  
+  setLoader($('.Content'));
+  
   $.ajax({
     type: 'POST',
     url: 'https://ntg.missouristate.edu/case/Case_Detail.asp',
     data: {'cmdSubmit':id},
   }).done(function(data){
-    $('.Main').html($('table',tempCleanQuery(data))[3]);
+    $('.Content').html($('table',tempCleanQuery(data))[3]);
   });
 }
