@@ -1448,3 +1448,88 @@ function getUnChecked( bldg ){
   console.log(retVal);
   //return retVal;
 }
+
+var Case = {
+  getOpen: function(){
+
+  },
+
+  getUserCases: function(user){
+
+  },
+
+  getCase: function(caseId){
+
+  },
+}
+
+function tempCleanQuery(data){
+  var stage = document.createElement('div');
+  stage.innerHTML = data.replace(/<img[^>]*>/g,'');
+  stage.childNodes;
+  //console.log(stage);
+    
+  $.each($('tr, td, th', stage),function(){
+    $(this).removeAttr('style');
+    $(this).removeAttr('bgcolor');
+  });
+ 
+  $('#PreCase', stage).remove();
+  
+  return stage;
+}
+
+function tempSetQueryDisplay(){
+  var header = $('.Header'),
+      navi = $('<div/>').attr('class','Outer_Nav'),
+      content = $('<div/>').attr('class','Content');
+   
+  $(navi).html ( 
+    $('<div/>').attr('class','Navigation').html(
+      $('<div/>').attr('class','LocalNav FSmall').html( 
+        $('<ul/>').html(
+            $('<li/>').addClass('NavHeading').html('Your Cases')
+        ).append(
+            $('<li/>').addClass('').html('Open Cases')
+        ).append(
+            $('<li/>').addClass('').html('Closed Cases')
+        ).append(
+            $('<li/>').addClass('NavHeading').html('All Cases')
+        ).append(
+            $('<li/>').addClass('').html('Open Cases')
+        ).append(
+            $('<li/>').addClass('').html('Closed Cases')
+        )
+      )
+    )
+  );
+  
+  $(navi).append( $('<div/>').addClass('Main'));
+
+  $('.Page').html('').append(
+      $(header)
+    ).append(
+      $(navi)
+    ).append(
+      $(content)
+    );
+}
+
+function tempGetQuery(){
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/case/queryCase.asp'
+  }).done(function(data){
+    $('.Main').html($('form',tempCleanQuery(data)));
+  });
+}
+
+function tempGetCase(id){
+  $.ajax({
+    type: 'POST',
+    url: 'https://ntg.missouristate.edu/case/Case_Detail.asp',
+    data: {'cmdSubmit':id},
+  }).done(function(data){
+    $('.Main').html($('table',tempCleanQuery(data))[3]);
+  });
+}

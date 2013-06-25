@@ -198,7 +198,7 @@ nT.msu = {
 
   postLoginSuccess: function() {
     console.log('Login: Logged In successfully');
-   
+    
     if (typeof(this.logInCallback) == "function") {
       this.logInCallback();
       delete this.logInCallback;

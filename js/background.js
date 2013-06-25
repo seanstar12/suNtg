@@ -50,16 +50,17 @@ bg = {
       chrome.alarms.clearAll();
     }
     else if (alarm.name == 'keepAlive'){
-      nT.msu.loggedIn(bg.onAlarmCallback);
+      //nT.msu.loggedIn(bg.onAlarmCallback);
+      nT.msu.isLoggedIn(bg.onAlarmCallback);
     }
   },
 
   onAlarmCallback: function(value) {
     if (value == 1){
-      this.msu.refresh();
+      nT.msu.refreshAuthCookies();
     } else if(value == 0){
       if (nT.storage.get('session','autoLogin') == 1){ 
-        nT.msu.logIn();
+        nT.msu.initLogin(nT.msu.refreshAuthCookies);
       }
       else {
         chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
@@ -78,7 +79,9 @@ bg = {
   },
 
   loggedInCallBack: function(value){
-    if(value == 0) nT.msu.initLogin();
+    if(value == 0){ 
+      nT.msu.initLogin();
+    }
   },
 
   init: function(){
