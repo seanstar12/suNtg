@@ -18,10 +18,12 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
     head.innerHTML = Handlebars.templates.nav(menuObject);
  
     $('#batchOps').on('click',function(){
+      setDisplay(batchObj);
       batchOps();
     });
     $('#caseSystem').on('click',function(){
-      tempSetQueryDisplay();
+      //tempSetQueryDisplay();
+      setDisplay(caseObj);
       tempGetQueryBlock();
     });
     

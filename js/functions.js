@@ -1098,31 +1098,18 @@ function batchOpsKeydown(e) { //get key for autoadd of fields e = e || window.ev
 
 //Page for batch operations of Allocation and Deallocation
 function batchOps(){
-  $('.Navigation').html('');
 
   document.title = "{NTG} Batch";
   
   document.onkeydown = batchOpsKeydown;
   
-  var context = {
-    selectListValues: JSON.parse(localStorage.building),
-    tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
-    tableOptions: {
-        'Allocate':'allo',
-        'Deallocate Only':'deallo'
-    }
-  }
-
-  renderBatchOps(context);
-}  
-
-function renderBatchOps(context) {
-  $('.Content').html(Handlebars.templates.renderBatchOps(context));
+  $('.Content').html(Handlebars.templates.renderBatchOps(batchObj.context));
 
   $('#submitBulkOps').click(function() {
     processBatchOps();
   });
-}
+
+}  
 
 function processBatchOps(){
 
@@ -1424,8 +1411,40 @@ function tempCleanQuery(obj){
   return stage;
 }
 
-function tempSetQueryDisplay(){
-  var navLinks = [
+var batchObj = {
+  title: '{NTG} Batch',
+  navLinks: [
+    {
+      'title': 'Batch Operations',
+      'class': 'NavHeading',
+      'id': 'batchHead',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  },
+  context : {
+    selectListValues: JSON.parse(localStorage.building),
+    tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
+    tableOptions: {
+        'Allocate':'allo',
+        'Deallocate Only':'deallo'
+    }
+  }
+}
+
+var caseObj = {
+  title : '{NTG} Case', 
+  navLinks: [
     {
       'title': 'Case Navigation',
       'class': 'NavHeading',
@@ -1475,23 +1494,32 @@ function tempSetQueryDisplay(){
       'id': 'allClosedCases',
       'style': 'disabled'
     }
-  ];
+  ],
 
+  'func': function(){
+    $('#returnToSearch').on('click', function(e){
+      e.preventDefault();
+      tempGetQueryBlock();
+    })
+  }
+}
+
+function setDisplay(obj){
+  document.title = obj.title;
+  
   var header = $('.Header'),                              //Store Header for rewrite of page
-      page = Handlebars.templates.pageWithNav(navLinks);  // handlebars in teh house
+      page = Handlebars.templates.pageWithNav(obj.navLinks);  // handlebars in teh house
 
   $('.Page').html('').append(
       header
     ).append(
       page
     );
-
-  $('#returnToSearch').on('click', function(e){
-    e.preventDefault();
-    tempGetQueryBlock();
-  });
+  
+  obj.func();
+  delete page;
+  delete header;
 }
-
 
 function caseSearch(obj){
   this.data = {};
