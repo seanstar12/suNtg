@@ -9,7 +9,7 @@ var menuObject =  [
                     {'parent': true, 'title':'NTG Tools', 'sub':[
                       {'title':'Batch Operations','parent':'NTG Tool','id':'batchOps', 'value':'#NtgTool/BatchOperations' },
                       {'title':'Yearly Inventory','parent':'NTG Tool','id':'yearlyInventory', 'value':'#NtgTool/YearlyInventory' },
-                      {'title':'Delete All The Things','parent':'NTG Tool','id':'rmAll', 'value':'#NtgTool/DeleteAllThings' }]}
+                      {'title':'Case System 2.0','parent':'NTG Tool','id':'caseSystem', 'value':'#NtgTool/CaseSystem2.0' }]}
                   ];
 //console.log(JSON.stringify(menuObject));
 urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
@@ -18,11 +18,14 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
     head.innerHTML = Handlebars.templates.nav(menuObject);
  
     $('#batchOps').on('click',function(){
-        batchOps();
+      batchOps();
+    });
+    $('#caseSystem').on('click',function(){
+      tempSetQueryDisplay();
+      tempGetQueryBlock();
     });
   
   }, true);
-
 urlCheck('PortList.asp', function(){
   $('table').addClass('table table-condensed portTable');
   

@@ -1463,9 +1463,9 @@ var Case = {
   },
 }
 
-function tempCleanQuery(data){
+function tempCleanQuery(obj){
   var stage = document.createElement('div');
-  stage.innerHTML = data.replace(/<img[^>]*>/g,'');
+  stage.innerHTML = obj.data.replace(/<img[^>]*>/g,'');
   stage.childNodes;
     
   $.each($('tr, td, th', stage),function(){
@@ -1473,6 +1473,33 @@ function tempCleanQuery(data){
     $(this).removeAttr('bgcolor');
   });
  
+  $('table',stage)
+    .attr('class','table table-bordered table-condensed table-striped')
+    .removeAttr('style');
+  
+  if (obj.flag == 'queryBox'){
+    $('table',stage).addClass('query');
+    $('[type="submit"]', stage).on('submit', function(e){
+      e.preventDefault();
+    }).on('click', function(e){
+      e.preventDefault();
+      var temp = new caseSearch($('[name="IP Requests"]').serializeObject());
+      temp.submitQuery();
+      return false;
+    })
+  }else if (obj.flag == 'subQuery'){
+    $('[type="submit"]', stage)
+      .removeAttr('style')
+      .addClass('btn')
+      .on('submit', function(e){
+        e.preventDefault();
+      })
+      .on('click', function(e){
+        e.preventDefault();
+        tempGetCase(this.value);
+      });
+  }
+  $('p', stage).removeAttr('align');
   $('#PreCase', stage).remove(); //strip out unwanted text
   
   return stage;
@@ -1480,6 +1507,21 @@ function tempCleanQuery(data){
 
 function tempSetQueryDisplay(){
   var navLinks = [
+    {
+      'title': 'Case Navigation',
+      'class': 'NavHeading',
+      'id': 'allClosedCases'
+    },
+    {
+      'title': 'Return to Search',
+      'class': '',
+      'id': 'returnToSearch'
+    },
+    {
+      'title': 'Back To Query',
+      'class': '',
+      'id': 'backToQuery'
+    },
     {
       'title': 'Your Cases',
       'class': 'NavHeading',
@@ -1493,22 +1535,26 @@ function tempSetQueryDisplay(){
     {
       'title': 'Closed Cases',
       'class': '',
-      'id': 'yourClosedCases'
+      'id': 'yourClosedCases',
+      'style': 'disabled'
     },
     {
       'title': 'All Cases',
       'class': 'NavHeading',
-      'id': 'allCasesHead'
+      'id': 'allCasesHead',
+      'style': 'disabled'
     },
     {
       'title': 'Open Cases',
       'class': '',
-      'id': 'allOpenCases'
+      'id': 'allOpenCases',
+      'style': 'disabled'
     },
     {
       'title': 'Closed Cases',
       'class': '',
-      'id': 'allClosedCases'
+      'id': 'allClosedCases',
+      'style': 'disabled'
     }
   ];
 
@@ -1520,23 +1566,67 @@ function tempSetQueryDisplay(){
     ).append(
       page
     );
-  
+
+  $('#returnToSearch').on('click', function(e){
+    e.preventDefault();
+    tempGetQueryBlock();
+  });
 }
 
-function tempGetQuery(){
+
+function caseSearch(obj){
+  this.data = {};
+
+  this.data['rdoStatus'] = obj.rdoStatus;
+  this.data['txtUser'] = obj.txtUser;
+  this.data['cboType'] = obj.cboType;
+  this.data['cboBldg'] = obj.cboBldg;
+  this.data['cboOwner'] = obj.cboOwner;
+  this.data['txtJack'] = obj.txtJack;
+  this.data['txtTech'] = obj.txtTech;
+  this.data['txtCaseNm'] = obj.txtCaseNm;
+  this.data['Last'] = obj.Last;
+}
+
+caseSearch.prototype.submitQuery = function() {
+  setLoader($('.Content'));
   
+  $.ajax({
+    url: 'https://ntg.missouristate.edu/case/QuerySummary-body_update.asp',
+    data: this.data
+  }).done(function(Data){
+    $('.Content').html($('form',tempCleanQuery({data:Data,flag:'subQuery'})));
+    this.content = $('.Content').html();
+
+    $('#backToQuery').on('click', function(e){
+      e.preventDefault();
+      $('.Content').html(this.content);
+      $('[type="submit"]')
+        .removeAttr('style')
+        .addClass('btn')
+        .on('submit', function(e){
+          e.preventDefault();
+        })
+        .on('click', function(e){
+          e.preventDefault();
+          tempGetCase(this.value);
+        });
+    }.bind(this));
+  }.bind(this));
+}
+
+function tempGetQueryBlock(){
   setLoader($('.Content'));
   
   $.ajax({
     type: 'POST',
     url: 'https://ntg.missouristate.edu/case/queryCase.asp'
   }).done(function(data){
-    $('.Content').html($('form',tempCleanQuery(data)));
+    $('.Content').html($('form',tempCleanQuery({data:data,flag:'queryBox'})));
   });
 }
 
 function tempGetCase(id){
-  
   setLoader($('.Content'));
   
   $.ajax({
@@ -1544,6 +1634,6 @@ function tempGetCase(id){
     url: 'https://ntg.missouristate.edu/case/Case_Detail.asp',
     data: {'cmdSubmit':id},
   }).done(function(data){
-    $('.Content').html($('table',tempCleanQuery(data))[3]);
+    $('.Content').html($('table',tempCleanQuery({data:data,flag:'getCase'}))[3]);
   });
 }

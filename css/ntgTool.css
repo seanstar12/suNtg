@@ -39,6 +39,19 @@ body {
   padding-top: 48px;
 }
 
+.Content.ntgTool {
+  padding: 5px;
+}
+
+.Content.ntgTool table.query{
+  width: 700px;
+}
+
+.Content.ntgTool table{
+  width: 95%;
+}
+
+
 #custNavBar a,
 ul.specialOp a {
   color: #0088cc;
