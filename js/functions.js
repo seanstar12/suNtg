@@ -1479,7 +1479,13 @@ function tempCleanQuery(obj){
   
   if (obj.flag == 'queryBox'){
     $('table',stage).addClass('query');
-    $('[type="submit"]', stage).on('submit', function(e){
+
+    $('[type="submit"],[type="reset"]',stage).removeAttr('style').addClass('btn');
+    $('[type="reset"]',stage).addClass('btn-warning');
+
+
+    $('[type="submit"]', stage)
+      .on('submit', function(e){
       e.preventDefault();
     }).on('click', function(e){
       e.preventDefault();
