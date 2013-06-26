@@ -24,8 +24,25 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
       tempSetQueryDisplay();
       tempGetQueryBlock();
     });
-  
-  }, true);
+    
+    if ((window.location.origin).indexOf('dev')>0 {
+      urlCheck('', function(){
+        var rightCol = $('.right-col');
+        $('.ContentMaxMin')
+          .html(
+            $('<h2/>')
+              .html('Web design on Meth: Not Even Once')
+          ).append(
+            $('<div/>')
+            .html('Contact your local web administrator today and help stop the madness').attr('style','height:850px'))
+          .prepend(rightCol);
+        $('.brand')
+          .html('Ntg.Dev')
+          .attr('href','https://ntgdev.missouristate.edu/');    
+      });
+    }
+},true);
+
 urlCheck('PortList.asp', function(){
   $('table').addClass('table table-condensed portTable');
   

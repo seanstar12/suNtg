@@ -8,7 +8,7 @@ bg = {
     var temp = tab.url.toLowerCase();
     var siteUrl = 'https://ntg.missouristate.edu'
     
-    if (tab.url.indexOf('ntg.missouristate') > -1 && changeInfo.status == 'loading') {
+    if (tab.url.indexOf('ntg') > -1 && changeInfo.status == 'loading') {
         chrome.pageAction.show(tabId);
     }
     

@@ -16,6 +16,8 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
   return this;
 }
 
+var siteUrl = window.location.origin;
+
 function addScripts(files){
   for (var i =0; i< files.length; i++){
     var s = "";
@@ -536,11 +538,9 @@ form = {
     $.ajax({
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded',
-      url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp',
-      data: portData,
-      success: function(data){
-      }.bind(this),
-      complete:  function(){
+      url: siteUrl+'/NetInfo/PortList.asp',
+      data: portData
+      }).always(function(){
         this.temp++;
         //Adds no real value, just shows the switch that's being updated
         var swName = $('h2')[0].innerHTML.split(': ')[1];
@@ -564,9 +564,8 @@ form = {
             $('#updateProgressAlert').fadeOut(500);
           }, 1200);
         }
-      }.bind(this)
-    });
-  }
+      }.bind(this));
+    }
 }
 
 var searchTool = {};
@@ -584,8 +583,8 @@ searchTool = {
     $.each(this.terms, function(key,val){
       $.ajax({
         type: 'POST',
-        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentList.asp?'+val+'='+query+'*',
-        success: function(data){
+        url: siteUrl+'/NetInfo/EquipmentList.asp?'+val+'='+query+'*'
+      }).done(function(data){
           var tags = [];
           var temp = $('table',data);
           if (temp.length > 0 ) {  //if has results
@@ -605,7 +604,6 @@ searchTool = {
                   .html($(temp).addClass('table table-condensed table-hover'))
                   .prepend('<h2>' + key + ' Results</h2>'));
           }
-        }
       });
     });
   },
@@ -668,7 +666,7 @@ function getYearlyData() {
     $.ajax({
       type: 'GET',
       cache: false,
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+this,
+      url: siteUrl+'/NetInfo/EquipmentDetail.asp?Tag='+this,
       error: function(){
         console.log('Error:> ' + this);
         
@@ -781,7 +779,7 @@ var yearlyInventory = {
     $.ajax({
       type: 'GET',
       cache: false,
-      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+this,
+      url: siteUrl+'/NetInfo/EquipmentDetail.asp?Tag='+this,
       error: function(){
         console.log('Error:> ' + this);
       }
@@ -869,7 +867,7 @@ Tag.prototype.getInfo = function(tag, func, passedVal){
   
   $.ajax({
     cache: false,
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+tag,
+    url: siteUrl+'/NetInfo/EquipmentDetail.asp?Tag='+tag,
   })
   .fail(function(){
     console.log('Error:> ' + this);
@@ -915,7 +913,7 @@ Tag.prototype.deallocate = function(callback){
     type: 'POST',
     cache: false,
     data: data,
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+data['data'],
+    url: siteUrl+'/NetInfo/EquipmentDetail.asp?Tag='+data['data'],
   }).fail(function(){
     console.log('Error:> ' + this);
   }).done(function(data, str){
@@ -942,7 +940,7 @@ Tag.prototype.allocate = function(){
 
   $.ajax({
     type: 'POST',
-    url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+    url: siteUrl+'/NetInfo/AllocateEquipment.asp',
     data: data,
   }).done(function(data){
     console.log('is allocated'); 
@@ -994,7 +992,7 @@ function updateVerify(xTag){
 
   $.ajax({
     type: 'POST',
-    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag=' + xTag
+    url: siteUrl+'/NetInfo/EquipmentDetail.asp?Tag=' + xTag
   }).done(function(data){
       var stage = document.createElement('div');
       stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
@@ -1005,7 +1003,7 @@ function updateVerify(xTag){
       tagData.cmdSubmit = 'Update Equipment';
       $.ajax({
         type: 'POST',
-        url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+        url: siteUrl+'/NetInfo/EquipmentDetail.asp',
         data: tagData
       }).done(function(data){
         console.log("Verify Date Updated to " + returnDate());
@@ -1239,35 +1237,12 @@ function setProgress(){
 
 var bldg = {
   closets: [],
-  buildings: [],
-
-  getBuildings: function(tag){
-    $.ajax({
-      type: 'POST',
-      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
-      data: {
-        'Tag':tag,
-      }
-    }).complete(function(){
-        localStorage['buildings'] = JSON.stringify(bldg.buildings);
-    }).done(function(data, str){
-      var stage = document.createElement('div');
-      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
-      stage.childNodes;
-      $('#Building', stage).children().each(function(i,l){
-        if (l.innerHTML != '') {
-          bldg.buildings.push(l.value);
-        }
-      });
-    });
-
-  },
 
   getClosets: function(building){
     
     $.ajax({
       type: 'POST',
-      url: 'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
+      url: siteUrl+'/NetInfo/AllocateEquipment.asp',
       data: {
         'scrollHeight':'',
         'scrollWidth':'',
@@ -1277,9 +1252,9 @@ var bldg = {
         'Building' : building,
         'AllocatePorts':''
       }
-    }).complete(function(){
+    }).always(function(){
         localStorage[building] = bldg.closets;
-    }).done(function(data, str){
+    }).done(function(data){
       var stage = document.createElement('div');
       stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
       stage.childNodes;
@@ -1295,42 +1270,43 @@ var bldg = {
 var fetch = {
   //Uses data function to fetch different the different data types from below
   type: {
-          'equipment': {
-            'url':'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
-            'return': temp = {},
-            'data':{},
-            'func':function(stage){$("#dbInventory_n_DescriptionID option",stage).each(function(i,el){this.return[el.value] = el.label}.bind(this))}
-          }, 
-          'building': {
-            'url':'https://ntg.missouristate.edu/NetInfo/AllocateEquipment.asp',
-            'return':temp=[],
-            'data':{'Tag':'X3333'},
-            'func': function(stage){$("#Building",stage).children().each(function(i,l){if(l.innerHTML!='') this.return.push(l.value)}.bind(this))}
-          }, 
-          'objIds': {
-            'url':'https://ntg.missouristate.edu/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
-            'return':temp={},
-            'data':{},
-            'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[el.value]=$('label',$(el).parents('tr'))[0].outerText}.bind(this))}
-          }, 
-          'dnsObjs': {
-            'url':'https://ntg.missouristate.edu/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
-            'return':temp={},
-            'data':{},
-            'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[$('label',$(el).parents('tr'))[0].outerText]=el.value}.bind(this))}
-          } 
-        }, 
+    'equipment': {
+      'url':siteUrl+'/NetInfo/EquipmentDetail.asp',
+      'return': temp = {},
+      'data':{},
+      'func':function(stage){$("#dbInventory_n_DescriptionID option",stage).each(function(i,el){this.return[el.value] = el.label}.bind(this))}
+    }, 
+    'building': {
+      'url':siteUrl+'/NetInfo/AllocateEquipment.asp',
+      'return':temp=[],
+      'data':{'Tag':'X3333'},
+      'func': function(stage){$("#Building",stage).children().each(function(i,l){if(l.innerHTML!='') this.return.push(l.value)}.bind(this))}
+    }, 
+    'objIds': {
+      'url':siteUrl+'/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
+      'return':temp={},
+      'data':{},
+      'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[el.value]=$('label',$(el).parents('tr'))[0].outerText}.bind(this))}
+    }, 
+    'dnsObjs': {
+      'url':siteUrl+'/NetInfo/LinkSelect.asp?mode=Device+Select&LocalPort=4130_ge+_0_0_0&dbnIP3=&dbnIP4=&dbsName=*&dbsCurBldg=&dbsCurCloset=',
+      'return':temp={},
+      'data':{},
+      'func': function(stage){$('[name="ObjID"]',stage).each(function(i,el){this.return[$('label',$(el).parents('tr'))[0].outerText]=el.value}.bind(this))}
+    } 
+  }, 
   data: function(type) {
+     
     $.ajax({
       type:'POST',
       url: this.type[type].url,
       data: this.type[type].data
     }).done(function(data){
-      
-      var stage = document.createElement('div');
-      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
-      stage.childNodes;
      
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img[^>]*>/g,'');
+      stage.childNodes;
+      
       this.type[type].func(stage);
       localStorage[type] = JSON.stringify(this.type[type].return); //yeah, this shit works.
        
@@ -1387,68 +1363,6 @@ function LinkSet() {
   this.properties = '';
 }
 
-
-
-function getUnChecked( bldg ){
-  
-  function getSwitches(bldg){
-    var switches = {};
-      $.each(JSON.parse(localStorage.dnsObjs), function(key, value){
-        if (key.indexOf(bldg) > -1){
-          switches[key] = value;
-        }
-      });
-    return switches;    
-
-  }
-  
-  var switches = getSwitches(bldg);
-  $.each(switches, function(sKey, sValue){  
-    
-    retVal[sKey] = {};
-
-    $.ajax({
-        type:'POST',
-        url: 'https://ntg.missouristate.edu/NetInfo/PortList.asp?objid='+ sValue +'&mode=&verbose=true',
-    }).done(function(data){
-        var stage = document.createElement('div');
-        stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
-        stage.childNodes;
-    
-        var t = "Unit_" + sValue + "_0_0";
-        var temp = $('[name='+t+']', stage).serializeObject();
-    
-        $.each(temp, function(key, value){
-          if (value == 'checked' && key.indexOf('dbbResRoom') > -1){
-            console.log('Popping: ' + key + '  --  ' + value);
-            temp.dbsDescription.splice(key.split('_0_0_')[1],1);
-            temp.dbnPort.splice(key.split('_0_0_')[1],1);
-          }
-        });
-        console.log(temp);
-        if (temp.dbsDescription.length) {
-          for (var i=0; i < temp.dbsDescription.length; i++){
-            //retVal[tempVar + ' ' +i] = { temp.dbnPort[i]: temp.dbsDescription[i]};
-            //console.log( temp.dbnPort[i]+ ' ' + temp.dbsDescription[i] + ' ' + tempVar);
-    //        console.log(sValue);
-    //        console.log(temp.dbnPort[i].split('_0_0_')[1]);
-    //        console.log(temp.dbsDescription[i]);
-            if (temp.dbsDescription[i] == '' || temp.dbsDescription[i] == null){
-              //temp.dbsDescription[i] = 'Empty Field';
-            }
-            //console.log(temp.dbnPort[i].split('_0_0_')[1]);
-            //console.log(temp.dbsDescription[i]);
-           // retVal[sValue][temp.dbnPort[i].split('_0_0_')[1]] = temp.dbsDescription[i];
-            //retVal[sKey][temp.dbnPort[i].split('_0_0_')[1]] = temp.dbsDescription[i];
-          }
-        }
-    });
-  }.bind(this));
-  
-  console.log(retVal);
-  //return retVal;
-}
-
 var Case = {
   getOpen: function(){
 
@@ -1486,12 +1400,11 @@ function tempCleanQuery(obj){
 
     $('[type="submit"]', stage)
       .on('submit', function(e){
-      e.preventDefault();
+        e.preventDefault();
     }).on('click', function(e){
-      e.preventDefault();
-      var temp = new caseSearch($('[name="IP Requests"]').serializeObject());
-      temp.submitQuery();
-      return false;
+        e.preventDefault();
+        (new caseSearch($('[name="IP Requests"]').serializeObject())).submitQuery();
+        return false;
     })
   }else if (obj.flag == 'subQuery'){
     $('[type="submit"]', stage)
@@ -1564,8 +1477,8 @@ function tempSetQueryDisplay(){
     }
   ];
 
-  var header = $('.Header'),  //Store Header for rewrite of page
-      page = Handlebars.templates.pageWithNav(navLinks); // handlebars in teh house
+  var header = $('.Header'),                              //Store Header for rewrite of page
+      page = Handlebars.templates.pageWithNav(navLinks);  // handlebars in teh house
 
   $('.Page').html('').append(
       header
@@ -1598,7 +1511,7 @@ caseSearch.prototype.submitQuery = function() {
   setLoader($('.Content'));
   
   $.ajax({
-    url: 'https://ntg.missouristate.edu/case/QuerySummary-body_update.asp',
+    url: siteUrl+'/case/QuerySummary-body_update.asp',
     data: this.data
   }).done(function(Data){
     $('.Content').html($('form',tempCleanQuery({data:Data,flag:'subQuery'})));
@@ -1626,7 +1539,7 @@ function tempGetQueryBlock(){
   
   $.ajax({
     type: 'POST',
-    url: 'https://ntg.missouristate.edu/case/queryCase.asp'
+    url: siteUrl+'/case/queryCase.asp'
   }).done(function(data){
     $('.Content').html($('form',tempCleanQuery({data:data,flag:'queryBox'})));
   });
@@ -1637,7 +1550,7 @@ function tempGetCase(id){
   
   $.ajax({
     type: 'POST',
-    url: 'https://ntg.missouristate.edu/case/Case_Detail.asp',
+    url: siteUrl+'/case/Case_Detail.asp',
     data: {'cmdSubmit':id},
   }).done(function(data){
     $('.Content').html($('table',tempCleanQuery({data:data,flag:'getCase'}))[3]);

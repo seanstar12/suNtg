@@ -1,6 +1,6 @@
 {
   "name": "su@NTG",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "manifest_version": 2,
   "description": "Because life could suck less.",
   "options_page": "ooptions.html",
@@ -24,7 +24,7 @@
     "storage" 
   ],
   "web_accessible_resources": [
-    "js/jquery-1.8.3.min.js",
+    "js/jquery-2.0.2.min.js",
     "js/bootstrap.min.js",
     "js/functions.js",
     "js/reload.js",
@@ -47,13 +47,13 @@
   "content_scripts": [
     {
       "js": ["js/onStart.js","js/handlebars.js","js/templates.js"],
-      "matches": ["https://ntg.missouristate.edu/*"],
+      "matches": ["https://ntg.missouristate.edu/*","https://ntgdev.missouristate.edu/*"],
       "css":["css/clear.css","css/ntgTool.css"],
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-1.8.3.min.js","js/jquery-plugins.js","js/functions.js","js/onEnd.js"],
-      "matches": ["https://ntg.missouristate.edu/*"],
+      "js": ["js/jquery-2.0.2.min.js","js/jquery-plugins.js","js/functions.js","js/onEnd.js"],
+      "matches": ["https://ntg.missouristate.edu/*","https://ntgdev.missouristate.edu/*"],
       "run_at": "document_end"
     }
   ]
