@@ -50,7 +50,6 @@ bg = {
       chrome.alarms.clearAll();
     }
     else if (alarm.name == 'keepAlive'){
-      //nT.msu.loggedIn(bg.onAlarmCallback);
       nT.msu.isLoggedIn(bg.onAlarmCallback);
     }
   },
@@ -158,4 +157,3 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
     sendResponse(nT.storage.config());
   }
 });
-

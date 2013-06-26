@@ -25,7 +25,7 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
       tempGetQueryBlock();
     });
     
-    if ((window.location.origin).indexOf('dev')>0 {
+    if ((window.location.origin).indexOf('dev')>0) {
       urlCheck('', function(){
         var rightCol = $('.right-col');
         $('.ContentMaxMin')

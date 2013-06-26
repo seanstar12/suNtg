@@ -101,9 +101,9 @@ nT.msu = {
     });
   },
 
-  postLogin: function(domData){
+  postLogin: function(data){
     var stage = document.createElement('div');
-    stage.innerHTML = domData.replace(/<img(.|\s)*?\/>/g,'');
+    stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
     stage.childNodes;
     
     var postData =  { '__VIEWSTATE':stage.querySelector('#__VIEWSTATE').value,
