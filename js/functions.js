@@ -40,6 +40,7 @@ function dbInit() {
   fetch.data('equipment');  
   fetch.data('objIds');  
 }
+
 function portalFrame(crUrl, urlVar) {
   var f = document.createElement('frame');
   f.src = crUrl + 'portal.html?id=' + urlVar;
@@ -69,7 +70,6 @@ function autoDate() {
 
 
 function getUrlVars() {
-  //var first = getUrlVars()["id"];
   var vars = {};
   var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
       vars[key] = value;
@@ -101,6 +101,11 @@ function urlCheck(link,f,invert) {
   } else (document.URL.indexOf(link) >=0) ? f(): false;
 }
 
+/**
+ * Intended for ntgdev.mostate. It gets rid of the disgusting page layout
+ * and makes fun of them in the process.
+ * Takes no args and is only run on index
+ */
 function ntgDevCleanup() {
   urlCheck('', function(){
     var rightCol = $('.right-col');
@@ -118,74 +123,9 @@ function ntgDevCleanup() {
   });
 }
 
-function btnBuildAsp(id){
-  var b = document.createElement('input');
-  b.type = 'submit';
-  b.className = 'btn btn-primary subBtn';
-  b.id = id;
-  b.value = 'Update to: '+ ((localStorage.custDate == 1) ? localStorage.custDateVal : returnDate());
-  return b;
-}
-
-function btnBuild(id,_class,value,func){
-  var b = document.createElement('button');
-  b.className = 'btn ' +_class;
-  b.id = id;
-  b.innerHTML = value;
-  b.type = 'button';
-  
-  $(b).bind('click', function(){
-    func();
-  });
-
-  return b;
-}
-
-function btnBuildGrp(id,_class,value,func){
-  var d = document.createElement('div');
-  
-  d.className = "btn-group";
-  d.appendChild(btnBuild(id,_class,value,func));
-  d.appendChild(btnBuild(id+'split','btn-info','<span class="icon-calendar icon-white"></span>',btnCustDate));
-  
-  return d;
-}
-
-function linkCustDate(){
- var newDate = prompt('Custom Date',
-     (localStorage.custDateVal == '' || localStorage.custDateVal == null) ? returnDate() : localStorage.custDateVal);
-  
-  if (newDate != null) {
-    localStorage.custDate = 1;
-    localStorage.custDateVal = newDate; 
-    autoDate();
-    //updateAllDates();
- }
-
-}
-
 function test(){
   console.log('i work');
 }
-
-function btnDates(){
-  var f = document.forms;
-  //console.log(f);
-  for (var i = 1; i < f.length; i++){
-    var btn = btnBuildAsp(f[i].name);
-    f[i].appendChild(btn);
-  }
-  $('.subBtn').each(function(){
-    $(this).bind('click',function(){
-      $(this)[0].value = "Updating";
-      autoDate();
-      ($('[name='+$(this)[0].id+']')[0]).querySelector('[value="Update"]').click();
-
-      return false;
-    });
-  });
-}
-
 
 /**
  * rename to createModal
@@ -449,20 +389,6 @@ function setOnKeys () {
   });
 }
 
-function verboseCheck(){
-  if (getUrlVars()['verbose'] == 'true') {
-    $('<div/>').addClass('alert alert-error')
-                .attr('id','updateProgressAlert')
-                .css('display','none')
-                .prependTo('.Content')
-                .html('<h4>Eek!</h4><a class="close" data-dismiss="alert" href="#">&times;</a>' +
-                '<p> You\'re headed into unknow territory. I haven\'t tested this feature in this mode. ' +
-                'I\'ll do what I can, but you\'re on your own bro.</p>')
-                .toggle(500);
-  } else {
-    return 1;
-  }
-}
 var form = {};
 
 form = {
@@ -470,7 +396,7 @@ form = {
 
   allDates: function() {
     autoDate();   
-    if (verboseCheck()) form.submitForms();
+    form.submitForms();
   },
 
   custDate: function(){
@@ -481,7 +407,7 @@ form = {
       localStorage.custDate = 1;
       localStorage.custDateVal = newDate; 
       autoDate();
-      if (verboseCheck()) form.submitForms();
+      form.submitForms();
     }
   },
   
@@ -1098,23 +1024,6 @@ function batchOps(){
 
 function processBatchOps(){
 
-$.fn.serializeObject = function()
-{
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
-
   var c = $('#quickAllo').serializeObject();
   var xtags = [];
    
@@ -1184,28 +1093,6 @@ function setStatus(tag, row){
      $('#'+row).removeClass('info');
     }, 1000);
   }
-}
-
-function setProgress(){
-
-//  $('<div/>').addClass('alert alert-info')
-//             .attr('id','updateProgressAlert')
-//             .css('display','none')
-//             .prependTo('.Content')
-//             .html('<h4>Update All The Things:  <p><span id="updateProgressMsg"> Generating Requests</span></p></h4>'+
-//                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
-//             .toggle(200)
-//             .append( 
-//                $('<div/>')
-//                  .addClass('progress progress-striped active')
-//                  .attr('id','updateProgressCont')
-//                  .append(
-//                    $('<div/>')
-//                      .addClass('bar')
-//                      .attr('id','updateProgressBar')
-//                      .css('width','0%')
-//                  )
-//              );
 }
 
 var bldg = {
@@ -1290,49 +1177,50 @@ var fetch = {
 
 function LinkSet() {
   this.modes = {
-                  'Device Select': 
-                    {
-                      'mode':'Device Select',
-                      'LocalPort':'',
-                      'dbnIP3':'',
-                      'dbnIP4':'',
-                      'dbsName':'',
-                      'dbsCurBldg':'',
-                      'dbsCurCloset':''
-                    },
-                  'Unit Select': {
-                      'mode':'Unit Select',
-                      'LocalPort':'',
-                      'dbsName':'',
-                      'ObjID':''
-                    },
-                'Port Select': {
-                      'mode':'Port Select',
-                      'LocalPort':'',
-                      'dbsName':'',
-                      'ObjID':'',
-                      'UnitID':''
-                    },
-                'Confirmation':{
-                      'mode':'Confirmation',
-                      'LocalPort':'',
-                      'DNSName':'',
-                      'ObjID':'',
-                      'PortID':'',
-                      'If3Used':'',
-                      'If2Used':'',
-                      'R1':'V1'
-                    },
-                'Finished': {
-                      'mode':'Finished',
-                      'LocalPort':'',
-                      'DNSName':'',
-                      'ObjID':'',
-                      'PortID':'',
-                      'If3Used':'',
-                      'If2Used':''
-                    }
-              };
+    'Device Select': 
+      {
+        'mode':'Device Select',
+        'LocalPort':'',
+        'dbnIP3':'',
+        'dbnIP4':'',
+        'dbsName':'',
+        'dbsCurBldg':'',
+        'dbsCurCloset':''
+    },
+    'Unit Select': {
+        'mode':'Unit Select',
+        'LocalPort':'',
+        'dbsName':'',
+        'ObjID':''
+    },
+    'Port Select': {
+        'mode':'Port Select',
+        'LocalPort':'',
+        'dbsName':'',
+        'ObjID':'',
+        'UnitID':''
+    },
+    'Confirmation':{
+        'mode':'Confirmation',
+        'LocalPort':'',
+        'DNSName':'',
+        'ObjID':'',
+        'PortID':'',
+        'If3Used':'',
+        'If2Used':'',
+        'R1':'V1'
+    },
+    'Finished': {
+        'mode':'Finished',
+        'LocalPort':'',
+        'DNSName':'',
+        'ObjID':'',
+        'PortID':'',
+        'If3Used':'',
+        'If2Used':''
+    }
+  };
+  
   this.properties = '';
 }
 
