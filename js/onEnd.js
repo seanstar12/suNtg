@@ -1,19 +1,7 @@
 //Render Navbar and special options
 urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
-    var head = document.getElementsByClassName('header')[0];
-    head.setAttribute('class','Header');
-    head.innerHTML = Handlebars.templates.nav(menuObject);
- 
-    $.each(menuObject, function(el, i){
-      if (typeof(this.func) == "function") this.func();
-      if (this.parent){
-        $.each(this.sub, function(ell, ii){
-          if (typeof(this.func) == "function") this.func();
-        });
-      }
-    });
-    
-    if ((window.location.origin).indexOf('dev')>0) ntgDevCleanup();
+  constructHeader();
+  if ((window.location.origin).indexOf('dev')>0) ntgDevCleanup();
 
 },true);
 
@@ -41,15 +29,6 @@ urlCheck('EquipmentDetail.asp', function() {
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
-// Start of on change for port list. changes the color of the row when changed
-//$('[name="Update"]').live('change', function(){
-//  if ($(this).checked = true){
-//    $($(this).parent()).parent().toggleClass('warning');
-//  } else {
-//    $($(this).parent()).parent().toggleClass('warning');
-//  }
-//})
-
 //setOnKeys();
 //$('#logOut').bind('click', function(e) {
 //  //e.preventDefault();
@@ -59,15 +38,6 @@ document.body.removeAttribute('onload');
 //$('#settings').bind('click', function(e) {
 //  //e.preventDefault();
 //  portalFrame(chrome.extension.getURL(''),'settings');
-
-
-//$('.header').html(b).attr('class','Header');
-
-//Pretty Buttons
-//styleButtons();
-//$('[size="13"]').each(function(a){this.setAttribute('size','20');});
-//$('[name="dbdVerifyDt"]').each(function(a){this.setAttribute('size','10');});
-
 
 
 //Add Link Redux

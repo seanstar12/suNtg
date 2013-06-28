@@ -41,6 +41,21 @@ function dbInit() {
   fetch.data('objIds');  
 }
 
+function constructHeader(){
+  var head = document.getElementsByClassName('header')[0];
+  head.setAttribute('class','Header');
+  head.innerHTML = Handlebars.templates.nav(menuObject);
+
+  $.each(menuObject, function(el, i){
+    if (typeof(this.func) == "function") this.func();
+    if (this.parent){
+      $.each(this.sub, function(ell, ii){
+        if (typeof(this.func) == "function") this.func();
+      });
+    }
+  });
+}
+
 function portalFrame(crUrl, urlVar) {
   var f = document.createElement('frame');
   f.src = crUrl + 'portal.html?id=' + urlVar;
