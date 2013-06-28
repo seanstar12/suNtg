@@ -1,0 +1,11 @@
+<ul class="specialOp nav nav-list">
+  {{#each .}}
+    {{#if class}}
+      <li class="{{class}}">{{title}}</li>
+    {{else}}
+      <li>
+        <a id="{{id}}" href="#">{{title}}</a>
+      </li>
+    {{/if}}
+  {{/each}}
+</ul>

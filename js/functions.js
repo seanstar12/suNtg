@@ -101,17 +101,22 @@ function urlCheck(link,f,invert) {
   } else (document.URL.indexOf(link) >=0) ? f(): false;
 }
 
-function defaultSelect() {
-  var values = document.getElementsByTagName('input');
-
-  for (var i =0; i < values.length; i++){
-    if (values[i].type == 'radio') {
-      values[i].checked = true;
-      break;
-    }
-  }
+function ntgDevCleanup() {
+  urlCheck('', function(){
+    var rightCol = $('.right-col');
+    $('.ContentMaxMin')
+      .html(
+        $('<h2/>')
+          .html('Web design on Meth: Not Even Once')
+      ).append(
+        $('<div/>')
+        .html('Contact your local web administrator today and help stop the madness').attr('style','height:850px'))
+      .prepend(rightCol);
+    $('.brand')
+      .html('Ntg.Dev')
+      .attr('href','https://ntgdev.missouristate.edu/');    
+  });
 }
-
 
 function btnBuildAsp(id){
   var b = document.createElement('input');
@@ -486,31 +491,9 @@ form = {
 
     $('input,select',$('form')).each(function(){this.setAttribute('disabled','true')});
     
-    $('<div/>').addClass('alert alert-info')
-                .attr('id','updateProgressAlert')
-                .css('display','none')
-                .prependTo('.Content')
-                .html('<h4>Updating Switches:  <p><span id="updateProgressMsg"> Generating Request</span></p></h4>'+
-                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
-                .toggle(500)
-                .append( $('<div/>')
-                  .addClass('progress progress-striped active')
-                  .attr('id','updateProgressCont')
-                  .append($('<div/>')
-                    .addClass('bar')
-                    .attr('id','updateProgressBar')
-                    .css('width','5%')
-                  )
-                );
-    
-//  var source = '\
-//        <div id="updateProgressAlert" class="alert alert-info" style="display: none;">\
-//          <h4>Updating Switches:  <span id="updateProgressMsg"> Generating Request</span> </h4>\
-//          <a class="close" data-dismiss="alert" href="#">&times;</a>\
-//          <div class="progress progress-striped active" id="updateProgressCont">\
-//            <div class="bar" id="updateProgressBar" style="width:5%;"></div>\
-//          </div>\
-//        </div>';
+    $('.Content').prepend(Handlebars.templates.progress({title:'Updating Switches: ',msg:'Generating Request'}));
+   
+    $('#updateProgressAlert').fadeIn(300); 
 
     $('form').not('#srchBox').each(
       function(j, jel){
@@ -539,6 +522,7 @@ form = {
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded',
       url: siteUrl+'/NetInfo/PortList.asp',
+      //url: siteUrl+'/NetInfo/SPortList.asp',
       data: portData
       }).always(function(){
         this.temp++;
@@ -1007,6 +991,7 @@ function updateVerify(xTag){
         data: tagData
       }).done(function(data){
         console.log("Verify Date Updated to " + returnDate());
+        
       });
   });
 }
@@ -1202,24 +1187,25 @@ function setStatus(tag, row){
 }
 
 function setProgress(){
-  $('<div/>').addClass('alert alert-info')
-             .attr('id','updateProgressAlert')
-             .css('display','none')
-             .prependTo('.Content')
-             .html('<h4>Update All The Things:  <p><span id="updateProgressMsg"> Generating Requests</span></p></h4>'+
-                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
-             .toggle(200)
-             .append( 
-                $('<div/>')
-                  .addClass('progress progress-striped active')
-                  .attr('id','updateProgressCont')
-                  .append(
-                    $('<div/>')
-                      .addClass('bar')
-                      .attr('id','updateProgressBar')
-                      .css('width','0%')
-                  )
-              );
+
+//  $('<div/>').addClass('alert alert-info')
+//             .attr('id','updateProgressAlert')
+//             .css('display','none')
+//             .prependTo('.Content')
+//             .html('<h4>Update All The Things:  <p><span id="updateProgressMsg"> Generating Requests</span></p></h4>'+
+//                '<a class="close" data-dismiss="alert" href="#">&times;</a>')
+//             .toggle(200)
+//             .append( 
+//                $('<div/>')
+//                  .addClass('progress progress-striped active')
+//                  .attr('id','updateProgressCont')
+//                  .append(
+//                    $('<div/>')
+//                      .addClass('bar')
+//                      .attr('id','updateProgressBar')
+//                      .css('width','0%')
+//                  )
+//              );
 }
 
 var bldg = {
@@ -1411,98 +1397,6 @@ function tempCleanQuery(obj){
   return stage;
 }
 
-var batchObj = {
-  title: '{NTG} Batch',
-  navLinks: [
-    {
-      'title': 'Batch Operations',
-      'class': 'NavHeading',
-      'id': 'batchHead',
-    },
-    {
-      'title': 'Annie Are You Okay?',
-      'class': '',
-      'id': 'filla',
-    }
-  ],
-
-  'func': function(){
-    $('#filla').on('click', function(e){
-      e.preventDefault();
-      alert('yeah, I\'m okay.');
-    })
-  },
-  context : {
-    selectListValues: JSON.parse(localStorage.building),
-    tableRows: ['#','XTag','AP Name', 'IP Address', 'Status', ''],
-    tableOptions: {
-        'Allocate':'allo',
-        'Deallocate Only':'deallo'
-    }
-  }
-}
-
-var caseObj = {
-  title : '{NTG} Case', 
-  navLinks: [
-    {
-      'title': 'Case Navigation',
-      'class': 'NavHeading',
-      'id': 'allClosedCases'
-    },
-    {
-      'title': 'Return to Search',
-      'class': '',
-      'id': 'returnToSearch'
-    },
-    {
-      'title': 'Back To Query',
-      'class': '',
-      'id': 'backToQuery'
-    },
-    {
-      'title': 'Your Cases',
-      'class': 'NavHeading',
-      'id': 'yourCasesHead'
-    },
-    {
-      'title': 'Open Cases',
-      'class': '',
-      'id': 'yourOpenCases'
-    },
-    {
-      'title': 'Closed Cases',
-      'class': '',
-      'id': 'yourClosedCases',
-      'style': 'disabled'
-    },
-    {
-      'title': 'All Cases',
-      'class': 'NavHeading',
-      'id': 'allCasesHead',
-      'style': 'disabled'
-    },
-    {
-      'title': 'Open Cases',
-      'class': '',
-      'id': 'allOpenCases',
-      'style': 'disabled'
-    },
-    {
-      'title': 'Closed Cases',
-      'class': '',
-      'id': 'allClosedCases',
-      'style': 'disabled'
-    }
-  ],
-
-  'func': function(){
-    $('#returnToSearch').on('click', function(e){
-      e.preventDefault();
-      tempGetQueryBlock();
-    })
-  }
-}
 
 function setDisplay(obj){
   document.title = obj.title;

@@ -37,6 +37,7 @@
     "portal.html",
     "js/jquery-ui.min.js",
     "js/jquery.form.js",
+    "js/ntgVars.js",
     "css/bootstrap.css",
     "css/clear.css",
     "css/ntgTool.css",
@@ -46,13 +47,24 @@
   ],
   "content_scripts": [
     {
-      "js": ["js/onStart.js","js/handlebars.js","js/templates.js"],
+      "js": [
+        "js/onStart.js",
+        "js/ntgVars.js",
+        "js/handlebars.js",
+        "js/templates.js",
+        "js/jquery-2.0.2.min.js",
+        "js/bootstrap.min.js"
+      ],
       "matches": ["https://ntg.missouristate.edu/*","https://ntgdev.missouristate.edu/*"],
       "css":["css/clear.css","css/ntgTool.css"],
       "run_at": "document_start"
     },
     {
-      "js": ["js/jquery-2.0.2.min.js","js/jquery-plugins.js","js/functions.js","js/onEnd.js"],
+      "js": [
+        "js/ntgVars.js",
+        "js/functions.js",
+        "js/onEnd.js"
+      ],
       "matches": ["https://ntg.missouristate.edu/*","https://ntgdev.missouristate.edu/*"],
       "run_at": "document_end"
     }

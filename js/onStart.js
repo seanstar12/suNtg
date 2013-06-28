@@ -19,7 +19,6 @@ function addScripts(files){
 addScripts(['js/handlebars.js',
             'js/jquery-2.0.2.min.js',
             'js/functions.js',
-            'js/jquery-plugins.js',
             'js/bootstrap.min.js',
             'js/templates.js',
             'css/bootstrap.css',
@@ -27,9 +26,6 @@ addScripts(['js/handlebars.js',
 
 // Needed to prevent errors (It's sending a message from somewhere... need to find it)
 chrome.extension.onMessage.addListener( function(request,sender,response) {
-  if ((document.location.pathname.toLowerCase()).indexOf('accessdenied.aspx') > -1){
-    document.body.innerHTML= "<a href='https://ntg.missouristate.edu/Tools/Default.asp'>Home</a>";
-  }
 });
 
 var t = document.createElement('script');

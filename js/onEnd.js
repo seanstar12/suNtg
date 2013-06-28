@@ -1,17 +1,4 @@
-var menuObject =  [
-                    {'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'},
-                    {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
-                    {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
-                    {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
-                    {'parent': true, 'title':'Case System', 'sub':[
-                      {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/queryCase.asp' },
-                      {'title':'TeleCom','parent':'Case System','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'}]},
-                    {'parent': true, 'title':'NTG Tools', 'sub':[
-                      {'title':'Batch Operations','parent':'NTG Tool','id':'batchOps', 'value':'#NtgTool/BatchOperations' },
-                      {'title':'Yearly Inventory','parent':'NTG Tool','id':'yearlyInventory', 'value':'#NtgTool/YearlyInventory' },
-                      {'title':'Case System 2.0','parent':'NTG Tool','id':'caseSystem', 'value':'#NtgTool/CaseSystem2.0' }]}
-                  ];
-//console.log(JSON.stringify(menuObject));
+//Render Navbar and special options
 urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
     var head = document.getElementsByClassName('header')[0];
     head.setAttribute('class','Header');
@@ -22,65 +9,31 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
       batchOps();
     });
     $('#caseSystem').on('click',function(){
-      //tempSetQueryDisplay();
       setDisplay(caseObj);
       tempGetQueryBlock();
     });
     
     if ((window.location.origin).indexOf('dev')>0) {
-      urlCheck('', function(){
-        var rightCol = $('.right-col');
-        $('.ContentMaxMin')
-          .html(
-            $('<h2/>')
-              .html('Web design on Meth: Not Even Once')
-          ).append(
-            $('<div/>')
-            .html('Contact your local web administrator today and help stop the madness').attr('style','height:850px'))
-          .prepend(rightCol);
-        $('.brand')
-          .html('Ntg.Dev')
-          .attr('href','https://ntgdev.missouristate.edu/');    
-      });
+      ntgDevCleanup();
     }
 },true);
 
 urlCheck('PortList.asp', function(){
   $('table').addClass('table table-condensed portTable');
+  $('.Navigation').prepend(Handlebars.templates.ntgSideNav(portListLinks));
   
-  var nav = [
-    new NavLink('addCurrentDate', 'Set Dates to ' + returnDate(), form.allDates).createLink(),
-    new NavLink('addCustomDate', 'Set Custom Date', form.custDate).createLink(),
-    $('<li/>').attr('class','divider'),
-    new NavLink('massInput','Mass Input Mode',massInput).createLink(),
-    new NavLink('updateAll','Update All Switches',form.submitForms).createLink()
-  ];
-  
-  new Navigation('mainNav','nav nav-link',nav).createMenu()
+  $.each(portListLinks, function(el, i){
+    if (typeof(this.func) == "function") this.func();
+  });
 
 });
 
-urlCheck('LinkSelect.asp', function() {
-  var values = document.getElementsByTagName('input');
-
-  for (var i =0; i < values.length; i++){
-    if (values[i].type == 'radio') {
-      console.log(document.getElementsByName('mode')[0].value);
-      if (document.getElementsByClassName('NetHeading')[0].innerHTML.indexOf('Select Port') > 0 ) {
-        values[i].checked = true;
-        document.forms[0].PortID.value = (values[i].id.split('Port_'))[1];
-        break;
-      }
-    }
-  }
-  document.scripts[5].remove()
-  if (document.body == "") window.close();
-});
 
 urlCheck('EquipmentDetail.asp', function() {
   if (document.getElementsByClassName('NetWarning')[0] != null) {
-    document.getElementById('dbInventory_d_VerifyDt').value = returnDate();
-    document.getElementsByName('cmdSubmit')[0].click();
+    updateVerify(getId('dbInventory_s_SMSUTag').value);
+    getId('dbInventory_d_VerifyDt').value = returnDate();
+    $(document.getElementsByClassName('NetWarning')).remove()
   }
 });
 
