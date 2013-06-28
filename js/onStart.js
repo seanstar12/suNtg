@@ -1,6 +1,6 @@
 function addScripts(files){
+  var s = "";
   for (var i =0; i< files.length; i++){
-    var s = "";
 
     if (files[i].indexOf('js/') > -1){
       s = document.createElement('script');
@@ -13,22 +13,24 @@ function addScripts(files){
     }
     document.documentElement.insertBefore(s);  
   }
+  delete s;
 }
 
+addScripts([
+  'js/handlebars.js',
+  'js/jquery-2.0.2.min.js',
+  'js/functions.js',
+  'js/templates.js',
+  'js/bootstrap.min.js',
+  'css/bootstrap.css',
+  'css/ntgTool.css'
+]);
 
-addScripts(['js/handlebars.js',
-            'js/jquery-2.0.2.min.js',
-            'js/functions.js',
-            'js/bootstrap.min.js',
-            'js/templates.js',
-            'css/bootstrap.css',
-            'css/ntgTool.css']);
-
-// Needed to prevent errors (It's sending a message from somewhere... need to find it)
+//Will be used for portal between front and back
 chrome.extension.onMessage.addListener( function(request,sender,response) {
 });
 
+//Add chrome extension URL so that portal will work
 var t = document.createElement('script');
 t.innerHTML = "var url = \"" + chrome.extension.getURL('') + "\";";
 document.documentElement.insertBefore(t);
-

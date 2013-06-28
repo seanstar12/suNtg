@@ -1,8 +1,5 @@
 var portListLinks = [
-  {
-    'title': 'Special Stuff',
-    'class': 'nav-header',
-  }, 
+  {'title':'Special Stuff','class': 'nav-header'}, 
   {
     'title': 'Set Dates to Current',
     'id': 'addCurrentDate',
@@ -22,10 +19,7 @@ var portListLinks = [
       }); 
     }
   },
-  {
-    'title': '',
-    'class': 'divider',
-  },
+  {'title':'','class': 'divider' },
   {
     'title': 'Mass Input Mode',
     'id': 'massInput',
@@ -48,18 +42,46 @@ var portListLinks = [
 
 
 var menuObject =  [
-                    {'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'},
-                    {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
-                    {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
-                    {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
-                    {'parent': true, 'title':'Case System', 'sub':[
-                      {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/queryCase.asp' },
-                      {'title':'TeleCom','parent':'Case System','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'}]},
-                    {'parent': true, 'title':'NTG Tools', 'sub':[
-                      {'title':'Batch Operations','parent':'NTG Tool','id':'batchOps', 'value':'#NtgTool/BatchOperations' },
-                      {'title':'Yearly Inventory','parent':'NTG Tool','id':'yearlyInventory', 'value':'#NtgTool/YearlyInventory' },
-                      {'title':'Case System 2.0','parent':'NTG Tool','id':'caseSystem', 'value':'#NtgTool/CaseSystem2.0' }]}
-                  ];
+  {'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'},
+  {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
+  {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
+  {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
+  {'parent': true, 'title':'Case System', 'sub':[
+    {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/queryCase.asp' },
+    {'title':'TeleCom','parent':'Case System','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'}]},
+  {'parent': true, 'title':'NTG Tools', 'sub':[
+    {
+      'title':'Batch Operations',
+      'parent':'NTG Tool',
+      'id':'batchOps', 
+      'value':'#NtgTool/BatchOperations',
+      'func': function(){
+        $('#'+this.id).on('click', function(){
+          setDisplay(batchObj);
+          batchOps();
+        });
+      }
+    },
+    {
+      'title':'Yearly Inventory',
+      'parent':'NTG Tool',
+      'id':'yearlyInventory', 
+      'value':'#NtgTool/YearlyInventory'
+    },
+    {
+      'title':'Case System 2.0',
+      'parent':'NTG Tool',
+      'id':'caseSystem', 
+      'value':'#NtgTool/CaseSystem2.0', 
+      'func': function(){
+        $('#'+this.id).on('click', function(){
+          setDisplay(caseObj);
+          tempGetQueryBlock();
+        });
+      }
+    }
+  ]}
+];
 
 
 var batchObj = {

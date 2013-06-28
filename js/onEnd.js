@@ -4,20 +4,20 @@ urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
     head.setAttribute('class','Header');
     head.innerHTML = Handlebars.templates.nav(menuObject);
  
-    $('#batchOps').on('click',function(){
-      setDisplay(batchObj);
-      batchOps();
-    });
-    $('#caseSystem').on('click',function(){
-      setDisplay(caseObj);
-      tempGetQueryBlock();
+    $.each(menuObject, function(el, i){
+      if (typeof(this.func) == "function") this.func();
+      if (this.parent){
+        $.each(this.sub, function(ell, ii){
+          if (typeof(this.func) == "function") this.func();
+        });
+      }
     });
     
-    if ((window.location.origin).indexOf('dev')>0) {
-      ntgDevCleanup();
-    }
+    if ((window.location.origin).indexOf('dev')>0) ntgDevCleanup();
+
 },true);
 
+// Portlist page functions :: Display Extra side nav :: Remove stupid size (updated size in css)
 urlCheck('PortList.asp', function(){
   $('table').addClass('table table-condensed portTable');
   $('.Navigation').prepend(Handlebars.templates.ntgSideNav(portListLinks));
@@ -26,9 +26,10 @@ urlCheck('PortList.asp', function(){
     if (typeof(this.func) == "function") this.func();
   });
 
+  $('[name="dbsDescription"]').removeAttr('size');
 });
 
-
+//Automatically update date verified after allocation of entity
 urlCheck('EquipmentDetail.asp', function() {
   if (document.getElementsByClassName('NetWarning')[0] != null) {
     updateVerify(getId('dbInventory_s_SMSUTag').value);
@@ -40,7 +41,6 @@ urlCheck('EquipmentDetail.asp', function() {
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
-$('[name="dbsDescription"]').removeAttr('size');
 // Start of on change for port list. changes the color of the row when changed
 //$('[name="Update"]').live('change', function(){
 //  if ($(this).checked = true){

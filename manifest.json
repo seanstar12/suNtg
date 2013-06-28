@@ -48,12 +48,7 @@
   "content_scripts": [
     {
       "js": [
-        "js/onStart.js",
-        "js/ntgVars.js",
-        "js/handlebars.js",
-        "js/templates.js",
-        "js/jquery-2.0.2.min.js",
-        "js/bootstrap.min.js"
+        "js/onStart.js"
       ],
       "matches": ["https://ntg.missouristate.edu/*","https://ntgdev.missouristate.edu/*"],
       "css":["css/clear.css","css/ntgTool.css"],
@@ -61,7 +56,10 @@
     },
     {
       "js": [
+        "js/jquery-2.0.2.min.js",
         "js/ntgVars.js",
+        "js/handlebars.js",
+        "js/templates.js",
         "js/functions.js",
         "js/onEnd.js"
       ],
