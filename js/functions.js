@@ -18,6 +18,7 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
 
 var siteUrl = window.location.origin;
 
+
 function addScripts(files){
   for (var i =0; i< files.length; i++){
     var s = "";
@@ -43,9 +44,10 @@ function dbInit() {
 
 function constructHeader(){
   var head = document.getElementsByClassName('header')[0];
-  head.setAttribute('class','Header');
-  head.innerHTML = Handlebars.templates.nav(menuObject);
-
+  
+  head.innerHTML = "";
+  $('body').prepend(Handlebars.templates.nav(menuObject));
+  
   $.each(menuObject, function(el, i){
     if (typeof(this.func) == "function") this.func();
     if (this.parent){
@@ -53,6 +55,99 @@ function constructHeader(){
         if (typeof(this.func) == "function") this.func();
       });
     }
+  });
+}
+
+function constructFav(links){
+  var el = $('.NavHeading.favHead');
+  $.each(links, function(){
+    if (!(this.className == 'EditBtn')){
+      el.after( $('<li/>').html(this));
+    }
+  });
+}
+
+//For use with custBuildingDisplay
+function parseBldgSwitches(context){
+  var switches = [], uniqueIds = [];
+  $('tr:not(".NetHeading")', context).each(function(i, el){
+    
+    if (this.innerHTML.indexOf(' Switch') < 0) {
+      $(this).remove();
+      return;
+    }
+
+    var tmpObj = {}, tmpSwitch = $('a',this);
+    
+    tmpObj['name'] = tmpSwitch[1].innerHTML.split(' /')[0];
+    tmpObj['objId'] = tmpSwitch[1].href.split('=')[1];
+    tmpObj['tag'] = tmpSwitch[0].innerHTML;
+
+
+    // Remove Duplicates From Array 
+    if ($.inArray(tmpObj.objId, uniqueIds) === -1) {
+      switches.push(tmpObj);
+      uniqueIds.push (tmpObj.objId);
+    }
+  });
+  
+  //Add sorting later
+  return switches;
+}
+
+function parseSwitchJacks(switchId){
+
+    $.ajax({
+      type: 'GET',
+      url: '/NetInfo/PortList.asp?ObjId='+switchId,
+      error: function(){
+        console.log('Error:> ' + this);
+      }
+    }).done(function(data, str){
+      var stage = document.createElement('div');
+      stage.innerHTML = data.replace(/<img(.|\s)*?\/>/g,'');
+      stage.childNodes;
+      
+      var switchForms = $('form:not("#srchBox")', stage);
+      
+      $.each($('table', stage), function(){$('tr',this)[0].remove()});
+      $('select, :checkbox', switchForms).parent().remove();  
+      $('#lA').html(switchForms);
+    });
+}
+
+function tempBldgUpdate(bldg){
+  Handlebars.registerHelper("foreach",function(arr,options) {
+    if(options.inverse && !arr.length)
+      return options.inverse(this);
+  
+      return arr.map(function(item,index) {
+        item.$index = index;
+        item.$first = index === 0;
+        item.$last  = index === arr.length-1;
+        return options.fn(item);
+      }).join('');
+  });
+  
+  $.ajax({
+    type: 'GET',
+    url: '/NetInfo/EquipmentList.asp?dbsCurBldg=hill',
+    error: function(){
+      console.log('Error:> ' + this);
+    }
+  }).done(function(data, str){
+    var something = parseBldgSwitches(data);
+    $('.Content.ntgTool').html(Handlebars.templates.bldgUpdatePartial(something));
+    $.each(something, function(){
+      $('#'+this.objId).on('click', function(e){
+        setLoader($('#lA'));
+        e.preventDefault();
+        $('#switchList li').each(function(){$(this).attr('class','')});
+        
+        $('#'+this.objId).parent().attr('class','active');
+        parseSwitchJacks(this.objId);
+      }.bind(this));
+    });
   });
 }
 
@@ -121,20 +216,34 @@ function urlCheck(link,f,invert) {
  * and makes fun of them in the process.
  * Takes no args and is only run on index
  */
-function ntgDevCleanup() {
+function __doPostBack(eventTarget, eventArgument) {
+        document.forms['aspnetForm'].__EVENTTARGET.value = eventTarget;
+        document.forms['aspnetForm'].__EVENTARGUMENT.value = eventArgument;
+        document.forms['aspnetForm'].submit();
+}
+
+function ntgCleanup(bool) {
   urlCheck('', function(){
     var rightCol = $('.right-col');
     $('.ContentMaxMin')
       .html(
         $('<h2/>')
-          .html('Web design on Meth: Not Even Once')
+          .html('Web Design on Meth: Not Even Once')
       ).append(
         $('<div/>')
-        .html('Contact your local web administrator today and help stop the madness').attr('style','height:850px'))
+        .addClass('minHeight')
+        .html('Contact your local web administrator today and help stop the madness.')
+      )
       .prepend(rightCol);
-    $('.brand')
-      .html('Ntg.Dev')
-      .attr('href','https://ntgdev.missouristate.edu/');    
+    if (bool){
+      $('.brand')
+        .html('Ntg.Dev')
+        .attr('href','https://ntgdev.missouristate.edu/');    
+    } else { 
+      $('.brand')
+        .html('Networking')
+        .attr('href','https://ntg.missouristate.edu/');    
+    }
   });
 }
 
@@ -146,6 +255,107 @@ function test(){
  * rename to createModal
  * See also 
  */
+
+var tempModal = {
+  id: 'ntgModal',
+  title: 'Ima Modal',
+  subTitle: 'Because I can',
+  body: 'stuf stuff stufff stuf stuff stuff',
+  footer: '<input type="button" id="modalCancel"class="btn" value="Cancel">'+
+          '<input id="modalSubmit" type="button" class="btn btn-primary" value="Submit">',
+  close: function(){
+    console.log('I\'m Doin something');
+  },
+  submit: function(){
+    console.log('I\'m Doin something else');
+  }
+}
+
+var custDateModalData = {
+  id: 'ntgModal',
+  title: 'Set Custom Date',
+  subTitle: '',
+  body: '<input type="date" name="dateField" id="datePicker">',
+  footer: '<input type="button" id="modalCancel"class="btn" value="Cancel">'+
+          '<input id="modalSubmit" type="button" class="btn btn-primary" value="Submit">',
+  close: function(){
+    console.log('I\'m Doin something');
+  },
+  submit: function(){
+    console.log('I\'m Doin something else');
+    localStorage.custDateVal = dateFormatter($('#datePicker').val(),'toSite');
+    localStorage.custDate = '1';
+    autoDate();
+    form.submitForms();
+    
+    $('#ntgModal').modal('hide');
+  }
+}
+
+function makeModal(){
+  $('body').append(Handlebars.templates.modal(tempModal));
+}
+
+function oModal(modalData){
+  this.data = modalData;
+  this.htm = Handlebars.templates.modal(modalData);
+  
+  $('body').append(this.htm);
+  $('#modalCancel').attr('data-dismiss','modal');
+  $('#modalSubmit').on('click',function(modalData){this.data.submit()}.bind(this));
+  return $('#ntgModal');
+}
+
+function nModal(data){
+  this.data = data;
+  this.id = data.id;
+  this.title = data.title;
+  this.subTitle = data.subTitle;
+  this.body = data.body;
+  this.footer = data.footer;
+ 
+  this.Modal = Handlebars.templates.modal(this); 
+  
+  $('body').append(this.Modal);
+  $('#datePicker').val(dateFormatter(localStorage.custDateVal,'toPicker'));
+  
+  $('#modalCancel').attr('data-dismiss','modal');
+  $('#modalSubmit').on('click',function(data){
+    this.data.submit();
+    $('#ntgModal').remove();
+  }.bind(this));
+}
+
+function dateFormatter(str, format){
+  var a,b,c,comp;
+  switch(format){
+    case 'toSite':
+      
+      a = str.split('-')[0];
+      b = str.split('-')[1];
+      c = str.split('-')[2];
+
+      if (a < 10) a = a.split('0')[1];
+      if (b < 10) b = b.split('0')[1];
+      return b+'/'+c+'/'+a;
+    
+    case 'toPicker':
+      
+      a = str.split('/')[0];
+      b = str.split('/')[1];
+      c = str.split('/')[2];
+      
+      if (b < 10) b = '0'+b;
+      if (a < 10) a = '0'+a;
+
+      return c+'-'+a+'-'+b;
+  }
+
+}
+
+function custDateModal(){
+  nModal(custDateModalData);
+}
 
 function launchSettings(){
   var box = new Modal();
@@ -415,15 +625,17 @@ form = {
   },
 
   custDate: function(){
-    var newDate = prompt('Custom Date',
-     (localStorage.custDateVal == '' || localStorage.custDateVal == null) ? returnDate() : localStorage.custDateVal);
+    //var newDate = prompt('Custom Date',
+    // (  localStorage.custDateVal == '' 
+    //    || localStorage.custDateVal == null
+    // ) ? returnDate() : localStorage.custDateVal);
   
-    if (newDate != null) {
-      localStorage.custDate = 1;
-      localStorage.custDateVal = newDate; 
-      autoDate();
-      form.submitForms();
-    }
+    //if (newDate != null) {
+    //  localStorage.custDate = 1;
+    //  localStorage.custDateVal = newDate; 
+    //  autoDate();
+    //  form.submitForms();
+    //}
   },
   
   submitForms: function() {
@@ -501,10 +713,15 @@ searchTool = {
   
   search: function(query){
     this.query = query;
-    $('.Content').html('').append( $('<div/>')
-                            .attr('class','srchResults')
-                            .attr('id','srchResults'));
+
+    setDisplay(searchObj);
+    $('.Content')
+      .html(Handlebars.templates.searchResults())
+   //   .append( $('<div/>')
+   //                 .attr('class','srchResults')
+   //                 .attr('id','srchResults'));
     document.title = '"' + query.toUpperCase() + '"  {Query}';
+    window.location.hash = "ntgQuery\\" + query.toUpperCase(); 
     $.each(this.terms, function(key,val){
       $.ajax({
         type: 'POST',
@@ -521,14 +738,13 @@ searchTool = {
               }
             });
             
-            //if (tags.length > 0) //console.log(tags);
-
             $('#srchResults')
                 .append( $('<div/>')
                   .attr('class','searchItem')
                   .html($(temp).addClass('table table-condensed table-hover'))
                   .prepend('<h2>' + key + ' Results</h2>'));
           }
+
       });
     });
   },
@@ -1304,18 +1520,13 @@ function tempCleanQuery(obj){
 function setDisplay(obj){
   document.title = obj.title;
   
-  var header = $('.Header'),                              //Store Header for rewrite of page
-      page = Handlebars.templates.pageWithNav(obj.navLinks);  // handlebars in teh house
+  var page = Handlebars.templates.pageWithNav(obj.navLinks);  // handlebars in teh house
 
-  $('.Page').html('').append(
-      header
-    ).append(
-      page
-    );
+  $('.Page').html('').append(page);
   
   obj.func();
+  
   delete page;
-  delete header;
 }
 
 function caseSearch(obj){
@@ -1381,3 +1592,81 @@ function tempGetCase(id){
     $('.Content').html($('table',tempCleanQuery({data:data,flag:'getCase'}))[3]);
   });
 }
+
+//function History(){
+//}
+//
+//History.prototype.addEntry = function(entry){
+//  var currDate = Date.now();
+//  var newEntry = {};
+//  newEntry[currDate] = {};
+//
+//  $.each(entry, function(unit,el){
+//    newEntry[currDate][unit] = this;
+//  });
+//  
+//
+//}
+
+function getHistory(){
+  var Forms = $('form',$('.Page'));
+  var tempHistory = {};
+  $.each(Forms, function(){tempHistory[this.name] = ($(this).serializeObject())});
+  addEntry(tempHistory);
+}
+
+function addEntry(entry){
+  var currDate = Date.now();
+  var newEntry = {};
+  
+  $.each(entry, function(unit, el) {
+    if (!newEntry[this.ObjId]) newEntry[this.ObjId] = {};
+  });
+
+  $.each(entry, function(unit,el){
+    newEntry[this.ObjId][unit] = this;
+  });
+
+  
+  if(localStorage.hist == null || localStorage.hist == "") localStorage.hist="{}";
+  
+  var history = JSON.parse(localStorage.hist);
+
+  if (!history[returnDate()]){
+    history[returnDate()] = {};
+  }
+  console.log(newEntry);
+
+  history[returnDate()][currDate] = newEntry;
+  localStorage.hist = JSON.stringify(history);
+
+}
+
+function getPast(obj){
+  var history = JSON.parse(localStorage.hist);
+  var list = [];
+
+  $.each(history, function(entryDate){
+    temp['date'] = entryDate;
+    $.each(this, function(entryTime, el){
+      if (el[obj]) {
+        temp['date']['time'] = entryTime;
+        list.push(temp);
+      }
+    });
+  });
+
+  console.log(list);
+  return(list);
+}
+
+function renderList(obj){
+  var list = getPast(obj);
+  $('#valueList').append(Handlebars.templates.selectListPartial(list))
+  $.each(list, function(el,i){
+    console.log(this);
+  });
+}
+
+//TODO : add history compression: http://stackoverflow.com/questions/1068834/object-comparison-in-javascript
+

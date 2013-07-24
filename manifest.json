@@ -21,25 +21,16 @@
     "*://*.missouristate.edu/",
     "background",
     "cookies",
-    "storage" 
+    "storage",
+    "unlimitedStorage"
   ],
   "web_accessible_resources": [
-    "js/jquery-2.0.2.min.js",
-    "js/bootstrap.min.js",
-    "js/functions.js",
-    "js/reload.js",
-    "js/handlebars.js",
-    "js/pop.js",
-    "js/templates.js",
-    "reload.html",
+    "js/*",
+    "css/*",
+    "images/*",
+    "lib/*",
     "portal.html",
-    "js/ntgVars.js",
-    "css/bootstrap.css",
-    "css/clear.css",
-    "css/ntgTool.css",
-    "images/Net_Logo.gif",
-    "images/glyphicons-halflings-white.png",
-    "images/glyphicons-halflings.png"
+    "reload.html"
   ],
   "content_scripts": [
     {
@@ -56,6 +47,7 @@
         "js/ntgVars.js",
         "js/handlebars.js",
         "js/templates.js",
+        "js/bootstrap.min.js",
         "js/functions.js",
         "js/onEnd.js"
       ],

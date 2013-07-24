@@ -1,0 +1,23 @@
+<div id="bldgUpdate" class="bldgUpdate">
+  <div class="tabbable tabs-left">
+    <ul class="nav nav-tabs" id="switchList">
+      {{#each .}}
+        <li>
+          <a href="#{{objId}}" id="{{objId}}">{{name}}</a>
+        </li>
+      {{/each}}
+    </ul> 
+    <div class="tab-content" id="bldgUpdateTab">
+      <div class="tab-pane active" id="lA">
+        <span>Select A Switch To Edit</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!--
+      {{#foreach .}}
+        <li class="{{#if $first}}active{{/if}}">
+          <a href="#{{objId}}" id="{{objId}}">{{name}}</a>
+        </li>
+      {{/foreach}}
+-->

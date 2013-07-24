@@ -21,7 +21,8 @@ addScripts([
   'js/jquery-2.0.2.min.js',
   'js/functions.js',
   'js/templates.js',
-  'js/bootstrap.min.js',
+  'lib/bootstrap-select/bootstrap-select.min.js',
+  'lib/bootstrap-select/bootstrap-select.min.css',
   'css/bootstrap.css',
   'css/ntgTool.css'
 ]);

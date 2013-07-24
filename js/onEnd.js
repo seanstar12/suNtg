@@ -1,8 +1,7 @@
 //Render Navbar and special options
 urlCheck(['LinkSelect.asp','AllocateEquipment.asp'],function(){
   constructHeader();
-  if ((window.location.origin).indexOf('dev')>0) ntgDevCleanup();
-
+  ntgCleanup((window.location.origin).indexOf('dev')>0);
 },true);
 
 // Portlist page functions :: Display Extra side nav :: Remove stupid size (updated size in css)
@@ -19,11 +18,32 @@ urlCheck('PortList.asp', function(){
 
 //Automatically update date verified after allocation of entity
 urlCheck('EquipmentDetail.asp', function() {
-  if (document.getElementsByClassName('NetWarning')[0] != null) {
-    updateVerify(getId('dbInventory_s_SMSUTag').value);
-    getId('dbInventory_d_VerifyDt').value = returnDate();
-    $(document.getElementsByClassName('NetWarning')).remove()
+  if (1 == 0){
+    if (document.getElementsByClassName('NetWarning')[0] != null) {
+      updateVerify(getId('dbInventory_s_SMSUTag').value);
+      getId('dbInventory_d_VerifyDt').value = returnDate();
+      $(document.getElementsByClassName('NetWarning')).remove()
+    }
   }
+});
+
+urlCheck('Default.aspx', function(){
+  // A little Ghetto. Probably need to remove stock favorites entirely...
+  // I'll think about it.
+
+  var aspForm = $('#aspnetForm'); //Needed for postback of Edit
+  var content = $('.Content');
+  var favCol = $('.FavCol');
+  
+  setDisplay(toolsObj);
+  constructFav($('.FavCol a', content));
+  $('.Content')
+    .html(content)
+    .append(aspForm);
+   
+  favCol.next().remove();
+  favCol.next().remove();
+  favCol.remove();
 });
 
 searchTool.bindSearch();

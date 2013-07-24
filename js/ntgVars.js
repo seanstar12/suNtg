@@ -15,7 +15,8 @@ var portListLinks = [
     'id': 'addCustomDate',
     'func': function(){
       $('#'+this.id).on('click', function(){
-        form.custDate();
+        custDateModal();
+        $('#ntgModal').modal('show');
       }); 
     }
   },
@@ -38,6 +39,9 @@ var portListLinks = [
       });
     }
   },
+  {'title':'','class': 'divider' },
+  {'title': 'Revert To Previous','class': 'nav-header'},
+  {'title': 'select','select':true}
 ];
 
 
@@ -79,10 +83,91 @@ var menuObject =  [
           tempGetQueryBlock();
         });
       }
+    },
+    {
+      'title':'Building Update 2.0',
+      'parent':'NTG Tool',
+      'id':'bldgUpdate', 
+      'value':'#NtgTool/BldgUpdate2.0', 
+      'func': function(){
+        $('#'+this.id).on('click', function(){
+          setDisplay(bldgUpdateObj);
+          tempBldgUpdate('hill');
+        });
+      }
     }
   ]}
 ];
 
+
+var  toolsObj = {
+  title: '{NTG} Tools',
+  navLinks: [
+    {
+      'title': 'Favorites',
+      'class': 'NavHeading favHead',
+      'id': 'favHeadid'
+    },
+    {
+      'title': 'Toggle Favorites Edit',
+      'class': '',
+      'id': 'editShortCuts',
+    }
+  ],
+
+  'func': function(){
+    $('#editShortCuts').on('click', function(e){
+      e.preventDefault();
+      __doPostBack('ctl00$MainContent$EditButton','');
+    });
+  }
+}
+
+var searchObj = {
+  title: '{NTG} Search',
+  navLinks: [
+    {
+      'title': 'Search Operations',
+      'class': 'NavHeading',
+      'id': 'batchHead',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  }
+}
+
+var bldgUpdateObj = {
+  title: '{NTG} Update',
+  navLinks: [
+    {
+      'title': 'Building Operations',
+      'class': 'NavHeading',
+      'id': 'bldgOps',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  }
+}
 
 var batchObj = {
   title: '{NTG} Batch',
@@ -176,3 +261,4 @@ var caseObj = {
     })
   }
 }
+
