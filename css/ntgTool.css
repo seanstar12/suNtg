@@ -20,16 +20,6 @@ td label {
 //      float:left;
 //}
 
-.FLeft h1,
-.FLeft h2,
-.FLeft h3, 
-.Content h1,
-.Content h2,
-.Content h3 
-{
-  line-height: 1 !important;
-}
-
 .btnPad button,
 .btn-group {
   margin: 5px 0px 0px 5px;

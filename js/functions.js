@@ -222,28 +222,32 @@ function __doPostBack(eventTarget, eventArgument) {
 }
 
 function ntgCleanup(bool) {
-  urlCheck('', function(){
-    var rightCol = $('.right-col');
-    $('.ContentMaxMin')
-      .html(
-        $('<h2/>')
-          .html('Web Design on Meth: Not Even Once')
-      ).append(
-        $('<div/>')
-        .addClass('minHeight')
-        .html('Contact your local web administrator today and help stop the madness.')
-      )
-      .prepend(rightCol);
-    if (bool){
-      $('.brand')
-        .html('Ntg.Dev')
-        .attr('href','https://ntgdev.missouristate.edu/');    
-    } else { 
-      $('.brand')
-        .html('Networking')
-        .attr('href','https://ntg.missouristate.edu/');    
-    }
-  });
+  
+  var s = document.createElement('link');
+  s.href = chrome.extension.getURL('css/ntgOverride.css');
+  s.rel = 'stylesheet';
+  document.body.appendChild(s);
+
+  var rightCol = $('.right-col');
+  $('.ContentMaxMin')
+    .html(
+      $('<h2/>')
+        .html('Web Design on Meth: Not Even Once')
+    ).append(
+      $('<div/>')
+      .addClass('minHeight')
+      .html('Contact your local web administrator today and help stop the madness.')
+    )
+    .prepend(rightCol);
+  if (bool){
+    $('.brand')
+      .html('Ntg.Dev')
+      .attr('href','https://ntgdev.missouristate.edu/');    
+  } else { 
+    $('.brand')
+      .html('Networking')
+      .attr('href','https://ntg.missouristate.edu/');    
+  }
 }
 
 function test(){
