@@ -1,16 +1,22 @@
 NTG TOOL
 ========
- 
-Because life can suck less
+
+This is a chrome extension created so that work would be made better.
+
+Features:
+---------
+*  Automatic login (never again will I be bothered to login after a session timeout)
+*  Automatic Session Refresh (see above comment)
+*  Partial Redesign (Added constant Navigation with shortcuts and a lot of cleanup)
+*  Custom JS Functions to make life easier
 
 todo:
 -----
  
-*  Keep session alive via background.html -- WORKS --  9b3df5d337fa880afa7cfbd2f1477d23ccbf1310
-*  hijack cookies and force them to do our bidding
-*  Finish up api
 *  Link mass allocate tool to api
-*  Setup options page.
+*  Finish options page.
 *  Set options page to have control over what gets ran
-*  Finish Making shortcuts on switch page
+*  Redo menu / nav creation to make one clean funciton
+*  Build out api to copy to su@NtgServer (nodejs mobile implementation)
+*  Prorably a lot more. If I feel like it
 
