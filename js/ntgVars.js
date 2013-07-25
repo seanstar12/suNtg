@@ -101,24 +101,39 @@ var menuObject =  [
 
 
 var  toolsObj = {
-  title: '{NTG} Tools',
+  title: 'Network Management',
   navLinks: [
     {
-      'title': 'Favorites',
+      'title': 'Network Management',
       'class': 'NavHeading favHead',
-      'id': 'favHeadid'
+      'id': 'mgmtHeadid'
     },
     {
-      'title': 'Toggle Favorites Edit',
+      'title': 'Extension Settings',
       'class': '',
-      'id': 'editShortCuts',
+      'id': 'suSettingsId',
+    },
+    {
+      'title': 'Log Out',
+      'class': '',
+      'id': 'logOutId',
     }
   ],
 
   'func': function(){
-    $('#editShortCuts').on('click', function(e){
+    $('#logOutId').on('click', function(e){
       e.preventDefault();
-      __doPostBack('ctl00$MainContent$EditButton','');
+      chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogout'},
+        function(response){
+          if (response) {
+            console.log(response.msg);
+            window.location.href = "https://ntg.missouristate.edu/";
+          }
+        });
+    });
+    $('#suSettingsId').on('click', function(e){
+      e.preventDefault();
+      window.open(chrome.extension.getURL('options.html'), '_blank');
     });
   }
 }
@@ -169,6 +184,55 @@ var bldgUpdateObj = {
   }
 }
 
+var ntgSideLinks = [
+  {
+    'title': 'su@Ntg Links',
+    'class': 'NavHeading',
+    'id': 'suLinksHead',
+  },
+  {
+    'title':'Batch Operations',
+    'parent':'NTG Tool',
+    'id':'batchOpsSide', 
+    'value':'#NtgTool/BatchOperations',
+    'func': function(){
+      $('#'+this.id).on('click', function(){
+        setDisplay(batchObj);
+        batchOps();
+      });
+    }
+  },
+  {
+    'title':'Yearly Inventory',
+    'parent':'NTG Tool',
+    'id':'yearlyInventorySide', 
+    'value':'#NtgTool/YearlyInventory'
+  },
+  {
+    'title':'Case System 2.0',
+    'parent':'NTG Tool',
+    'id':'caseSystemSide', 
+    'value':'#NtgTool/CaseSystem2.0', 
+    'func': function(){
+      $('#'+this.id).on('click', function(){
+        setDisplay(caseObj);
+        tempGetQueryBlock();
+      });
+    }
+  },
+  {
+    'title':'Building Update 2.0',
+    'parent':'NTG Tool',
+    'id':'bldgUpdateSide', 
+    'value':'#NtgTool/BldgUpdate2.0', 
+    'func': function(){
+      $('#'+this.id).on('click', function(){
+        setDisplay(bldgUpdateObj);
+        tempBldgUpdate('hill');
+      });
+    }
+  }
+]
 var batchObj = {
   title: '{NTG} Batch',
   navLinks: [

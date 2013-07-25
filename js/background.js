@@ -153,7 +153,11 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
     chrome.alarms.clearAll();
     bg.init();
   }
+  else if (msg.data = "reqLogout"){
+    nT.msu.logOut();
+    sendResponse({msg:'Loggin out'});
+  }
   else if (msg.data = "reqFeatures"){
-    sendResponse(nT.storage.config());
+    sendResponse(nT.storage.settings());
   }
 });

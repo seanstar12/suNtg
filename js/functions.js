@@ -58,13 +58,12 @@ function constructHeader(){
   });
 }
 
-function constructFav(links){
-  var el = $('.NavHeading.favHead');
-  $.each(links, function(){
-    if (!(this.className == 'EditBtn')){
-      el.after( $('<li/>').html(this));
-    }
-  });
+function removeFavCol(context){
+  context.next().remove();
+  context.next().remove();
+  context.remove();
+  
+  $('#ctl00_titleH2').remove();
 }
 
 //For use with custBuildingDisplay

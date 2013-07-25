@@ -28,22 +28,17 @@ urlCheck('EquipmentDetail.asp', function() {
 });
 
 urlCheck('Default.aspx', function(){
-  // A little Ghetto. Probably need to remove stock favorites entirely...
-  // I'll think about it.
 
-  var aspForm = $('#aspnetForm'); //Needed for postback of Edit
+  removeFavCol($('.FavCol')); // Also removes title
   var content = $('.Content');
-  var favCol = $('.FavCol');
-  
   setDisplay(toolsObj);
-  constructFav($('.FavCol a', content));
-  $('.Content')
-    .html(content)
-    .append(aspForm);
+  $('.Content').html(content);
    
-  favCol.next().remove();
-  favCol.next().remove();
-  favCol.remove();
+  $('.Navigation ul').append(Handlebars.templates.ntgSidebar(ntgSideLinks));
+  
+  $.each(ntgSideLinks, function(el, i){
+    if (typeof(this.func) == "function") this.func();
+  });
 });
 
 searchTool.bindSearch();
