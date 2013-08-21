@@ -36,6 +36,12 @@ function addScripts(files){
   }
 }
 
+function clickDate() {
+  $('[name="dbdVerifyDt"]').each(function(i,el){
+      $(this).attr('onclick',  '$(this).attr("value", returnDate())')
+  })
+}
+
 function dbInit() {  
   fetch.data('building');  
   fetch.data('equipment');  
@@ -1669,6 +1675,115 @@ function renderList(obj){
   $.each(list, function(el,i){
     console.log(this);
   });
+}
+
+var surplusSet = [];
+function getSurplusInfo (dB, bool){
+  setDisplay(surplusObj);
+  $('.Content').html(Handlebars.templates.loadStatus({
+    'action':'Grabbing Hardware Info',
+    'status': 'Generating Requests'
+  }));
+  
+  $('#updateProgressAlert').fadeIn(150);
+
+  var _progress = $('#updateProgressBar');
+  var _progressTotal = $('#updateProgressBarTotal');
+  var _msg = $('#updateProgressMsg');
+  var _total = 0;
+  var _tCount = 0;
+  var _acC = 0;
+
+  $.each(dB, function(i,el){
+    _total += el.tags.length;
+    _acC += el.accCount;
+  });
+
+  var db = dB,
+      dbC = 0,
+      dbL = dB.length;
+
+  $.each(db, function(i,el){
+    el.hardware = [];
+    console.log(el);
+    var tgL = el.tags.length,
+        cnt = 0;
+
+    $.each(el.tags, function(y, tag){
+      function pad(num, size) {
+        var s = "000" + num;
+        return 'X' + s.substr(s.length-size);
+      }
+      if (typeof tag == 'number') var sTag = pad(tag, 4);
+      else var sTag = tag;
+
+      console.log(sTag + ' : ' + tag + '  : ' + db[i].tags[y]);
+      if (true){
+        $.ajax({
+          url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+ sTag
+        }).done(function(data){
+          el.hardware.push( {
+            'tag': sTag,
+            'serial': $('#dbInventory_s_SerialNumber',data).val(),
+            'desc': $('#dbInventory_n_DescriptionID',data).val(),
+            'box': el.boxId
+          });
+          _tCount++;
+          updateStatus(sTag,y,tgL);
+          if ( _tCount == _total ) {
+            if (bool) db.multiTable = true;
+            surplusSet = db;
+            var stats = {boxes:dbL,hw:_total,acc:el.acc,accCount:_acC};
+            $('.Content').append(Handlebars.templates.xInfoStats(stats));
+            $('.Content').append(Handlebars.templates.xInfo(db));
+          }
+        });
+      }
+    });
+    delete el.tags;
+  });
+
+  function updateStatus(tag,tCount,tTotal){
+    var tempTag = ((tCount+1) / tTotal)*100 || 1;
+    var tempTot = (_tCount / _total)*100 || 1;
+    _msg.html('['+_tCount+':'+_total+ '] :  '+tag);
+    _progress.width(tempTag + '%');
+    _progressTotal.width(tempTot + '%');
+    
+    if (_tCount == _total){
+      _msg.html('Grabbed All Teh Things');
+      $('#updateProgressAlert').attr('class','alert alert-success');
+      _progress.parent().addClass('progress-success'); 
+      setTimeout(function(){
+        $('#updateProgressAlert').fadeOut(500);
+      }, 2500);
+    }
+    console.log(tempTag + '  ' + tempTot);
+    console.log(_tCount + ' : ' + _total + '  -  '+ tCount + ' : ' + tTotal);
+  }
+}
+
+var surplusObj = {
+  title: 'Surplus Stuffs',
+  navLinks: [
+    {
+      'title': 'Surplus Stuffs',
+      'class': 'NavHeading',
+      'id': 'batchHead',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  }
 }
 
 //TODO : add history compression: http://stackoverflow.com/questions/1068834/object-comparison-in-javascript

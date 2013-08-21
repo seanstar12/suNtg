@@ -44,6 +44,8 @@ urlCheck('Default.aspx', function(){
 searchTool.bindSearch();
 document.body.removeAttribute('onload');
 
+
+clickDate();
 //setOnKeys();
 //$('#logOut').bind('click', function(e) {
 //  //e.preventDefault();

@@ -1,10 +1,13 @@
 <div id="updateProgressAlert" class="alert alert-info" style="display: none;">
   <h4>
-    Updating Switches:  
-    <span id="updateProgressMsg"> Generating Request</span> 
+    {{action}}:  
+    <span id="updateProgressMsg"> {{status}}</span> 
   </h4>
   <a class="close" data-dismiss="alert" href="#">&times;</a>
   <div class="progress progress-striped active" id="updateProgressCont">
-    <div class="bar" id="updateProgressBar" style="width:5%;"></div>
+    <div class="bar" id="updateProgressBar" style="width:1%;"></div>
+  </div>
+  <div class="progress progress-success progress-striped active" id="updateProgressCont">
+    <div class="bar" id="updateProgressBarTotal" style="width:1%;"></div>
   </div>
 </div>

@@ -1,0 +1,41 @@
+{{#if multiTable}}
+{{else}}
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>xTag</th>
+        <th>Serial</th>
+        <th>Description</th>
+        <th>Box Id</th>
+      </tr>
+    </thead>
+{{/if}}
+{{#each .}}
+  {{#if ../multiTable}}
+    <h2>
+    Box ID: {{boxId}} - {{acc}}: {{accCount}}
+    </h2>
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th>xTag</th>
+          <th>Serial</th>
+          <th>Description</th>
+          <th>Box Id</th>
+        </tr>
+      </thead>
+  {{/if}}
+      {{#each this.hardware}}
+        <tr>
+          <td>{{tag}}</td>
+          <td>{{serial}}</td>
+          <td>{{desc}}</td>
+          <td>{{box}}</td>
+        </tr>
+      {{/each}}
+      
+  {{#if ../multiTable}}
+    </table>
+  {{/if}}
+{{/each}}
+</table>

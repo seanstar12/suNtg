@@ -161,6 +161,29 @@ var searchObj = {
   }
 }
 
+var surplusObj = {
+  title: 'Surplus Stuffs',
+  navLinks: [
+    {
+      'title': 'Surplus Stuffs',
+      'class': 'NavHeading',
+      'id': 'batchHead',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  }
+}
+
 var bldgUpdateObj = {
   title: '{NTG} Update',
   navLinks: [
