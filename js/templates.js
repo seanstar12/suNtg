@@ -743,26 +743,41 @@ function program10(depth0,data) {
 templates['xInfoStats'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\n    <tr>\n      <td>";
+  if (stack1 = helpers.boxId) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.boxId; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n      <td>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.hardware),stack1 == null || stack1 === false ? stack1 : stack1.length)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td>\n      <td>";
+  if (stack2 = helpers.accCount) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.accCount; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</td>\n      <td></td>\n    </tr>\n  ";
+  return buffer;
+  }
 
-  buffer += "<div class=\"alert alert-info\">\n  <h2>Boxes: ";
+  buffer += "<table class=\"table table-condensed\">\n  <thead>\n    <tr>\n      <th>Box Id</th>\n      <th>Hardware Count</th>\n      <th>Accessory Count</th>\n      <th></th>\n    </tr>\n  </thead>\n  ";
+  stack1 = helpers.each.call(depth0, depth0.box, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <thead>\n      <tr class=\"warning\">\n        <th>";
   if (stack1 = helpers.boxes) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.boxes; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</h2>\n  <h2>Hardware: ";
+    + "</th>\n        <th>";
   if (stack1 = helpers.hw) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.hw; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</h2>\n  <h2>";
-  if (stack1 = helpers.acc) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.acc; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + ": ";
+    + "</th>\n        <th>";
   if (stack1 = helpers.accCount) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.accCount; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</h2>\n</div>\n";
+    + "</th>\n        <th>Totals</th>\n      </tr>\n    </thead>\n</table>\n";
   return buffer;
   });
 })();

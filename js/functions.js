@@ -1718,6 +1718,7 @@ function getSurplusInfo (dB, bool){
       else var sTag = tag;
 
       console.log(sTag + ' : ' + tag + '  : ' + db[i].tags[y]);
+
       if (true){
         $.ajax({
           url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+ sTag
@@ -1733,7 +1734,7 @@ function getSurplusInfo (dB, bool){
           if ( _tCount == _total ) {
             if (bool) db.multiTable = true;
             surplusSet = db;
-            var stats = {boxes:dbL,hw:_total,acc:el.acc,accCount:_acC};
+            var stats = {boxes:dbL,hw:_total,acc:el.acc,accCount:_acC,box:surplusSet};
             $('.Content').append(Handlebars.templates.xInfoStats(stats));
             $('.Content').append(Handlebars.templates.xInfo(db));
           }

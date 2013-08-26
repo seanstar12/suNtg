@@ -50,6 +50,10 @@ var menuObject =  [
   {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
   {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
   {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
+  {'parent': true, 'title':'Other', 'sub':[
+    {'title':'Phone Contacts','parent':'Other','id':'phoneLink', 'value':'/contacts/Personnel.aspx' },
+    {'title':'Schedules','parent':'Other','id':'scheduleLink','value':'/Tools/schedules/Default.aspx'}]
+  },
   {'parent': true, 'title':'Case System', 'sub':[
     {'title':'Ticket System','parent':'Case System','id':'ticketLink', 'value':'/case/queryCase.asp' },
     {'title':'TeleCom','parent':'Case System','id':'caseLink','value':'http://telsem.missouristate.edu/selfservice'}]},
