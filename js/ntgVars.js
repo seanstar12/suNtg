@@ -52,6 +52,7 @@ var menuObject =  [
   {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
   {'parent': true, 'title':'Other', 'sub':[
     {'title':'Phone Contacts','parent':'Other','id':'phoneLink', 'value':'/contacts/Personnel.aspx' },
+    {'title':'Jack Lookup','parent':'Other','id':'jacLink','value':'/NetInfo/JackQuery.asp'},
     {'title':'Schedules','parent':'Other','id':'scheduleLink','value':'/Tools/schedules/Default.aspx'}]
   },
   {'parent': true, 'title':'Case System', 'sub':[
