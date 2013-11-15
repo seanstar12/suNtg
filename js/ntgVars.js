@@ -49,8 +49,8 @@ var menuObject =  [
   {'title':'Tools','id':'toolLink','value':'/Tools/Default.aspx'},
   {'title':'Search','id':'searchLink','value':'/NetInfo/EquipmentDetail.asp'}, 
   {'title':'Floor Plans','id':'floorPlanLink','value':'/NetInfo/FloorPlans.asp'}, 
-  {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
   {'parent': true, 'title':'Other', 'sub':[
+    {'title':'Inventory','id':'inventoryLink','value':'/NetInfo/BuildingInventory.asp?InvCampus=Springfield&InvMonth=99'},
     {'title':'Phone Contacts','parent':'Other','id':'phoneLink', 'value':'/contacts/Personnel.aspx' },
     {'title':'Jack Lookup','parent':'Other','id':'jacLink','value':'/NetInfo/JackQuery.asp'},
     {'title':'Schedules','parent':'Other','id':'scheduleLink','value':'/Tools/schedules/Default.aspx'}]

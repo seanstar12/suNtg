@@ -132,12 +132,11 @@ nT.msu = {
   },
 
   refreshAuthCookies: function (){
-    var searchVars = ['/EquipmentList.asp?dbsSMSUTag=X3604&',
-                      '/EquipmentDetail.asp?Tag=X3403&'];
+    var searchVars = ['NetInfo/EquipmentDetail.asp?Tag=X3403&', 'Tools/Default.aspx'];
 
     $.each(searchVars, function(){
       $.ajax({
-        url: 'https://ntg.missouristate.edu/NetInfo' + this + Date.now(),
+        url: 'https://ntg.missouristate.edu/' + this + Date.now(),
       }).done(function(){
           var date = new Date();
           console.log('Refresh with success: '+ date.toTimeString());

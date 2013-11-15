@@ -22,6 +22,7 @@ addScripts([
   'js/functions.js',
   'js/templates.js',
   'js/surplus.json',
+  'js/powerInj.json',
   'lib/bootstrap-select/bootstrap-select.min.js',
   'lib/bootstrap-select/bootstrap-select.min.css',
   'css/bootstrap.css',
