@@ -8,6 +8,7 @@
 }
 
 .ColumnSet div {
+  width: 360px;
   background-color: #FFF;
   border: 1px solid #E4E4E4;
 }
@@ -19,6 +20,10 @@
 
 .ColumnSet ul a {
   color: #6B6A6A;
+}
+
+.ColumnSet {
+  width: 370px;
 }
 
 .FLeft h1,

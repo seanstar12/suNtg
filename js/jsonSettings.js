@@ -15,11 +15,29 @@ var Settings = {
 
 function onLoad(){
   if (localStorage.newSettings){
-    renderPage();
+    //renderPage();
+    debugRender();
   } else {
     Settings.setDefaults();
     renderPage();
   }
+}
+
+function debugSave(){
+   
+
+}
+
+function debugRender(){
+  var settings = JSON.parse(localStorage.fuu);
+
+  $('#imaBody').html(Handlebars.templates.basicSettings(settings));
+  $('#saveButton').on('click', function(){
+    $('#saveButton').html('This does not work yet jackass.');
+    setTimeout( function() {
+      $('#saveButton').html('Save');
+    }, 3000);
+  });
 }
 
 function renderPage(){
@@ -64,7 +82,7 @@ function renderPage(){
     k.push(e.keyCode);
     if (k.toString().indexOf(c) >= 0){
       $('.su').removeAttr('style');
-      $('.su a').trigger('click');
+      //$('.su a').trigger('click');
     }
   },false);
 }

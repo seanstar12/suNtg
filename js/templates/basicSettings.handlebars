@@ -1,0 +1,6 @@
+  {{#each .}}
+    <div class="settingsItem">
+      {{@key}}: <input type='text' name='{{@key}}' id='{{@key}}' value='{{this}}'>
+    </div>
+  {{/each}}
+<button id="saveButton">COMMIT ALL TEH THINGS</button>
