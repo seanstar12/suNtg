@@ -64,7 +64,7 @@ bg = {
       else {
         chrome.tabs.query({url:'https://ntg.missouristate.edu/Login/login.aspx*'},function(stuff){
           if (stuff[0] == null){ 
-            if (nT.storage.get('other','nag') == 1){
+            if (3== 1){
               console.log('I need credentials to log you back in. Log in here:');
               alert('You\'re Logged Out! Imma open up the login page for you. ');
             }
@@ -99,9 +99,9 @@ bg = {
       }
       chrome.alarms.create('keepAlive',{periodInMinutes: Number(nT.storage.get('session','keepAliveRate'))});
     }
-    //if (autoLogin == 1) {
+    if (nT.storage.get('session','autoLogin') == 1) {
       nT.msu.isLoggedIn(bg.loggedInCallBack);
-    //}
+    }
     if(debug == 1) chrome.alarms.getAll(function(alarms){console.log(JSON.stringify(alarms));});
   }
 }
@@ -139,6 +139,7 @@ if (localStorage.settings != null){
   //var debug = nT.storage.get('other','debug');
   var debug = 1;
   //var autoLogin = 1;
+
   var autoLogin = nT.storage.get('session','autoLogin');
   //console.log(nT.storage.get('session','autoLogin'));
 }

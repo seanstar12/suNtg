@@ -9,7 +9,8 @@ nT.portal = {
 nT.storage = {
         // Return an individual item from storage
   get: function (set,key){
-    var cellar = JSON.parse(localStorage.settings); 
+    var cellar = JSON.parse(localStorage.settings);
+    console.log(cellar); 
     return cellar[set][key];
   },
         // Set an individual item from storage eg. (interface, tinyHeader, 1)
@@ -34,7 +35,8 @@ nT.storage = {
         // Set default settings file. 
   defaults: function(){
     //localStorage.settings = '{"session":{"keepAlive":"1","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","newTab":"0"},"credentials":{"username":"","password":""}, "other":{"cleanTheme":"0","nag":"0","formAuto":"0","idle":"0","idleTimeout":"15","idleCheckRate":"60","shortKeys":"1","debug":"1"}}';
-    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0"},"credentials":{"username":"","password":""},"other":{"debug":"1"}}';
+    //localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0"},"credentials":{"username":"","password":""},"other":{"debug":"1"}}';
+    localStorage.settings = '{"session":{"keepAlive":"0","keepAliveTimeout":"0","keepAliveRate":"7","autoLogin":"0","username":"","password":"","debug":"1"}}';
   }
 };
 
@@ -43,8 +45,8 @@ nT.msu = {
   //Verifies credentials are set and then initiates the login process
   initLogin: function (){
     if (  
-      nT.storage.get('credentials','username') != null 
-      && nT.storage.get('credentials','password') != null 
+      nT.storage.get('session','username') != null 
+      && nT.storage.get('session','password') != null 
     ){
       this.getValidation();
     } else {
@@ -108,8 +110,8 @@ nT.msu = {
     
     var postData =  { '__VIEWSTATE':stage.querySelector('#__VIEWSTATE').value,
                       '__EVENTVALIDATION':stage.querySelector('#__EVENTVALIDATION').value,
-                      'ctl00$MainContent$UserID':nT.storage.get('credentials','username'),
-                      'ctl00$MainContent$Password':nT.storage.get('credentials','password'), 
+                      'ctl00$MainContent$UserID':nT.storage.get('session','username'),
+                      'ctl00$MainContent$Password':nT.storage.get('session','password'), 
                       'ctl00$MainContent$ImageButton1.x':'15',
                       'ctl00$MainContent$ImageButton1.y':'23'
                     }; 

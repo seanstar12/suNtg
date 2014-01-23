@@ -23,17 +23,22 @@ function onLoad(){
   }
 }
 
-function debugSave(){
-   
-
+function debugSave(){ 
+  var tempStorage = {'session':{}};
+  $('input[type=\'text\']').each(function(){
+    console.log(this);
+    tempStorage['session'][this.name] = this.value;
+  });
+  localStorage.settings = JSON.stringify(tempStorage);
 }
 
 function debugRender(){
-  var settings = JSON.parse(localStorage.fuu);
+  var settings = JSON.parse(localStorage.settings);
 
-  $('#imaBody').html(Handlebars.templates.basicSettings(settings));
+  $('#imaBody').html(Handlebars.templates.basicSettings(settings.session));
   $('#saveButton').on('click', function(){
-    $('#saveButton').html('This does not work yet jackass.');
+    $('#saveButton').html('I saved it for you. -- <3 Sean');
+    debugSave();
     setTimeout( function() {
       $('#saveButton').html('Save');
     }, 3000);
@@ -43,7 +48,7 @@ function debugRender(){
 function renderPage(){
   
   var settings = Settings.load();
-  $('#imaBody').html(Handlebars.templates.settingsView(settings));
+  $('#imaBody').html(Handlebars.templates.settingsView(settings.session));
   $.each(settings, function(i,e){
     $.each(this.subFields, function(){
       $.each(this.subFields, function(){
