@@ -16,8 +16,14 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
   return this;
 }
 
+
+//Set some defaults so things work
 var siteUrl = window.location.origin;
 
+if (!localStorage.custDate || !localStorage.custDateVal){
+  localStorage.custDate = 0;
+  localStorage.custDateVal = returnDate();
+}
 
 function addScripts(files){
   for (var i =0; i< files.length; i++){

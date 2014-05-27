@@ -123,7 +123,7 @@ function onInstalled(details){
     bg.init();
   }
   else if (details.reason == "install"){
-    chrome.tabs.create({url:'options.html'});
+    chrome.tabs.create({url:'ooptions.html'});
     bg.init();
   }
   

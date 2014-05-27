@@ -2,7 +2,7 @@ var nT = {};
 
 nT.portal = {
   launchSettings: function () {
-    window.open('options.html','_blank');
+    window.open('ooptions.html','_blank');
   }
 };
 

@@ -19,7 +19,8 @@ function onLoad(){
     debugRender();
   } else {
     Settings.setDefaults();
-    renderPage();
+    debugRender();
+    //renderPage();
   }
 }
 
