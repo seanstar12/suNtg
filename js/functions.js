@@ -1683,6 +1683,72 @@ function renderList(obj){
   });
 }
 
+function surplusItems(dB) {
+  setDisplay(surplusObj);
+  
+  $('.Content').html(Handlebars.templates.loadStatus({
+    'action':'Grabbing Hardware Info',
+    'status': 'Generating Requests'
+  }));
+  
+  $('#updateProgressAlert').fadeIn(150);
+
+  var _progress = $('#updateProgressBar');
+  var _progressTotal = $('#updateProgressBarTotal');
+  var _msg = $('#updateProgressMsg');
+  var _total = 0;
+  var _tCount = 0;
+  var _acC = 0;
+  var dataSet = [];
+  var dataSetBAD = [];
+  
+
+  var db = dB,
+      dbC = 0,
+      dbL = dB.length;
+
+  $.each(db, function(i,el){
+    console.log(db[i]);
+    $.ajax({
+      url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+ db[i]
+    }).done(function(data){
+      dbLocation = $('#dbInventory_s_CurCloset',data).val();
+      dbType = $('#dbInventory_n_DescriptionID :selected', data).html();
+      if ( dbLocation == 'INV') {
+        console.log('we good boss');
+        $('.Content').append(db[i] + ': Location: ' + dbLocation + '\t' + dbType +'<br>');
+        dataSet.push( {
+          'tag': db[i],
+          'location': $('#dbInventory_s_CurCloset',data).val()
+        });
+        surplusDANGER(db[i]);
+      }
+      else {
+        
+        dataSetBAD.push( {
+          'tag': db[i],
+          'location': $('#dbInventory_s_CurCloset',data).val()
+        });
+        console.log('BAD: ' + db[i]);
+        $('.Content').append(db[i] + ': Location: ' + dbLocation + '\t' + dbType +'<br>');
+      }
+    });
+  });
+}
+
+function surplusDANGER(tag){
+  $.ajax({
+    url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+    data: {
+      'tag': tag,
+      'command': 'Surplus'
+    }
+  }).done(function(data){
+    $('.Content').append(tag + ' surplused \n')
+  });
+}
+
+
 var surplusSet = [];
 function getSurplusInfo (dB, bool){
   setDisplay(surplusObj);
