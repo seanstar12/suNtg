@@ -2,7 +2,7 @@
   "name": "su@NTG",
   "version": "0.4.24446",
   "manifest_version": 2,
-  "description": "It puts the lotion on the skin.",
+  "description": "Tools to make the job suck less.",
   "options_page": "ooptions.html",
   "icons": {
     "16": "images/icon16.png",
