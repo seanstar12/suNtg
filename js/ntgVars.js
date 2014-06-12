@@ -212,6 +212,29 @@ var bldgUpdateObj = {
   }
 }
 
+var quickEditObj = {
+  title: '{NTG} Quick Edit',
+  navLinks: [
+    {
+      'title': 'Stuffs',
+      'class': 'NavHeading',
+      'id': 'quickEditStuffs',
+    },
+    {
+      'title': 'Annie Are You Okay?',
+      'class': '',
+      'id': 'filla',
+    }
+  ],
+
+  'func': function(){
+    $('#filla').on('click', function(e){
+      e.preventDefault();
+      alert('yeah, I\'m okay.');
+    })
+  }
+}
+
 var ntgSideLinks = [
   {
     'title': 'su@Ntg Links',
@@ -257,6 +280,18 @@ var ntgSideLinks = [
       $('#'+this.id).on('click', function(){
         setDisplay(bldgUpdateObj);
         tempBldgUpdate('hill');
+      });
+    }
+  },
+  {
+    'title':'Quick Edit',
+    'parent':'NTG Tool',
+    'id':'quickEditSide', 
+    'value':'#NtgTool/quickEdit', 
+    'func': function(){
+      $('#'+this.id).on('click', function(){
+        setDisplay(quickEditObj);
+        quickEdit.propigateDisplay();
       });
     }
   }

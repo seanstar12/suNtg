@@ -49,7 +49,7 @@ function clickDate() {
 }
 
 function dbInit() {  
-  fetch.data('building');  
+  fetch.data('building'); 
   fetch.data('equipment');  
   fetch.data('objIds');  
 }
