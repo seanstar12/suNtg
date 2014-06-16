@@ -121,10 +121,12 @@ nT.msu = {
       url: 'https://ntg.missouristate.edu/Login/Login.aspx',
       context: this,
       data: postData 
-    }).done(this.postLoginSuccess());
+    }).done(this.postLoginSuccess(true));
   },
 
-  postLoginSuccess: function() {
+  postLoginSuccess: function(refresh) {
+    if (refresh) this.refreshAuthCookies();
+    
     console.log('Login: Logged In successfully');
     
     if (typeof(this.logInCallback) == "function") {
@@ -134,11 +136,12 @@ nT.msu = {
   },
 
   refreshAuthCookies: function (){
-    var searchVars = ['NetInfo/EquipmentDetail.asp?Tag=X3403&', 'Tools/Default.aspx'];
+    var searchVars = ['NetInfo/EquipmentDetail.asp', 'Tools/Default.aspx'];
 
     $.each(searchVars, function(){
       $.ajax({
-        url: 'https://ntg.missouristate.edu/' + this + Date.now(),
+        //url: 'https://ntg.missouristate.edu/' + this + Date.now(),
+        url: 'https://ntg.missouristate.edu/' + this,
       }).done(function(){
           var date = new Date();
           console.log('Refresh with success: '+ date.toTimeString());
