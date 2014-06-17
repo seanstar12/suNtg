@@ -14,6 +14,23 @@ urlCheck('PortList.asp', function(){
   });
 
   $('[name="dbsDescription"]').removeAttr('size');
+
+  var swtchCfg;
+
+  $('.LocalNav ul li a').each(function() { 
+    if (this.innerHTML == "Configure Switch") {
+      $(this).on( "click" , function(e) {
+        e.preventDefault();
+        window.open(this.href,'_blank');
+        chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogIn'},
+          function(response) {
+            console.log(response.msg);
+          }
+        );
+      });
+    }
+  });
+
 });
 
 //Automatically update date verified after allocation of entity
@@ -25,6 +42,18 @@ urlCheck('EquipmentDetail.asp', function() {
       $(document.getElementsByClassName('NetWarning')).remove()
     }
   }
+});
+
+
+urlCheck('UpdateSwitch.asp', function(){
+  var button = $("input[name='cmdSubmit']");
+  button.on('click', function(e){
+    chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogIn'},
+      function(response) {
+        console.log(response.msg);
+      }
+    );
+  });
 });
 
 urlCheck('Default.aspx', function(){

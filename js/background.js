@@ -154,11 +154,20 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
     chrome.alarms.clearAll();
     bg.init();
   }
+  else if (msg.data = "reqLogIn"){
+    nT.msu.logOut();
+    setTimeout(nT.msu.initLogin(),500);
+    //nT.msu.isLoggedIn(bg.loggedInCallBack);
+    sendResponse({msg:"reqLogIn ran"});
+  }
   else if (msg.data = "reqLogout"){
     nT.msu.logOut();
+    console.log('no ocokies for you');
     sendResponse({msg:'Loggin out'});
   }
   else if (msg.data = "reqFeatures"){
     sendResponse(nT.storage.settings());
+  } else {
+    sendResponse({msg: 'what?'});
   }
 });
