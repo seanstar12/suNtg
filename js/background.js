@@ -39,7 +39,11 @@ bg = {
 
   pageRefresh: function(tabArgs){
     console.log('pageRefresh');
-    chrome.tabs.update(tabArgs);
+    // give chrome some time to process cookies
+    // this prevents the infamous double login
+    setTimeout(function(){
+      chrome.tabs.update(tabArgs);
+    },100);
   },
 
   onAlarm: function(alarm){

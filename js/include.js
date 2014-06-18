@@ -10,7 +10,6 @@ nT.storage = {
         // Return an individual item from storage
   get: function (set,key){
     var cellar = JSON.parse(localStorage.settings);
-    console.log(cellar); 
     return cellar[set][key];
   },
         // Set an individual item from storage eg. (interface, tinyHeader, 1)
@@ -136,7 +135,7 @@ nT.msu = {
   },
 
   refreshAuthCookies: function (){
-    var searchVars = ['NetInfo/EquipmentDetail.asp', 'Tools/Default.aspx'];
+    var searchVars = ['NetInfo/EquipmentDetail.asp']; 
 
     $.each(searchVars, function(){
       $.ajax({
@@ -156,7 +155,7 @@ nT.msu = {
         chrome.cookies.remove({url: 'https://' + el.domain, name: el.name });
       });
     });
-    callback();
+    if (callback) callback();
   }
 };
 
