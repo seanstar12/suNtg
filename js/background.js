@@ -26,14 +26,14 @@ bg = {
         tabArgs = {url:siteUrl+decodeURIComponent((tab.url).split('ReturnUrl=')[1])};
       }
 
-      //if (autoLogin == 1) 
-      nT.msu.initLogin(bg.pageRefresh(tabArgs));
+      //if (autoLogin == 1) -- clears cookies then logs back in
+      nT.msu.logOut( nT.msu.initLogin(bg.pageRefresh(tabArgs)) );
     }
 
     if (temp.indexOf('accessdenied.aspx') > -1 ) {
       //if (debug == 1) 
       console.log('AccessDenied.aspx: New Url='+((tab.url).split('Referer=')[1]));
-      bg.pageRefresh({url:siteUrl+((tab.url).split('Referer=')[1])});
+      nT.msu.logOut( nT.msu.initLogin(bg.pageRefresh({url:siteUrl+((tab.url).split('Referer=')[1])})));
     }
   },
 
@@ -67,6 +67,7 @@ bg = {
             if (3== 1){
               console.log('I need credentials to log you back in. Log in here:');
               alert('You\'re Logged Out! Imma open up the login page for you. ');
+
             }
             if (nT.storage.get('session','newTab') == 1){
               chrome.tabs.create({url:'https://ntg.missouristate.edu/Login/login.aspx'});
@@ -155,9 +156,7 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
     bg.init();
   }
   else if (msg.data = "reqLogIn"){
-    nT.msu.logOut();
-    setTimeout(nT.msu.initLogin(),500);
-    //nT.msu.isLoggedIn(bg.loggedInCallBack);
+    nT.msu.logOut( nT.msu.initLogin() );
     sendResponse({msg:"reqLogIn ran"});
   }
   else if (msg.data = "reqLogout"){

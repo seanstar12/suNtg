@@ -153,9 +153,10 @@ nT.msu = {
     //removes auth cookies
     chrome.cookies.getAll({domain: 'ntg.missouristate.edu'}, function(e) {
       e.forEach(function(el){
-        chrome.cookies.remove({url: 'https://' + el.domain, name: el.name }, callback);
+        chrome.cookies.remove({url: 'https://' + el.domain, name: el.name });
       });
     });
+    callback();
   }
 };
 
