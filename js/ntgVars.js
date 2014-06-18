@@ -119,7 +119,7 @@ var  toolsObj = {
       'id': 'suSettingsId',
     },
     {
-      'title': 'Log Out',
+      'title': 'Refresh Auth',
       'class': '',
       'id': 'logOutId',
     }
