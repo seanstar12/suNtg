@@ -35,8 +35,8 @@ function debugSave(){
 
 function debugRender(){
   var settings = JSON.parse(localStorage.settings);
-
   $('#imaBody').html(Handlebars.templates.basicSettings(settings.session));
+  $('#password').attr('type','password');
   $('#saveButton').on('click', function(){
     $('#saveButton').html('I saved it for you. -- <3 Sean');
     debugSave();

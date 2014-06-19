@@ -158,18 +158,27 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
   if (msg.data == "optionsSave"){
     chrome.alarms.clearAll();
     bg.init();
-  }
-  else if (msg.data = "reqLogIn"){
+  
+  } else if (msg.data == "reqLogIn"){
     nT.msu.logOut( nT.msu.initLogin() );
     sendResponse({msg:"reqLogIn ran"});
-  }
-  else if (msg.data = "reqLogout"){
+  
+  } else if (msg.data == "reqLogout"){
+    chrome.tabs.update({url:'https://ntg.missouristate.edu'});
     nT.msu.logOut();
-    console.log('no ocokies for you');
     sendResponse({msg:'Loggin out'});
-  }
-  else if (msg.data = "reqFeatures"){
+
+  } else if (msg.data == "launchSettings") {
+    chrome.tabs.create({url:'ooptions.html'});
+    sendResponse({msg:'opening settings'});
+  
+  } else if (msg.data == "reload") {
+    chrome.runtime.reload();
+    sendResponse({msg:'reloading extension'});
+  
+  } else if (msg.data == "reqFeatures"){
     sendResponse(nT.storage.settings());
+  
   } else {
     sendResponse({msg: 'what?'});
   }

@@ -76,15 +76,33 @@ document.body.removeAttribute('onload');
 
 clickDate();
 //setOnKeys();
-//$('#logOut').bind('click', function(e) {
-//  //e.preventDefault();
+$('#logOut').on('click', function(e) {
+  e.preventDefault();
 //  portalFrame(chrome.extension.getURL(''),'logout');
-//});
+  chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogout'},
+    function(response) {
+      console.log(response.msg);
+    }
+  );
+});
 //
-//$('#settings').bind('click', function(e) {
-//  //e.preventDefault();
-//  portalFrame(chrome.extension.getURL(''),'settings');
+$('#settings').on('click', function(e) {
+  e.preventDefault();
+  chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'launchSettings'},
+    function(response) {
+      console.log(response.msg);
+    }
+  );
+});
 
+$('#reload').on('click', function(e) {
+  e.preventDefault();
+  chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reload'},
+    function(response) {
+      console.log(response.msg);
+    }
+  );
+});
 
 //Add Link Redux
 //  Add onclick to each button that launches
