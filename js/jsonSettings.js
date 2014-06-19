@@ -26,7 +26,7 @@ function onLoad(){
 
 function debugSave(){ 
   var tempStorage = {'session':{}};
-  $('input[type=\'text\']').each(function(){
+  $('input[type="text"], input[type="password"]').each(function(){
     console.log(this);
     tempStorage['session'][this.name] = this.value;
   });
