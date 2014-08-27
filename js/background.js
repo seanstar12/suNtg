@@ -43,7 +43,7 @@ bg = {
     // this prevents the infamous double login
     setTimeout(function(){
       chrome.tabs.update(tabArgs);
-    },100);
+    },500);
   },
 
   onAlarm: function(alarm){
@@ -171,6 +171,11 @@ chrome.extension.onMessage.addListener(function(msg,sender,sendResponse) {
   } else if (msg.data == "launchSettings") {
     chrome.tabs.create({url:'ooptions.html'});
     sendResponse({msg:'opening settings'});
+  
+  } else if (msg.data == "incogWindow") {
+    //chrome.tabs.create({url:'ooptions.html'});
+    chrome.windows.create({url:msg.url,incognito:true});
+    sendResponse(msg);
   
   } else if (msg.data == "reload") {
     chrome.runtime.reload();

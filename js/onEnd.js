@@ -21,10 +21,11 @@ urlCheck('PortList.asp', function(){
     if (this.innerHTML == "Configure Switch") {
       $(this).on( "click" , function(e) {
         e.preventDefault();
-        window.open(this.href,'_blank');
-        chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogIn'},
+        var U = this.href;
+//        window.open(this.href,'_blank');
+        chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'incogWindow',url:U},
           function(response) {
-            console.log(response.msg);
+            console.log(response);
           }
         );
       });
@@ -42,18 +43,20 @@ urlCheck('EquipmentDetail.asp', function() {
       $(document.getElementsByClassName('NetWarning')).remove()
     }
   }
+  $('#dbInventory_s_PartOf').removeAttr('disabled');
 });
 
 
 urlCheck('UpdateSwitch.asp', function(){
   var button = $("input[name='cmdSubmit']");
-  button.on('click', function(e){
-    chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'reqLogIn'},
-      function(response) {
-        console.log(response.msg);
-      }
-    );
-  });
+//  button.on('click', function(e){
+//    e.preventDefault();
+//    chrome.runtime.sendMessage(chrome.i18n.getMessage("@@extension_id"), {data:'incogWindow'},
+//      function(response) {
+//        console.log(response.msg);
+//      }
+//    );
+//  });
 });
 
 urlCheck('Default.aspx', function(){
