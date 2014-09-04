@@ -43,7 +43,7 @@ urlCheck('EquipmentDetail.asp', function() {
       $(document.getElementsByClassName('NetWarning')).remove()
     }
   }
-  $('#dbInventory_s_PartOf').removeAttr('disabled');
+  //$('#dbInventory_s_PartOf').removeAttr('disabled');
 });
 
 

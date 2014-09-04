@@ -1479,7 +1479,7 @@ function surplusItems(dB) {
       dbL = dB.length;
 
   $.each(db, function(i,el){
-    console.log(db[i]);
+    //console.log(db[i]);
     $.ajax({
       url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp?Tag='+ db[i]
     }).done(function(data){
@@ -1510,12 +1510,15 @@ function surplusItems(dB) {
 function surplusDANGER(tag){
   $.ajax({
     url: 'https://ntg.missouristate.edu/NetInfo/EquipmentDetail.asp',
+    type: 'POST',
     data: {
-      'tag': tag,
+      'Tag': tag,
+      'mode': 'update',
       'command': 'Surplus'
     }
   }).done(function(data){
-    $('.Content').append(tag + ' surplused \n')
+    console.log('surplusing ' + tag);
+    $('.Content').append( tag + "  -  ");
   });
 }
 
